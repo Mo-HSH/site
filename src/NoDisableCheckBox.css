@@ -1,0 +1,8 @@
+.ant-checkbox-checked.ant-checkbox-disabled .ant-checkbox-inner {
+    background-color: #1677ff;
+    border-color: #1677ff;
+}
+
+.ant-checkbox.ant-checkbox-disabled .ant-checkbox-inner::after {
+    border-color: white;
+}

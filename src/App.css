@@ -1,0 +1,156 @@
+:root {
+  --list-text: rgba(0, 0, 0, 0.88);
+  --selected-list-text: rgba(193, 33, 33, 0.88);
+}
+
+@font-face {
+  font-family: 'Samim';
+  src: url('assets/fonts/Samim/Samim-FD.eot') format('eot'),
+  url('assets/fonts/Samim/Samim-FD.ttf') format('ttf'),
+  url('assets/fonts/Samim/Samim-FD.woff') format('woff'),
+  url('assets/fonts/Samim/Samim-FD.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Samim';
+  src: url('assets/fonts/Samim/Samim-Bold-FD.eot') format('eot'),
+  url('assets/fonts/Samim/Samim-Bold-FD.ttf') format('ttf'),
+  url('assets/fonts/Samim/Samim-Bold-FD.woff') format('woff'),
+  url('assets/fonts/Samim/Samim-Bold-FD.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-style: italic;
+}
+
+.editor-textUnderline {
+  text-decoration: underline;
+}
+
+.editor-strikeThrough {
+  text-decoration: line-through;;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+  }
+
+  70% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(0.95);
+  }
+}
+
+@keyframes fade {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(5);
+    opacity: 0;
+  }
+}
+
+html, body, #root, #root > div {
+  height: 100vh
+}
+
+body {
+  margin: 0;
+}
+
+.ant-menu-item-selected {
+  color: #FAFBFC !important;
+}
+
+.ant-menu-submenu-selected {
+  background-color: #EDEFF1;
+}
+
+.ant-menu-submenu-selected  .ant-menu-submenu-title {
+  color: #787486 !important;
+}
+
+aside {
+  border-left: 1px solid;
+  border-color: #DBDBDB;
+}
+
+.ant-layout-header {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid;
+  border-color: #DBDBDB;
+}
+
+.ant-layout-sider-children {
+  background-color: #ffffff !important;
+}
+
+.print-text-size {
+  /*font-size: 10px;*/
+}
+
+.gray-background {
+  background-color: #ececec;
+  direction: ltr;
+}
+
+.print-title-size {
+  font-size: 12px;
+}
+
+.custom-side-table .ant-table-tbody > tr > td {
+  font-size: 12px;
+}
+
+.A4-portrait {
+  width: 794px;
+  height: 1150px;
+}
+
+.A4-portrait .ant-divider-vertical {
+  height: 1060px;
+}
+
+.A5-landscape {
+  width: 794px;
+  height: 575px;
+}
+
+.A5-portrait {
+  width: 575px;
+  height: 794px;
+}
+
+@media print {
+  .break-after {
+    width: 99vw;
+    height: 99vh;
+    page-break-before: always;
+    page-break-after: always;
+  }
+
+  .A4-portrait .ant-divider-vertical {
+    height: 90vh;
+  }
+
+  .A5-landscape {
+    width: 99vw;
+    height: 99vh;
+  }
+
+  .A5-portrait {
+    width: 99vw;
+    height: 99vh;
+  }
+}

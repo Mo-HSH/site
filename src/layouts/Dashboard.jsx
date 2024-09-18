@@ -1,0 +1,115 @@
+import {Outlet, useNavigate} from "react-router-dom";
+import {Button, Divider, Flex, Image, Layout, Menu, Space, Typography} from "antd";
+import {useState} from "react";
+import {
+    AuditOutlined,
+    DoubleLeftOutlined,
+    DoubleRightOutlined, FileTextOutlined, HomeOutlined, SettingOutlined,
+    UserOutlined,
+} from "@ant-design/icons";
+import padafandLogo from "../assets/img/Padafand_Logo.svg";
+
+
+function Dashboard() {
+
+    const [collapsed, setCollapsed] = useState(false);
+
+    const toggleCollapsed = () => {
+        setCollapsed(!collapsed);
+    };
+
+    function getItem(label, key, icon, children, type) {
+        return {
+            key,
+            icon,
+            children,
+            label,
+            type,
+        };
+    }
+
+    const navigate = useNavigate();
+
+    function onSelectMenu(e) {
+        navigate(e.key);
+    }
+
+    const items = [
+        getItem('خانه', '/', <HomeOutlined/>),
+        getItem('سرباز', 'soldier', <UserOutlined/>, [
+            getItem('پذیرش سرباز', '/add-soldier'),
+            getItem('جستجو سرباز', '/search-soldier'),
+            getItem('لیست سربازان', '/list-soldier'),
+        ]),
+        getItem('اسناد', 'document', <AuditOutlined />, [
+            getItem('ثبتی ها', '/leave'),
+            getItem('تسویه ها', '/releases'),
+            getItem('فرم الف', '/alef_form'),
+        ]),
+        getItem('گزارش', 'report', <FileTextOutlined />, [
+            getItem('نهست', '/absence_report'),
+            getItem('کان لم یکن', '/absence_ignored_report'),
+            getItem('گروه خدمتی', '/duty_group_report'),
+            getItem('ماده 60', '/md_60_report'),
+            getItem('فرار', '/run_report'),
+            getItem('مراجعت', '/return_report'),
+            getItem('ترخیص', '/release_report'),
+            getItem('اضافه سنواتی', '/init_additional_service_report'),
+        ]),
+        localStorage.getItem("user_access") === null ? null : localStorage.getItem("user_access") === undefined ? null : localStorage.getItem("user_access").length === 0 ? null :
+            getItem('تنظیمات', 'setting', <SettingOutlined />, [
+                getItem('گزینه ها', '/edit-options'),
+                getItem('محاسباتی', '/edit-calculative'),
+                getItem('شغل سازمانی', '/edit-organization-job'),
+            ]),
+    ];
+
+    return (
+        <Layout>
+            <Layout.Sider trigger={null} collapsible collapsed={collapsed}>
+                <Space>
+                    <Typography.Text/>
+                </Space>
+                <Flex align={"center"} justify={collapsed ? "center" : "right"} vertical={false} gap={"small"} style={{height:"52px"}}>
+                    {!collapsed &&
+                        <>
+                            <Typography.Text/>
+                            <Typography.Text/>
+                            <Image src={padafandLogo} style={{width:"50px", position: "static"}} preview={false} alt="padafdan logo"/>
+                            <Flex vertical justify={"center"}>
+                                <Typography.Text style={{display: "block", overflow: "hidden", whiteSpace: "nowrap"}}>ارتش جمهوری</Typography.Text>
+                                <Typography.Text style={{display: "block", overflow: "hidden", whiteSpace: "nowrap"}}>اسلامی ایران</Typography.Text>
+                            </Flex></>}
+                    <Button type="Typography.Text" icon={collapsed ? <DoubleLeftOutlined/> : <DoubleRightOutlined/>}
+                            onClick={toggleCollapsed}/>
+                </Flex>
+                <Divider/>
+                <Menu
+                    mode="inline"
+                    defaultSelectedKeys={['1']}
+                    items={items}
+                    onSelect={onSelectMenu}
+                />
+            </Layout.Sider>
+            <Layout>
+                <Layout.Header style={{
+                    height: "99px"
+                }}>
+                    <Flex align={"center"} justify={"left"} style={{
+                        height: "100%",
+                    }}>
+                        <Typography.Text>{localStorage.getItem("user_rank")} {localStorage.getItem("user_first_name")} {localStorage.getItem("user_last_name")}</Typography.Text>
+                    </Flex>
+                </Layout.Header>
+
+                <Layout.Content style={{padding:'30px', overflowY:'auto'}} id={"Content"}>
+                    <Outlet />
+                </Layout.Content>
+            </Layout>
+
+        </Layout>
+    );
+}
+
+
+export default Dashboard;
