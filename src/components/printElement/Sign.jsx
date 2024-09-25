@@ -1,6 +1,7 @@
 import {Flex, Popover, Select, Typography} from "antd";
 import {useEffect, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
+import axios from "axios";
+import {getApiUrl} from "../../utils/Config.js";
 
 
 const filterOption = (input, option) =>
@@ -14,17 +15,15 @@ function Single({defaultSign, fontSize, forceRefresh}) {
     const[signs, setSigns] = useState([]);
 
     useEffect(() => {
-        invoke("get_config", {configName: "signs"})
-            .then((res) => {
-                setSigns(res.config.map(({key, value}) => {
-                    return {
-                        title: key,
-                        signer: value
-                    };
-                }))
-            })
-            .catch((_) => {
-            });
+        axios.get(getApiUrl("config/signs"), {withCredentials: true}).then((res) => {
+            setSigns(res.data.config.map(({key, value}) => {
+                return {
+                    title: key,
+                    signer: value
+                };
+            }))
+        }).catch(() => {
+        });
     }, []);
 
     useEffect(() => {
@@ -92,17 +91,15 @@ function SingleInline({defaultSign, fontSize}) {
     const[signs, setSigns] = useState([]);
 
     useEffect(() => {
-        invoke("get_config", {configName: "signs"})
-            .then((res) => {
-                setSigns(res.config.map(({key, value}) => {
-                    return {
-                        title: key,
-                        signer: value
-                    };
-                }))
-            })
-            .catch((_) => {
-            });
+        axios.get(getApiUrl("config/signs"), {withCredentials: true}).then((res) => {
+            setSigns(res.data.config.map(({key, value}) => {
+                return {
+                    title: key,
+                    signer: value
+                };
+            }))
+        }).catch(() => {
+        });
     }, []);
 
     useEffect(() => {
@@ -170,17 +167,15 @@ function MultiInline({defaultSign, fontSize, singGap}) {
     const[signs, setSigns] = useState([]);
 
     useEffect(() => {
-        invoke("get_config", {configName: "signs"})
-            .then((res) => {
-                setSigns(res.config.map(({key, value}) => {
-                    return {
-                        title: key,
-                        signer: value
-                    };
-                }))
-            })
-            .catch((_) => {
-            });
+        axios.get(getApiUrl("config/signs"), {withCredentials: true}).then((res) => {
+            setSigns(res.data.config.map(({key, value}) => {
+                return {
+                    title: key,
+                    signer: value
+                };
+            }))
+        }).catch(() => {
+        });
     }, []);
 
     useEffect(() => {

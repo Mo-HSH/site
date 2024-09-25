@@ -1,11 +1,12 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
-import {Button, Card, ConfigProvider, Flex, notification, Table, Typography} from "antd";
+import {Button, ConfigProvider, Flex, notification, Typography} from "antd";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
 import {GetNumberLabel} from "../../../utils/Data.js";
 import Sign from "../../../components/printElement/Sign.jsx";
+import {getApiUrl} from "../../../utils/Config.js";
+import axios from "axios";
 
 function ReturnMD({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
 
@@ -28,30 +29,30 @@ function ReturnMD({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
     }, []);
 
     useEffect(() => {
-        invoke("get_soldiers", {
-            "query": {
-                "filter":
-                    {
-                        "_id":
-                            {
-                                "$oid": soldierKey
-                            }
-                    }
-                ,
-                "projection":
-                    {
-                        "first_name": 1,
-                        "last_name": 1,
-                        "military_rank": 1,
-                        "national_code": 1,
-                        "father_name": 1,
-                        "deployment_date": 1,
-                        "phone": 1,
-                        "run": 1,
-                    }
-            }
-        })
-            .then((res) => {
+        axios.post(getApiUrl("soldier/list"), {
+            "filter":
+                {
+                    "_id":
+                        {
+                            "$oid": soldierKey
+                        }
+                }
+            ,
+            "projection":
+                {
+                    "first_name": 1,
+                    "last_name": 1,
+                    "military_rank": 1,
+                    "national_code": 1,
+                    "father_name": 1,
+                    "deployment_date": 1,
+                    "phone": 1,
+                    "run": 1,
+                }
+
+        }, {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -73,7 +74,7 @@ function ReturnMD({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             });
     }, [soldierKey, runIndex, forceRefresh]);

@@ -1,11 +1,12 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
 import {Button, Col, ConfigProvider, Divider, Flex, Image, notification, Row, Table, Typography} from "antd";
 import {useReactToPrint} from "react-to-print";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import Sign from "../../../components/printElement/Sign.jsx";
 import padafandLogo from "../../../assets/img/Padafand_Logo.svg";
+import {getApiUrl} from "../../../utils/Config.js";
+import axios from "axios";
 
 function Release({setPrintTitle, soldierKey, refresher}) {
 
@@ -18,7 +19,6 @@ function Release({setPrintTitle, soldierKey, refresher}) {
     });
     const [legalDutyDuration, setLegalDutyDuration] = useState({});
     const [readyForPrint, setReadyForPrint] = useState(false);
-    const [apiUrl, setApiUrl] = useState("");
     const [releaseSign, setReleaseSign] = useState("");
 
     const [api, contextHolder] = notification.useNotification();
@@ -26,78 +26,72 @@ function Release({setPrintTitle, soldierKey, refresher}) {
 
     useEffect(() => {
         setPrintTitle("تسویه");
-
-        invoke("get_config", {configName: "signs"})
-            .then((res) => {
-                res.config.forEach(({key, value}) => {
-                    if (key === "رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا") {
-                        setReleaseSign(value);
-                    }
-                })
+        axios.get(getApiUrl("config/signs"), {withCredentials: true}).then((res) => {
+            res.data.config.forEach(({key, value}) => {
+                if (key === "رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا") {
+                    setReleaseSign(value);
+                }
             })
-            .catch((_) => {
-            });
-
-        invoke("get_api_url").then((res) => {
-            setApiUrl(res);
-        }).catch((err) => {
+        }).catch(() => {
             api["error"]({
                 message: "خطا",
-                description: err
+                description: "خطا در دریافت تنظیمات امضا!"
             });
         });
 
-        invoke("get_config", {configName: "duty-duration"})
-            .then((res) => {
-                setLegalDutyDuration(res.config);
-            })
-            .catch((_) => {
+        axios.get(getApiUrl("config/duty-duration"), {withCredentials: true}).then((res) => {
+            setLegalDutyDuration(res.data.config);
+        }).catch(() => {
+            api["error"]({
+                message: "خطا",
+                description: "خطا در دریافت تنظیمات مدت خدمت!"
             });
+        });
 
-        invoke("get_soldiers", {
-            "query": {
-                "filter":
-                    {
-                        "_id":
-                            {
-                                "$oid": soldierKey
-                            }
-                    }
-                ,
-                "projection":
-                    {
-                        "profile": 1,
-                        "folder_number": 1,
-                        "first_name": 1,
-                        "last_name": 1,
-                        "father_name": 1,
-                        "military_rank": 1,
-                        "deployment_date": 1,
-                        "national_code": 1,
-                        "release": 1,
-                        "birth_certificate_issuing_place": 1,
-                        "birthday": 1,
-                        "birthplace": 1,
-                        "deployment_location": 1,
-                        "learning_unit": 1,
-                        "eye_color": 1,
-                        "blood_type": 1,
-                        "height": 1,
-                        "state": 1,
-                        "city": 1,
-                        "address_street": 1,
-                        "address_house_number": 1,
-                        "address_home_unit": 1,
-                        "education": 1,
-                        "field_of_study": 1,
-                        "personnel_code": 1,
-                        "phone": 1,
-                        "unit": 1,
-                        "is_native": 1,
-                    }
-            }
-        })
-            .then((res) => {
+        axios.post(getApiUrl("soldier/list"), {
+
+            "filter":
+                {
+                    "_id":
+                        {
+                            "$oid": soldierKey
+                        }
+                }
+            ,
+            "projection":
+                {
+                    "profile": 1,
+                    "folder_number": 1,
+                    "first_name": 1,
+                    "last_name": 1,
+                    "father_name": 1,
+                    "military_rank": 1,
+                    "deployment_date": 1,
+                    "national_code": 1,
+                    "release": 1,
+                    "birth_certificate_issuing_place": 1,
+                    "birthday": 1,
+                    "birthplace": 1,
+                    "deployment_location": 1,
+                    "learning_unit": 1,
+                    "eye_color": 1,
+                    "blood_type": 1,
+                    "height": 1,
+                    "state": 1,
+                    "city": 1,
+                    "address_street": 1,
+                    "address_house_number": 1,
+                    "address_home_unit": 1,
+                    "education": 1,
+                    "field_of_study": 1,
+                    "personnel_code": 1,
+                    "phone": 1,
+                    "unit": 1,
+                    "is_native": 1,
+                }
+        }, {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -112,7 +106,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             });
     }, [setPrintTitle, soldierKey, refresher]);
@@ -311,7 +305,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                         </Col>
                                         <Col span={4}>
                                             <Image preview={false} shape="square" width={"100%"}
-                                                   src={"http://" + apiUrl + "/files/serve_file/" + soldier["profile"]}
+                                                   src={getApiUrl("files/serve_file/" + soldier["profile"])}
                                                    style={{border: "solid black 2px"}}
                                             />
                                         </Col>
@@ -468,7 +462,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                             <Col span={6} style={{height: "100%"}}>
                                                 <Flex style={{width: "100%"}} justify={"end"}>
                                                     <Image preview={false} shape="square" width={"75%"}
-                                                           src={"http://" + apiUrl + "/files/serve_file/" + soldier["profile"]}
+                                                           src={getApiUrl("files/serve_file/" + soldier["profile"])}
                                                            style={{border: "solid black 2px"}}
                                                     />
                                                 </Flex>
@@ -560,7 +554,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                     <Flex vertical={true} style={{width: "100%"}}
                                                           justify={"center"}>
                                                         <Image preview={false} shape="square" width={"100%"}
-                                                               src={"http://" + apiUrl + "/files/serve_file/" + soldier["profile"]}
+                                                               src={getApiUrl("files/serve_file/" + soldier["profile"])}
                                                                style={{border: "solid black 2px"}}
                                                         />
                                                         <Row style={{marginTop: "10px"}}>
@@ -672,7 +666,8 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                         background: `url(${padafandLogoOpacityLow}) center center / contain no-repeat`
                                     }}
                                 >
-                                    <Typography.Title level={5} style={{marginTop: "20px"}}>فرم تسویه حساب کارکنان وظیفه فرماندهی پش مرکز
+                                    <Typography.Title level={5} style={{marginTop: "20px"}}>فرم تسویه حساب کارکنان وظیفه
+                                        فرماندهی پش مرکز
                                         نپاجا</Typography.Title>
 
                                     <Row style={{width: "90%"}} gutter={[12, 0]}>
@@ -774,7 +769,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                         </Col>
                                         <Col span={5}>
                                             <Image preview={false} shape="square" width={"100%"}
-                                                   src={"http://" + apiUrl + "/files/serve_file/" + soldier["profile"]}
+                                                   src={getApiUrl("files/serve_file/" + soldier["profile"])}
                                                    style={{border: "solid black 2px"}}
                                             />
                                         </Col>

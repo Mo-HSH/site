@@ -1,10 +1,11 @@
 import {Button, Divider, Flex, Form, Input, notification, Select, Table, Tooltip, Typography} from "antd";
 import {dateValidator} from "../../utils/Validates.js";
 import {useCallback, useEffect, useRef, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
 import {GetQueryDate} from "../../utils/Calculative.js";
 import {DateRenderer} from "../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
+import {getApiUrl} from "../../utils/Config.js";
+import axios from "axios";
 
 function AbsenceReport() {
 
@@ -15,21 +16,19 @@ function AbsenceReport() {
     const printComponent = useRef(null);
 
     useEffect(() => {
-        invoke("get_config", {configName: "unit"})
-            .then((res) => {
-                setUnitSelectOptions(res.config.map(v => {
-                    return {
-                        label: v.name,
-                        value: v.name
-                    }
-                }))
-            })
-            .catch((err) => {
-                api["error"]({
-                    message: "خطا",
-                    description: "خطا در دریافت اطلاعات."
-                });
+        axios.get(getApiUrl("config/unit"), {withCredentials: true}).then((res) => {
+            setUnitSelectOptions(res.data.config.map(v => {
+                return {
+                    label: v.name,
+                    value: v.name
+                }
+            }))
+        }).catch(() => {
+            api["error"]({
+                message: "خطا",
+                description: "خطا در دریافت تنظیمات یگان!"
             });
+        });
     }, [])
 
     function onFinish(value) {
@@ -57,34 +56,33 @@ function AbsenceReport() {
             }
         }
 
-        invoke("get_soldiers", {
-            "query": {
-                "filter": filter,
-                "projection": {
-                    "first_name": 1,
-                    "last_name": 1,
-                    "national_code": 1,
-                    "father_name": 1,
-                    "deployment_date": 1,
-                    "unit": 1,
-                    "section": 1,
-                    "absence": {
-                        "$filter": {
-                            "input": "$absence",
-                            "as": "absenceItem",
-                            "cond": {
-                                "$and": [
-                                    {"$lte": ["$$absenceItem.start_date", toDate]},
-                                    {"$gte": ["$$absenceItem.end_date", fromDate]},
-                                    {"$eq": ["$$absenceItem.is_ignored", false]}
-                                ]
-                            }
+        axios.post(getApiUrl("soldier/list"), {
+            "filter": filter,
+            "projection": {
+                "first_name": 1,
+                "last_name": 1,
+                "national_code": 1,
+                "father_name": 1,
+                "deployment_date": 1,
+                "unit": 1,
+                "section": 1,
+                "absence": {
+                    "$filter": {
+                        "input": "$absence",
+                        "as": "absenceItem",
+                        "cond": {
+                            "$and": [
+                                {"$lte": ["$$absenceItem.start_date", toDate]},
+                                {"$gte": ["$$absenceItem.end_date", fromDate]},
+                                {"$eq": ["$$absenceItem.is_ignored", false]}
+                            ]
                         }
                     }
                 }
             }
-        })
-            .then((res) => {
+        }, {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 let rowIndexCounter = 1;
 
                 const transformedData = res.flatMap(soldier => {
@@ -107,9 +105,9 @@ function AbsenceReport() {
                     const prevItem = index > 0 ? array[index - 1] : null;
                     if (!prevItem || prevItem.national_code !== item.national_code) {
                         const count = array.filter(el => el.national_code === item.national_code).length;
-                        acc.push({ ...item, rowSpan: count });
+                        acc.push({...item, rowSpan: count});
                     } else {
-                        acc.push({ ...item, rowSpan: 0 });
+                        acc.push({...item, rowSpan: 0});
                     }
                     return acc;
                 }, []);
@@ -118,7 +116,7 @@ function AbsenceReport() {
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             });
     }
@@ -147,26 +145,26 @@ function AbsenceReport() {
                     onFinish={onFinish}
                 >
                     <Tooltip title={"از تاریخ نهست"}>
-                    <Form.Item
-                        label={"از تاریخ"}
-                        name={"from_date"}
-                        rules={[{
-                            validator: dateValidator, required: true,
-                        }]}
-                    >
-                        <Input/>
-                    </Form.Item>
+                        <Form.Item
+                            label={"از تاریخ"}
+                            name={"from_date"}
+                            rules={[{
+                                validator: dateValidator, required: true,
+                            }]}
+                        >
+                            <Input/>
+                        </Form.Item>
                     </Tooltip>
                     <Tooltip title={"تا تاریخ نهست"}>
-                    <Form.Item
-                        label={"تا تاریخ"}
-                        name={"to_date"}
-                        rules={[{
-                            validator: dateValidator, required: true,
-                        }]}
-                    >
-                        <Input/>
-                    </Form.Item>
+                        <Form.Item
+                            label={"تا تاریخ"}
+                            name={"to_date"}
+                            rules={[{
+                                validator: dateValidator, required: true,
+                            }]}
+                        >
+                            <Input/>
+                        </Form.Item>
                     </Tooltip>
                     <Form.Item
                         label={"یگان"}

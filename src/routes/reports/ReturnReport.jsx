@@ -1,10 +1,11 @@
 import {Button, Divider, Flex, Form, Input, notification, Select, Table, Tooltip, Typography} from "antd";
 import {dateValidator} from "../../utils/Validates.js";
 import {useCallback, useEffect, useRef, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
 import {GetQueryDate} from "../../utils/Calculative.js";
 import {DateRenderer} from "../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
+import axios from "axios";
+import {getApiUrl} from "../../utils/Config.js";
 
 function ReturnReport() {
 
@@ -15,21 +16,19 @@ function ReturnReport() {
     const printComponent = useRef(null);
 
     useEffect(() => {
-        invoke("get_config", {configName: "unit"})
-            .then((res) => {
-                setUnitSelectOptions(res.config.map(v => {
-                    return {
-                        label: v.name,
-                        value: v.name
-                    }
-                }))
-            })
-            .catch((err) => {
-                api["error"]({
-                    message: "خطا",
-                    description: "خطا در دریافت اطلاعات."
-                });
+        axios.get(getApiUrl("config/unit"), {withCredentials: true}).then((res) => {
+            setUnitSelectOptions(res.data.config.map(v => {
+                return {
+                    label: v.name,
+                    value: v.name
+                }
+            }))
+        }).catch(() => {
+            api["error"]({
+                message: "خطا",
+                description: "خطا در دریافت تنظیمات یگان!"
             });
+        });
     }, [])
 
     function onFinish(value) {
@@ -55,33 +54,32 @@ function ReturnReport() {
             }
         }
 
-        invoke("get_soldiers", {
-            "query": {
-                "filter": filter,
-                "projection": {
-                    "first_name": 1,
-                    "last_name": 1,
-                    "national_code": 1,
-                    "father_name": 1,
-                    "deployment_date": 1,
-                    "unit": 1,
-                    "section": 1,
-                    "run": {
-                        "$filter": {
-                            "input": "$run",
-                            "as": "runItem",
-                            "cond": {
-                                "$and": [
-                                    {"$lte": ["$$runItem.return_date", toDate]},
-                                    {"$gte": ["$$runItem.return_date", fromDate]}
-                                ]
-                            }
+        axios.post(getApiUrl("soldier/list"), {
+            "filter": filter,
+            "projection": {
+                "first_name": 1,
+                "last_name": 1,
+                "national_code": 1,
+                "father_name": 1,
+                "deployment_date": 1,
+                "unit": 1,
+                "section": 1,
+                "run": {
+                    "$filter": {
+                        "input": "$run",
+                        "as": "runItem",
+                        "cond": {
+                            "$and": [
+                                {"$lte": ["$$runItem.return_date", toDate]},
+                                {"$gte": ["$$runItem.return_date", fromDate]}
+                            ]
                         }
                     }
                 }
             }
-        })
-            .then((res) => {
+        }, {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 let rowIndexCounter = 1;
 
                 const transformedData = res.flatMap(soldier => {
@@ -117,7 +115,7 @@ function ReturnReport() {
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             });
     }

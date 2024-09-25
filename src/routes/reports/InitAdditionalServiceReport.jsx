@@ -1,10 +1,11 @@
 import {Button, Divider, Flex, Form, Input, notification, Select, Table, Tooltip, Typography} from "antd";
 import {dateValidator} from "../../utils/Validates.js";
 import {useCallback, useEffect, useRef, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
 import {GetQueryDate} from "../../utils/Calculative.js";
-import {DateRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
+import {DateRenderer} from "../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
+import axios from "axios";
+import {getApiUrl} from "../../utils/Config.js";
 
 function InitAdditionalServiceReport() {
 
@@ -15,21 +16,19 @@ function InitAdditionalServiceReport() {
     const printComponent = useRef(null);
 
     useEffect(() => {
-        invoke("get_config", {configName: "unit"})
-            .then((res) => {
-                setUnitSelectOptions(res.config.map(v => {
-                    return {
-                        label: v.name,
-                        value: v.name
-                    }
-                }))
-            })
-            .catch((err) => {
-                api["error"]({
-                    message: "خطا",
-                    description: "خطا در دریافت اطلاعات."
-                });
+        axios.get(getApiUrl("config/unit"), {withCredentials: true}).then((res) => {
+            setUnitSelectOptions(res.data.config.map(v => {
+                return {
+                    label: v.name,
+                    value: v.name
+                }
+            }))
+        }).catch(() => {
+            api["error"]({
+                message: "خطا",
+                description: "خطا در دریافت تنظیمات یگان!"
             });
+        });
     }, [])
 
     function onFinish(value) {
@@ -57,7 +56,7 @@ function InitAdditionalServiceReport() {
             }
         }
 
-        invoke("get_soldiers", {
+        axios.post(getApiUrl("soldier/list"), {
             "query": {
                 "filter": filter,
                 "projection": {
@@ -72,7 +71,8 @@ function InitAdditionalServiceReport() {
                 }
             }
         })
-            .then((res) => {
+            .then((response) => {
+                let res = response.data;
                 console.log(res);
                 const transformedData = res.flatMap((soldier, index) => {
                     return ({
@@ -92,7 +92,7 @@ function InitAdditionalServiceReport() {
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             });
     }

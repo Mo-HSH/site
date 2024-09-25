@@ -4,7 +4,7 @@ import {ReloadOutlined} from "@ant-design/icons";
 import VirtualList from 'rc-virtual-list';
 import {dateValidator} from "../../utils/Validates.js";
 import axios from "axios";
-import {GetUrl} from "../../utils/Config.js";
+import {getApiUrl} from "../../utils/Config.js";
 
 function ObjectOneByOne({configName, keyTitle, valueTitle}) {
     const [needFetch, setNeedFetch] = useState(false);
@@ -18,7 +18,7 @@ function ObjectOneByOne({configName, keyTitle, valueTitle}) {
 
     useEffect(() => {
         setDataLoading(true);
-        axios.get(GetUrl(`config/${configName}`), {withCredentials: true}).then((res) => {
+        axios.get(getApiUrl(`config/${configName}`), {withCredentials: true}).then((res) => {
             setData(res.data.config);
             console.log(res.data.config);
             setDataLoading(false);
@@ -51,7 +51,7 @@ function ObjectOneByOne({configName, keyTitle, valueTitle}) {
                         style={{width: "90%"}}
                         layout={"inline"}
                         onFinish={(value)=>{
-                            axios.post(GetUrl(`config/object_one_by_one/create/${configName}/${value.key}/${value.value}`), {}, {withCredentials: true}).then((res) => {
+                            axios.post(getApiUrl(`config/object_one_by_one/create/${configName}/${value.key}/${value.value}`), {}, {withCredentials: true}).then((res) => {
                                 setFormOpen(false);
                                 fetch();
                             }).catch((err) => {
@@ -110,7 +110,7 @@ function CustomDependList({configName, modalTitle, parentName, childName}) {
 
     function onFinish(values) {
         setFormLoading(true);
-        axios.post(GetUrl(`config/object_list/create/${configName}/${values.parent}/${values.child}`), {},{withCredentials: true}).then((res) => {
+        axios.post(getApiUrl(`config/object_list/create/${configName}/${values.parent}/${values.child}`), {},{withCredentials: true}).then((res) => {
             setFormLoading(false);
             setFormOpen(false);
             fetch();
@@ -122,7 +122,7 @@ function CustomDependList({configName, modalTitle, parentName, childName}) {
 
     useEffect(() => {
         setDataLoading(true);
-        axios.get(GetUrl(`config/${configName}`), {withCredentials: true}).then((res) => {
+        axios.get(getApiUrl(`config/${configName}`), {withCredentials: true}).then((res) => {
             setData(res.data.config);
             setParentData(res.data.config.map(v=>v.name));
             setDataLoading(false);
@@ -259,7 +259,7 @@ function CustomList({configName}) {
     function onFinish(values) {
         console.log(values);
         setFormLoading(true);
-        axios.post(GetUrl(`config/list/create/${configName}/${values.name}`), {}, {withCredentials: true})
+        axios.post(getApiUrl(`config/list/create/${configName}/${values.name}`), {}, {withCredentials: true})
             .then(()=>{
                 setFormLoading(false);
                 fetch();
@@ -271,7 +271,7 @@ function CustomList({configName}) {
 
     useEffect(() => {
         setDataLoading(true);
-        axios.get(GetUrl(`config/${configName}`), {withCredentials: true}).then((res) => {
+        axios.get(getApiUrl(`config/${configName}`), {withCredentials: true}).then((res) => {
             setData(res.data.config);
             setDataLoading(false);
         }).catch(() => {

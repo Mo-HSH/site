@@ -1,10 +1,11 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
-import {Button, Card, Col, ConfigProvider, Flex, Image, Input, notification, Row, Table, Typography} from "antd";
+import {Button, Col, ConfigProvider, Flex, Image, Input, notification, Row, Table, Typography} from "antd";
 import {useReactToPrint} from "react-to-print";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
 import Sign from "../../../components/printElement/Sign.jsx";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
+import {getApiUrl} from "../../../utils/Config.js";
+import axios from "axios";
 
 function TransferIntroduction({setPrintTitle, soldierKey, refresher, isOutsideOfPadafand}) {
 
@@ -16,7 +17,6 @@ function TransferIntroduction({setPrintTitle, soldierKey, refresher, isOutsideOf
         }
     });
     const [readyForPrint, setReadyForPrint] = useState(false);
-    const [apiUrl, setApiUrl] = useState("");
     const [introductionDate, setIntroductionDate] = useState("");
 
     const [api, contextHolder] = notification.useNotification();
@@ -25,42 +25,34 @@ function TransferIntroduction({setPrintTitle, soldierKey, refresher, isOutsideOf
     useEffect(() => {
         setPrintTitle(isOutsideOfPadafand ? "معرفی نامه انتقالی خارج سازمانی" : "معرفی نامه انتقالی درون سازمانی");
 
-        invoke("get_api_url").then((res) => {
-            setApiUrl(res);
-        }).catch((err) => {
-            api["error"]({
-                message: "خطا",
-                description: err
-            });
-        });
+        axios.post(getApiUrl("soldier/list"), {
 
-        invoke("get_soldiers", {
-            "query": {
-                "filter":
-                    {
-                        "_id":
-                            {
-                                "$oid": soldierKey
-                            }
-                    }
-                ,
-                "projection":
-                    {
-                        "profile": 1,
-                        "first_name": 1,
-                        "last_name": 1,
-                        "father_name": 1,
-                        "military_rank": 1,
-                        "deployment_date": 1,
-                        "national_code": 1,
-                        "personnel_code": 1,
-                        "release": 1,
-                        "extra_info": 1,
-                        "mental_health": 1,
-                    }
-            }
-        })
-            .then((res) => {
+            "filter":
+                {
+                    "_id":
+                        {
+                            "$oid": soldierKey
+                        }
+                }
+            ,
+            "projection":
+                {
+                    "profile": 1,
+                    "first_name": 1,
+                    "last_name": 1,
+                    "father_name": 1,
+                    "military_rank": 1,
+                    "deployment_date": 1,
+                    "national_code": 1,
+                    "personnel_code": 1,
+                    "release": 1,
+                    "extra_info": 1,
+                    "mental_health": 1,
+                }
+
+        }, {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -76,7 +68,7 @@ function TransferIntroduction({setPrintTitle, soldierKey, refresher, isOutsideOf
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             });
 
@@ -152,7 +144,7 @@ function TransferIntroduction({setPrintTitle, soldierKey, refresher, isOutsideOf
                                             <Col span={6} style={{height: "100%"}}>
                                                 <Flex style={{width: "100%"}} justify={"end"}>
                                                     <Image preview={false} shape="square" width={"55%"}
-                                                           src={"http://" + apiUrl + "/files/serve_file/" + soldier["profile"]}
+                                                           src={getApiUrl("files/serve_file/" + soldier["profile"])}
                                                            style={{border: "solid black 2px"}}
                                                     />
                                                 </Flex>
@@ -282,7 +274,8 @@ function TransferIntroduction({setPrintTitle, soldierKey, refresher, isOutsideOf
                                                             </Col>
                                                         </Row>
                                                         :
-                                                        <Flex style={{width: "100%", marginTop: "10px"}} vertical={true} align={"end"}>
+                                                        <Flex style={{width: "100%", marginTop: "10px"}} vertical={true}
+                                                              align={"end"}>
                                                             <Flex align={"center"} gap={70}>
                                                                 <Typography.Text style={{fontSize: 12}}>
                                                                     متصدی اقدام

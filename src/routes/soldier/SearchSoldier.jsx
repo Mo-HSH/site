@@ -12,14 +12,13 @@ import {
     Input,
     Modal,
     notification,
-    Popover,
     Table,
     Tooltip,
     Typography
 } from "antd";
 import {justStringValidator, nationalCodeValidator} from "../../utils/Validates.js";
 import {getStatusColor} from "../../utils/Color.js";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {DateRenderer, DutyGroupRenderer, ExtraInfoRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
 import {EditOutlined, UserOutlined, WarningTwoTone} from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
@@ -29,7 +28,7 @@ import Admission from "../Print/soldierProfile/Admission.jsx";
 import IntroductionLetter from "../Print/soldierProfile/IntroductionLetter.jsx";
 import EmploymentCertificate from "../Print/soldierProfile/EmploymentCertificate.jsx";
 import SoldierFolderLabel from "../Print/soldierProfile/SoldierFolderLabel.jsx";
-import {GetUrl} from "../../utils/Config.js";
+import {getApiUrl} from "../../utils/Config.js";
 
 function SearchSoldier() {
 
@@ -358,7 +357,7 @@ function SearchSoldier() {
                                             <Avatar shape="square" size={200} icon={<UserOutlined/>}/>
                                             :
                                             <Image shape="square" width={180}
-                                                   src={GetUrl("files/serve_file/" + targetSoldier["profile"])}/>
+                                                   src={getApiUrl("files/serve_file/" + targetSoldier["profile"])}/>
                                     }
                                 </Badge.Ribbon>
 
@@ -370,7 +369,7 @@ function SearchSoldier() {
                                             <Avatar shape="square" size={200} icon={<UserOutlined/>}/>
                                             :
                                             <Image shape="square" width={180}
-                                                   src={GetUrl("files/serve_file/" + targetSoldier["normalized_profile"])}/>
+                                                   src={getApiUrl("files/serve_file/" + targetSoldier["normalized_profile"])}/>
                                         :
                                         null
 

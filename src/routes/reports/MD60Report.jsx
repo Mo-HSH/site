@@ -1,10 +1,11 @@
 import {Button, Divider, Flex, Form, Input, notification, Select, Table, Tooltip, Typography} from "antd";
 import {dateValidator} from "../../utils/Validates.js";
 import {useCallback, useEffect, useRef, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
 import {GetQueryDate} from "../../utils/Calculative.js";
 import {DateRenderer} from "../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
+import {getApiUrl} from "../../utils/Config.js";
+import axios from "axios";
 
 function MD60Report() {
 
@@ -15,21 +16,19 @@ function MD60Report() {
     const printComponent = useRef(null);
 
     useEffect(() => {
-        invoke("get_config", {configName: "unit"})
-            .then((res) => {
-                setUnitSelectOptions(res.config.map(v => {
-                    return {
-                        label: v.name,
-                        value: v.name
-                    }
-                }))
-            })
-            .catch((err) => {
-                api["error"]({
-                    message: "خطا",
-                    description: "خطا در دریافت اطلاعات."
-                });
+        axios.get(getApiUrl("config/unit"), {withCredentials: true}).then((res) => {
+            setUnitSelectOptions(res.data.config.map(v => {
+                return {
+                    label: v.name,
+                    value: v.name
+                }
+            }))
+        }).catch(() => {
+            api["error"]({
+                message: "خطا",
+                description: "خطا در دریافت تنظیمات یگان!"
             });
+        });
     }, [])
 
     function onFinish(value) {
@@ -55,34 +54,33 @@ function MD60Report() {
             }
         }
 
-        invoke("get_soldiers", {
-            "query": {
-                "filter": filter,
-                "projection": {
-                    "first_name": 1,
-                    "last_name": 1,
-                    "national_code": 1,
-                    "father_name": 1,
-                    "deployment_date": 1,
-                    "unit": 1,
-                    "section": 1,
-                    "run": {
-                        "$filter": {
-                            "input": "$run",
-                            "as": "runItem",
-                            "cond": {
-                                "$and": [
-                                    {"$lte": ["$$runItem.run_date", toDate]},
-                                    {"$gte": ["$$runItem.run_date", fromDate]},
-                                    {"$eq": ["$$runItem.court_order", "اضافه خدمت"]}
-                                ]
-                            }
+        axios.post(getApiUrl("soldier/list"), {
+            "filter": filter,
+            "projection": {
+                "first_name": 1,
+                "last_name": 1,
+                "national_code": 1,
+                "father_name": 1,
+                "deployment_date": 1,
+                "unit": 1,
+                "section": 1,
+                "run": {
+                    "$filter": {
+                        "input": "$run",
+                        "as": "runItem",
+                        "cond": {
+                            "$and": [
+                                {"$lte": ["$$runItem.run_date", toDate]},
+                                {"$gte": ["$$runItem.run_date", fromDate]},
+                                {"$eq": ["$$runItem.court_order", "اضافه خدمت"]}
+                            ]
                         }
                     }
                 }
             }
-        })
-            .then((res) => {
+        }, {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 let rowIndexCounter = 1;
 
                 const transformedData = res.flatMap(soldier => {
@@ -106,9 +104,9 @@ function MD60Report() {
                     const prevItem = index > 0 ? array[index - 1] : null;
                     if (!prevItem || prevItem.national_code !== item.national_code) {
                         const count = array.filter(el => el.national_code === item.national_code).length;
-                        acc.push({ ...item, rowSpan: count });
+                        acc.push({...item, rowSpan: count});
                     } else {
-                        acc.push({ ...item, rowSpan: 0 });
+                        acc.push({...item, rowSpan: 0});
                     }
                     return acc;
                 }, []);

@@ -1,18 +1,18 @@
-import {Button, Flex, Form, Input, message} from "antd";
+import {Button, Flex, Form, Input, notification} from "antd";
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import axios from "axios";
-import {GetUrl} from "../../utils/Config.js";
+import {getApiUrl} from "../../utils/Config.js";
 
 
 function Login() {
     const navigate = useNavigate();
-    const [messageApi, contextHolder] = message.useMessage();
+    const [messageApi, contextHolder] = notification.useNotification();
     const [isLoading, setLoading] = useState(false);
 
     function onFinish(values) {
         setLoading(true);
-        axios.post(GetUrl("user/login"), values, {withCredentials: true})
+        axios.post(getApiUrl("user/login"), values, {withCredentials: true})
             .then((res) => {
                 setLoading(false);
                 console.log(res.data);
@@ -24,13 +24,10 @@ function Login() {
             })
             .catch((err) => {
                 setLoading(false);
-                messageApi.open({
-                    type: 'error',
-                    content: err,
-                }).then(() => {
-                    setLoading(false);
-                    console.error(err);
-                });
+                messageApi.error({
+                    message: "خطا",
+                    description: err.response.data
+                })
             })
     }
 

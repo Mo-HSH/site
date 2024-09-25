@@ -1,8 +1,9 @@
 import {useEffect, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
 import {Button, Checkbox, Flex, Form, Input, notification, Table, Typography} from "antd";
 import {DateRenderer} from "../../utils/TableRenderer.jsx";
 import {dateValidator} from "../../utils/Validates.js";
+import axios from "axios";
+import {getApiUrl} from "../../utils/Config.js";
 
 function AlefFormNumber() {
 
@@ -19,70 +20,64 @@ function AlefFormNumber() {
     }, [today]);
 
     useEffect(() => {
-        invoke("get_config", {configName: "alef"})
-            .then((res)=>{
-                setLastAlef(res.config);
-            })
-            .catch((err)=>{
-                api["error"]({
-                    message: "خطا",
-                    description: "آخرین فرم الف یافت نشد."
-                });
-            });
-
-        invoke("get_date_time_now").then((res) => {
-            setToday(DateRenderer({"$date": {"$numberLong": res}}));
-        }).catch((err) => {
+        axios.get(getApiUrl("config/alef"), {withCredentials: true}).then((res) => {
+            setLastAlef(res.data.config);
+        }).catch(() => {
             api["error"]({
                 message: "خطا",
-                description: "خطا در دریافت تاریخ."
+                description: "خطا در دریافت آخرین شماره فرم الف!"
             });
         });
 
-        invoke("get_soldiers", {
-            "query": {
-                "filter": {
-                    "release.release_type": {
-                        "$eq": "پایان خدمت"
-                    },
-                    "release_progress.card_application_registration_date": {
-                        "$ne": null
-                    },
-                    "release_progress.confirm_legal_date": {
-                        "$ne": null
-                    },
-                    "release_progress.alef_form_number": {
-                        "$eq": null
-                    },
-                    "release_progress.alef_create_date": {
-                        "$eq": null
-                    },
-                }, "projection": {
-                    "first_name": 1,
-                    "last_name": 1,
-                    "national_code": 1,
-                    "father_name": 1,
-                    "deployment_date": 1,
-                    "release": 1,
-                    "release_progress": 1,
-                }
+        axios.get(getApiUrl("utils/get_date_now"), {withCredentials: true}).then((res) => {
+            setToday(DateRenderer({"$date": {"$numberLong": res.data}}));
+        }).catch(() => {
+            api["error"]({
+                message: "خطا",
+                description: "خطا در دریافت تاریخ!"
+            });
+        });
+
+        axios.post(getApiUrl("soldier/list"), {
+            "filter": {
+                "release.release_type": {
+                    "$eq": "پایان خدمت"
+                },
+                "release_progress.card_application_registration_date": {
+                    "$ne": null
+                },
+                "release_progress.confirm_legal_date": {
+                    "$ne": null
+                },
+                "release_progress.alef_form_number": {
+                    "$eq": null
+                },
+                "release_progress.alef_create_date": {
+                    "$eq": null
+                },
+            }, "projection": {
+                "first_name": 1,
+                "last_name": 1,
+                "national_code": 1,
+                "father_name": 1,
+                "deployment_date": 1,
+                "release": 1,
+                "release_progress": 1,
             }
-        })
+        }, {withCredentials: true})
             .then((res) => {
-                setSoldiers(res);
+                setSoldiers(res.data);
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             });
     }, [reFetch]);
 
     function onFinish(value) {
         console.log(value);
-        invoke("create_alef", {
-            "query": value,
-        }).then((res) => {
+        axios.post(getApiUrl("document/release/alef/create/public_alef"), query, {withCredentials: true}).then(() => {
             api["success"]({
                 message: "عملیات موفق!", description: "درخواست با موفقیت انجام شد!"
             });
@@ -91,7 +86,7 @@ function AlefFormNumber() {
             })
         }).catch((err) => {
             api["error"]({
-                message: "خطا", description: err
+                message: "خطا", description: err.data.message
             });
         });
     }

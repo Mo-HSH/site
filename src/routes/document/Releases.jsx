@@ -1,12 +1,11 @@
 import SearchSelect from "../../layouts/SearchSelect.jsx";
-import {useEffect, useState} from "react";
-import {Form, Input, Spin} from "antd";
+import {useState} from "react";
+import {Form, Input} from "antd";
 import SoldierRelease from "../soldier/SoldierRelease.jsx";
 import {
     dateValidator,
     justNumericValidator,
-    justStringValidator,
-    nationalCodeValidator
+    justStringValidator
 } from "../../utils/Validates.js";
 import {GetQueryDate} from "../../utils/Calculative.js";
 import {DateRenderer} from "../../utils/TableRenderer.jsx";

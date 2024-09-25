@@ -9,11 +9,10 @@ import {
     Spin,
     Table,
 } from "antd";
-import {invoke} from "@tauri-apps/api/core";
 import {GetDutyDuration, IsDutyStopped} from "../utils/Calculative.js";
 import {DateRenderer, OpenProfileRenderer} from "../utils/TableRenderer.jsx";
 import {EyeOutlined} from "@ant-design/icons";
-import {GetUrl} from "../utils/Config.js";
+import {getApiUrl} from "../utils/Config.js";
 import axios from "axios";
 
 
@@ -36,7 +35,7 @@ function SearchSelect({
 
     function selectTarget(key) {
         setSoldierOid(key);
-        axios.post(GetUrl("soldier/list"), {
+        axios.post(getApiUrl("soldier/list"), {
             "filter": {
                 "_id":
                     {
@@ -139,28 +138,22 @@ function SearchSelect({
             "section": 1,
         } : searchProject;
 
-        invoke("get_soldiers", {
-            "query": {
-                "filter": filter, "projection": {
-                    ...project
-                }
+        axios.post(getApiUrl("soldier/list"), {"filter": filter, "projection": {...project}}, {withCredentials: true}).then((response) => {
+            let res = response.data;
+            console.log(res);
+            if (res.length === 1) {
+                selectTarget(res[0]["key"]);
+            } else {
+                setShowSearchList(true);
+                setSelectedSoldierState({"family": []});
+                setSoldiers(res.data);
             }
-        })
-            .then((res) => {
-                console.log(res);
-                if (res.length === 1) {
-                    selectTarget(res[0]["key"]);
-                } else {
-                    setShowSearchList(true);
-                    setSelectedSoldierState({"family": []});
-                    setSoldiers(res);
-                }
-            })
-            .catch((err) => {
-                api["error"]({
-                    message: "خطا", description: err
-                });
+        }).catch((error)=>{
+            console.log("dd", error);
+            api["error"]({
+                message: "خطا", description: error.response
             });
+        })
     }
 
     const columns = searchColumns === undefined ? [

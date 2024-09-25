@@ -1,11 +1,12 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {Button, Card, Col, ConfigProvider, Flex, Image, notification, Row, Typography} from "antd";
-import {invoke} from "@tauri-apps/api/core";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
 import {GetNumberLabel} from "../../../utils/Data.js";
 import Sign from "../../../components/printElement/Sign.jsx";
+import {getApiUrl} from "../../../utils/Config.js";
+import axios from "axios";
 
 
 function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
@@ -23,47 +24,37 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
     const [api, contextHolder] = notification.useNotification();
     const [readyForPrint, setReadyForPrint] = useState(false);
     const printComponent = useRef(null);
-    const [apiUrl, setApiUrl] = useState("");
 
     useEffect(() => {
         setPrintTitle("فرم اعزام به قضایی");
     }, []);
 
     useEffect(() => {
-        invoke("get_api_url").then((res) => {
-            setApiUrl(res);
-        }).catch((err) => {
-            api["error"]({
-                message: "خطا",
-                description: err
-            });
-        });
 
-        invoke("get_soldiers", {
-            "query": {
-                "filter":
-                    {
-                        "_id":
-                            {
-                                "$oid": soldierKey
-                            }
-                    }
-                ,
-                "projection":
-                    {
-                        "profile": 1,
-                        "first_name": 1,
-                        "last_name": 1,
-                        "military_rank": 1,
-                        "national_code": 1,
-                        "father_name": 1,
-                        "deployment_date": 1,
-                        "phone": 1,
-                        "run": 1,
-                    }
-            }
-        })
-            .then((res) => {
+        axios.post(getApiUrl("soldier/list"), {
+            "filter":
+                {
+                    "_id":
+                        {
+                            "$oid": soldierKey
+                        }
+                }
+            ,
+            "projection":
+                {
+                    "profile": 1,
+                    "first_name": 1,
+                    "last_name": 1,
+                    "military_rank": 1,
+                    "national_code": 1,
+                    "father_name": 1,
+                    "deployment_date": 1,
+                    "phone": 1,
+                    "run": 1,
+                }
+        }, {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -85,7 +76,7 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             });
     }, [soldierKey, runIndex, forceRefresh]);
@@ -160,7 +151,7 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                             <Flex justify={"end"}>
                                                 <Image
                                                     preview={false} shape="square" width={90}
-                                                    src={"http://" + apiUrl + "/files/serve_file/" + soldier["profile"]}
+                                                    src={getApiUrl("files/serve_file/" + soldier["profile"])}
                                                     style={{border: "solid black 2px", borderRadius: "5px"}}
                                                 />
                                             </Flex>

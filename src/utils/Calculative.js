@@ -1,30 +1,27 @@
-import {invoke} from "@tauri-apps/api/core";
 import moment from "jalali-moment";
+import axios from "axios";
+import {getApiUrl} from "./Config.js";
 
 function GetDutyDuration(oid) {
-    return invoke("get_duty_duration", {"oid": oid})
-        .then((res)=>{
-            return Promise.resolve(res);
-        })
-        .catch((err)=>{
-            console.log(err);
-            return Promise.reject(new Error(err));
-        })
+    return axios.get(getApiUrl(`soldier/get_duty_duration/${oid}`), {withCredentials: true}).then((res) => {
+        return Promise.resolve(res.data);
+    }).catch((err)=>{
+        console.log(err);
+        return Promise.reject(new Error(err));
+    });
 }
 
 function IsDutyStopped(oid) {
-    return invoke("get_duty_run_stop", {"oid": oid})
-        .then((res)=>{
-            if (res === "") {
-                return Promise.resolve({stop: false, text: res});
-            } else {
-                return Promise.resolve({stop: true, text: "فرار"});
-            }
-        })
-        .catch((err)=>{
-            console.log(err);
-            return Promise.reject(new Error(err));
-        })
+    return axios.get(getApiUrl(`document/run/duty_stop/${oid}`), {withCredentials: true}).then((res) => {
+        if (res.data === "") {
+            return Promise.resolve({stop: false, text: res.data});
+        } else {
+            return Promise.resolve({stop: true, text: "فرار"});
+        }
+    }).catch((err)=>{
+        console.log(err);
+        return Promise.reject(new Error(err));
+    })
 }
 
 function GetQueryDate(jDate) {

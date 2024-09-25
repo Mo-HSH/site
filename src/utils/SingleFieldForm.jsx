@@ -1,8 +1,9 @@
-import {Button, Flex, Input, InputNumber, Radio, Select, Space, Tag, Tooltip, Typography} from "antd";
-import Icon, {CheckOutlined, CloseOutlined, EditOutlined, StopOutlined} from "@ant-design/icons";
+import {Button, Flex, Input, InputNumber, Radio, Select, Tag, Tooltip, Typography} from "antd";
+import {CheckOutlined, CloseOutlined, EditOutlined, StopOutlined} from "@ant-design/icons";
 import {useEffect, useRef, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
 import {getTagColor} from "./Color.js";
+import axios from "axios";
+import {getApiUrl} from "./Config.js";
 
 const filterOption = (input, option) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
@@ -241,8 +242,9 @@ function SelectFieldForm({label, validator, initValue, onConfirmEdit, configName
 
     useEffect(() => {
         setValue(initValue);
-        invoke("get_config", {configName: configName})
-            .then((res) => {
+        axios.get(getApiUrl(`config/${configName}`), {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 let temp = [];
                 res.config.forEach((value) => {
                     temp.push({
@@ -252,7 +254,7 @@ function SelectFieldForm({label, validator, initValue, onConfirmEdit, configName
                 });
                 setOptions(temp);
             })
-            .catch((_) => {
+            .catch(() => {
             });
     }, []);
 
@@ -421,8 +423,9 @@ function PairedSelectFieldForm({label, initParentValue, initChildValue, onConfir
 
 
     useEffect(() => {
-        invoke("get_config", {configName: configName})
-            .then((res) => {
+        axios.get(getApiUrl(`config/${configName}`), {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 setData(res.config);
                 setParentOptions(res.config.map(v=>{
                     return({
@@ -439,13 +442,14 @@ function PairedSelectFieldForm({label, initParentValue, initChildValue, onConfir
                 setParentValue(initParentValue);
                 setChildValue(initChildValue);
             })
-            .catch((_) => {
+            .catch(() => {
             });
     }, [initParentValue]);
 
     useEffect(() => {
-        invoke("get_config", {configName: configName})
-            .then((res) => {
+        axios.get(getApiUrl(`config/${configName}`), {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 setData(res.config);
                 setParentOptions(res.config.map(v=>{
                     return({
@@ -460,7 +464,7 @@ function PairedSelectFieldForm({label, initParentValue, initChildValue, onConfir
                     })
                 }));
             })
-            .catch((_) => {
+            .catch(() => {
             });
     }, [parentValue]);
 

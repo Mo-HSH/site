@@ -17,17 +17,17 @@ import {
     Typography
 } from "antd";
 import {useReactToPrint} from "react-to-print";
-import {invoke} from "@tauri-apps/api/core";
 import {GetDutyDuration} from "../../../utils/Calculative.js";
 import padafandLogo from "../../../assets/img/Padafand_Logo.svg";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import Sign from "../../../components/printElement/Sign.jsx";
+import axios from "axios";
+import {getApiUrl} from "../../../utils/Config.js";
 
 function StatusSummery({setPrintTitle, soldierKey}) {
 
     const printComponent = useRef(null);
-    const [apiUrl, setApiUrl] = useState("");
     const [soldier, setSoldier] = useState({
         "is_native": true,
         "family": [],
@@ -62,49 +62,41 @@ function StatusSummery({setPrintTitle, soldierKey}) {
     useEffect(() => {
         setPrintTitle("خلاصه وضعیت");
 
-        invoke("get_api_url").then((res) => {
-            setApiUrl(res);
-        }).catch((err) => {
-            api["error"]({
-                message: "خطا",
-                description: err
-            });
-        });
-
-        invoke("get_date_time_now").then((res) => {
+        axios.get(getApiUrl("utils/get_date_now"), {withCredentials: true}).then((res) => {
             setDutyData((prev) => {
                 return ({
                     ...prev,
-                    "today": DateRenderer({"$date": {"$numberLong": res}})
+                    "today": DateRenderer({"$date": {"$numberLong": res.data}})
                 });
             });
-        }).catch((err) => {
+        }).catch(() => {
             api["error"]({
                 message: "خطا",
-                description: err
+                description: "خطا در دریافت تاریخ!"
             });
         });
 
-        invoke("get_config", {configName: "duty-duration"}).then((res) => {
-            setDutyDuration(res.config);
-        }).catch((err) => {
+        axios.get(getApiUrl("config/duty-duration"), {withCredentials: true}).then((res) => {
+            setDutyDuration(res.data.config);
+        }).catch(() => {
             api["error"]({
                 message: "خطا",
-                description: err
+                description: "خطا در دریافت تنظیمات مدت خدمت!"
             });
         });
 
-        invoke("get_total_legal_leave", {oid: soldierKey}).then((res) => {
-            setLegalLeaveLimit(res);
-        }).catch((err) => {
+        axios.get(getApiUrl(`utils/get_total_legal_leave/${soldierKey}`), {withCredentials: true}).then((res) => {
+            setLegalLeaveLimit(res.data);
+        }).catch(() => {
             api["error"]({
                 message: "خطا",
-                description: err
+                description: "خطا در دریافت تنظیمات مرخصی"
             });
         });
 
-        invoke("get_soldiers", {
-            "query": {
+
+        axios.post(getApiUrl("soldier/list"),
+            {
                 "filter":
                     {
                         "_id":
@@ -152,9 +144,11 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                         "done_service_day": 1,
                         "additional_service_day": 1,
                     }
-            }
-        })
-            .then((res) => {
+            },
+            {withCredentials: true}
+        )
+            .then((response) => {
+                let res = response.data;
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -1277,7 +1271,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                                         <Badge count={"وضعیت خدمت: " + soldier["status"]} color={"blue"}
                                                offset={[80, 0]}>
                                             <Image preview={false} shape="square" width={160}
-                                                   src={"http://" + apiUrl + "/files/serve_file/" + soldier["profile"]}
+                                                   src={getApiUrl("files/serve_file/" + soldier["profile"])}
                                                    style={{border: "solid black 2px", borderRadius: "5px"}}/>
                                         </Badge>
                                         <Table

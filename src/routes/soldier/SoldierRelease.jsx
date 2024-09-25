@@ -1,6 +1,5 @@
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
 import {
     Button,
     Card,
@@ -26,6 +25,8 @@ import {DeleteOutlined, EditOutlined, ReloadOutlined} from "@ant-design/icons";
 import Release from "../Print/release/Release.jsx";
 import TransferIntroduction from "../Print/release/TransferIntroduction.jsx";
 import StatusSummery from "../Print/soldierProfile/StatusSummery.jsx";
+import axios from "axios";
+import {getApiUrl} from "../../utils/Config.js";
 
 
 function SoldierRelease({oid}) {
@@ -105,17 +106,16 @@ function SoldierRelease({oid}) {
         if ((typeof legalReleaseDate !== "string") || (typeof releaseDate !== "string")) {
             return;
         }
-        invoke("calculate_additional_duty_service", {
-            "data": {
+        axios.post(getApiUrl("utils/calculate_additional_duty_service"),
+            {
                 "legal_release_date": legalReleaseDate,
                 "release_date": releaseDate
             }
-        })
-            .then((res) => {
-                form.setFieldValue("additional_service_day", res);
-            }).catch((err) => {
+            , {withCredentials: true}).then((res) => {
+            form.setFieldValue("additional_service_day", res.data);
+        }).catch((err) => {
             api["error"]({
-                message: "خطا", description: err
+                message: "خطا", description: err.data.message
             });
         })
     }
@@ -152,51 +152,48 @@ function SoldierRelease({oid}) {
         if (targetKey === "" || targetKey === undefined) {
             return;
         }
-
-        invoke("get_date_time_now").then((res) => {
-            setToday(DateRenderer({"$date": {"$numberLong": res}}));
-        }).catch((err) => {
+        axios.get(getApiUrl("utils/get_date_now"), {withCredentials: true}).then((res) => {
+            setToday(DateRenderer({"$date": {"$numberLong": res.data}}));
+        }).catch(() => {
             api["error"]({
                 message: "خطا",
-                description: err
+                description: "خطا در دریافت تاریخ!"
             });
         });
 
-        invoke("get_soldiers", {
-            "query": {
-                "filter":
-                    {
-                        "_id":
-                            {
-                                "$oid": targetKey
-                            }
-                    }
-                ,
-                "projection":
-                    {
-                        "first_name": 1,
-                        "last_name": 1,
-                        "deployment_date": 1,
-                        "legal_release_date": 1,
-                        "overall_release_date": 1,
-                        "additional_service_day": 1,
-                        "done_service_day": 1,
-                        "extra_annual_leave": 1,
-                        "extra_medical_leave": 1,
-                        "run_discharge": 1,
-                        "run_punish": 1,
-                        "arrest_punish": 1,
-                        "absence_punish": 1,
-                        "absence_discharge": 1,
-                        "deficit": 1,
-                        "release": 1,
-                        "release_progress": 1,
-                        "status": 1
-                    }
-            }
-        })
-            .then((res) => {
-                console.log(res);
+        axios.post(getApiUrl("soldier/list"), {
+            "filter":
+                {
+                    "_id":
+                        {
+                            "$oid": targetKey
+                        }
+                }
+            ,
+            "projection":
+                {
+                    "first_name": 1,
+                    "last_name": 1,
+                    "deployment_date": 1,
+                    "legal_release_date": 1,
+                    "overall_release_date": 1,
+                    "additional_service_day": 1,
+                    "done_service_day": 1,
+                    "extra_annual_leave": 1,
+                    "extra_medical_leave": 1,
+                    "run_discharge": 1,
+                    "run_punish": 1,
+                    "arrest_punish": 1,
+                    "absence_punish": 1,
+                    "absence_discharge": 1,
+                    "deficit": 1,
+                    "release": 1,
+                    "release_progress": 1,
+                    "status": 1
+                }
+        }, {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -233,7 +230,7 @@ function SoldierRelease({oid}) {
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             });
     }, [targetKey, reFetch]);
@@ -282,11 +279,8 @@ function SoldierRelease({oid}) {
 
     function onFinish(value) {
         value["additional_service_day"] = parseInt(value["additional_service_day"]);
-        invoke("create_leave_or_absence", {
-            "oid": targetKey,
-            "query": value,
-            "queryTarget": "release"
-        }).then((res) => {
+
+        axios.post(getApiUrl(`document/release/create/${targetKey}`), value, {withCredentials: true}).then(() => {
             api["success"]({
                 message: "عملیات موفق!", description: "ثبت تسویه با موفقیت انجام شد!"
             });
@@ -295,7 +289,7 @@ function SoldierRelease({oid}) {
             })
         }).catch((err) => {
             api["error"]({
-                message: "خطا", description: err
+                message: "خطا", description: err.data.message
             });
         });
     }
@@ -306,31 +300,24 @@ function SoldierRelease({oid}) {
     }
 
     function removeRelease() {
-        invoke("delete_leave_or_absence", {
-            "oid": targetKey,
-            "index": 0,
-            "queryTarget": "release"
-        }).then((res) => {
-            api["success"]({
-                message: "عملیات موفق!", description: "حذف تسویه با موفقیت انجام شد!"
-            });
-            form.resetFields();
-            setReFetch((prev) => {
-                return !prev;
-            })
-        }).catch((err) => {
+        axios.delete(getApiUrl(`document/release/delete/${targetKey}/0`), {withCredentials: true})
+            .then(() => {
+                api["success"]({
+                    message: "عملیات موفق!", description: "حذف تسویه با موفقیت انجام شد!"
+                });
+                form.resetFields();
+                setReFetch((prev) => {
+                    return !prev;
+                })
+            }).catch((err) => {
             api["error"]({
-                message: "خطا", description: err
+                message: "خطا", description: err.data.message
             });
-        });
+        })
     }
 
     function editProgress(key, date) {
-        invoke("edit_release_progress", {
-            "oid": targetKey,
-            "key": key,
-            "query": {"date": date},
-        }).then((res) => {
+        axios.post(getApiUrl(`document/release/progress/${targetKey}/${key}`), {"date": date}, {withCredentials: true}).then(() => {
             api["success"]({
                 message: "عملیات موفق!", description: "درخواست با موفقیت انجام شد!"
             });
@@ -339,23 +326,21 @@ function SoldierRelease({oid}) {
             })
         }).catch((err) => {
             api["error"]({
-                message: "خطا", description: err
+                message: "خطا", description: err.data.message
             });
         });
     }
 
     function alefForSingleSoldier(key, alefFormNumber) {
-        invoke("alef_for_single_soldier", {
-            "oid": targetKey,
-            "alefFormNumber": alefFormNumber,
-        }).then((res) => {
-            api["success"]({
-                message: "عملیات موفق!", description: "درخواست با موفقیت انجام شد!"
-            });
-            setReFetch((prev) => {
-                return !prev;
-            })
-        }).catch((err) => {
+        axios.post(getApiUrl(`document/release/single_alef/${targetKey}/${alefFormNumber}`))
+            .then(() => {
+                api["success"]({
+                    message: "عملیات موفق!", description: "درخواست با موفقیت انجام شد!"
+                });
+                setReFetch((prev) => {
+                    return !prev;
+                })
+            }).catch((err) => {
             api["error"]({
                 message: "خطا", description: err
             });
@@ -722,7 +707,7 @@ function SoldierRelease({oid}) {
                                                                         trigger={"click"}
                                                                         content={
                                                                             <Form
-                                                                                onFinish={(v)=>{
+                                                                                onFinish={(v) => {
                                                                                     editProgress(key, v.date)
                                                                                 }}
                                                                             >
@@ -730,22 +715,27 @@ function SoldierRelease({oid}) {
                                                                                     name={"date"}
                                                                                     label={"تاریخ"}
                                                                                     rules={[{
-                                                                                        validator: dateValidator, required: true,
+                                                                                        validator: dateValidator,
+                                                                                        required: true,
                                                                                     }]}
                                                                                 >
-                                                                                    <Input />
+                                                                                    <Input/>
                                                                                 </Form.Item>
                                                                                 <Form.Item>
-                                                                                    <Button block={true} type={"primary"} htmlType="submit">ثبت</Button>
+                                                                                    <Button block={true}
+                                                                                            type={"primary"}
+                                                                                            htmlType="submit">ثبت</Button>
                                                                                 </Form.Item>
                                                                             </Form>
                                                                         }
                                                                     >
                                                                         <Button type={"text"} icon={<EditOutlined/>}/>
                                                                     </Popover>
-                                                                    <Button type={"text"} icon={<DeleteOutlined />} onClick={()=> editProgress(key, "")}/>
+                                                                    <Button type={"text"} icon={<DeleteOutlined/>}
+                                                                            onClick={() => editProgress(key, "")}/>
                                                                     <Tooltip title={"تبدیل به تاریخ امروز"}>
-                                                                        <Button type={"text"} icon={<ReloadOutlined />} onClick={()=> editProgress(key, today)}/>
+                                                                        <Button type={"text"} icon={<ReloadOutlined/>}
+                                                                                onClick={() => editProgress(key, today)}/>
                                                                     </Tooltip>
                                                                 </Flex>
                                                                 :
@@ -825,7 +815,7 @@ function SoldierRelease({oid}) {
                     </Card>
                     <Card title={"فرم الف"} style={{width: "100%"}}>
                         <Form
-                            onFinish={(v)=>{
+                            onFinish={(v) => {
                                 alefForSingleSoldier(targetKey, v["form_number"]);
                             }}
                             layout={"inline"}
@@ -837,7 +827,7 @@ function SoldierRelease({oid}) {
                                     required: true,
                                 }]}
                             >
-                                <Input />
+                                <Input/>
                             </Form.Item>
                             <Form.Item>
                                 <Button block={true} type={"primary"} htmlType="submit">ثبت</Button>

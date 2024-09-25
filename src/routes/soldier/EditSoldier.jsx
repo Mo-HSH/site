@@ -1,5 +1,5 @@
 import {useParams} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {
     Avatar,
     Button,
@@ -13,9 +13,9 @@ import {
     Spin,
     Tabs,
     Tag,
-    Typography
+    Typography, Upload
 } from "antd";
-import {EditOutlined, PlusOutlined, UserOutlined} from "@ant-design/icons";
+import {EditOutlined, PlusOutlined, UploadOutlined, UserOutlined} from "@ant-design/icons";
 import {
     BooleanFieldForm,
     InputFieldForm,
@@ -31,7 +31,7 @@ import {
 import {GetDutyDuration} from "../../utils/Calculative.js";
 import {DateRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
 import {getTagColor} from "../../utils/Color.js";
-import {GetUrl} from "../../utils/Config.js";
+import {getApiUrl} from "../../utils/Config.js";
 import axios from "axios";
 
 function EditSoldier() {
@@ -49,12 +49,14 @@ function EditSoldier() {
     const [familyActiveTab, setFamilyActiveTab] = useState(0);
     const [relation, setRelation] = useState([]);
     const [removeFamilyConfirmModal, removeFamilyConfirmContextHolder] = Modal.useModal();
+    const inputProfile = useRef(null);
 
     useEffect(() => {
-        axios.get(GetUrl("config/relation"), {withCredentials: true})
-            .then((res) => {
+        axios.get(getApiUrl("config/relation"), {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 let temp = [];
-                res.data.config.forEach((value) => {
+                res.config.forEach((value) => {
                     temp.push({
                         value: value,
                         label: value
@@ -62,10 +64,10 @@ function EditSoldier() {
                 });
                 setRelation(temp);
             })
-            .catch((err) => {
+            .catch(() => {
                 api["error"]({
                     message: "خطا",
-                    description: err.message
+                    description: "خطا در دریافت تنظیمات خانواده!"
                 });
             });
     }, []);
@@ -74,90 +76,98 @@ function EditSoldier() {
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
     function fetchData() {
-        axios.post(GetUrl("soldier/list"), {
-            "filter": {
-                "_id": {
-                    "$oid": params.key
+        axios.post(getApiUrl("soldier/list"), {
+            "filter":
+                {
+                    "_id":
+                        {
+                            "$oid": params.key
+                        }
                 }
-            },
-            "projection": {
-                "profile": 1,
-                "normalized_profile": 1,
-                "status": 1,
-                "first_name": 1,
-                "last_name": 1,
-                "national_code": 1,
-                "deployment_date": 1,
-                "military_rank": 1,
-                "father_name": 1,
-                "legal_release_date": 1,
-                "overall_release_date": 1,
-                "unit": 1,
-                "section": 1,
-                "birthday": 1,
-                "birthplace": 1,
-                "birth_certificate_issuing_place": 1,
-                "family": 1,
-                "additional_service_day": 1,
-                "entry_date": 1,
-                "personnel_code": 1,
-                "order_number": 1,
-                "done_service_day": 1,
-                "extra_info": 1,
-                "previous_unit": 1,
-                "field_of_study": 1,
-                "education": 1,
-                "skill": 1,
-                "skill_to_learn": 1,
-                "mental_health": 1,
-                "blood_type": 1,
-                "eye_color": 1,
-                "height": 1,
-                "address_street": 1,
-                "address_house_number": 1,
-                "address_home_unit": 1,
-                "phone": 1,
-                "is_native": 1,
-                "state": 1,
-                "city": 1,
-            }
-        }, {withCredentials: true}).then((res)=>{
-            if (res.data.length === 0) {
-                api["error"]({
-                    message: "خطا", description: "مشکلی در سرور پیش آمده."
-                });
-            } else {
-                setSoldier({
-                    ...res.data[0],
-                    "duty_duration": <Spin/>,
-                });
-                GetDutyDuration(params.key)
-                    .then((res) => {
-                        let temp = "";
-                        temp = `${res.month} ماه و ${res.day} روز`
-                        setSoldier((lastValue) => {
-                            let newFilter = {...lastValue};
-                            newFilter["duty_duration"] = temp;
-                            return newFilter;
-                        });
-                    })
-                    .catch((err) => {
-                        setSoldier((lastValue) => {
-                            let newFilter = {...lastValue};
-                            newFilter["duty_duration"] = "err";
-                            return newFilter;
-                        });
-                        api["error"]({
-                            message: "خطا", description: err
-                        });
-                    })
+            ,
+            "projection":
+                {
+                    "profile": 1,
+                    "normalized_profile": 1,
+                    "status": 1,
+                    "first_name": 1,
+                    "last_name": 1,
+                    "national_code": 1,
+                    "deployment_date": 1,
+                    "military_rank": 1,
+                    "father_name": 1,
+                    "legal_release_date": 1,
+                    "overall_release_date": 1,
+                    "unit": 1,
+                    "section": 1,
+                    "birthday": 1,
+                    "birthplace": 1,
+                    "birth_certificate_issuing_place": 1,
+                    "family": 1,
+                    "additional_service_day": 1,
+                    "entry_date": 1,
+                    "personnel_code": 1,
+                    "order_number": 1,
+                    "done_service_day": 1,
+                    "extra_info": 1,
+                    "previous_unit": 1,
+                    "field_of_study": 1,
+                    "education": 1,
+                    "skill": 1,
+                    "skill_to_learn": 1,
+                    "mental_health": 1,
+                    "blood_type": 1,
+                    "eye_color": 1,
+                    "height": 1,
+                    "address_street": 1,
+                    "address_house_number": 1,
+                    "address_home_unit": 1,
+                    "phone": 1,
+                    "is_native": 1,
+                    "state": 1,
+                    "city": 1,
+                }
 
-            }
-        }).catch((err) => {
-            api["error"]({
-                message: "خطا", description: err
+        }, {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
+                if (res.length === 0) {
+                    api["error"]({
+                        message: "خطا", description: "مشکلی در سرور پیش آمده."
+                    });
+                } else {
+                    setSoldier({
+                        ...res[0],
+                        "duty_duration": <Spin/>,
+                    });
+                    GetDutyDuration(params.key)
+                        .then((res) => {
+                            let temp = "";
+                            temp = `${res.month} ماه و ${res.day} روز`
+                            setSoldier((lastValue) => {
+                                let newFilter = {...lastValue};
+                                newFilter["duty_duration"] = temp;
+                                return newFilter;
+                            });
+                        })
+                        .catch((err) => {
+                            setSoldier((lastValue) => {
+                                let newFilter = {...lastValue};
+                                newFilter["duty_duration"] = "err";
+                                return newFilter;
+                            });
+                            api["error"]({
+                                message: "خطا", description: err
+                            });
+                        })
+
+                }
+            })
+            .catch(() => {
+                api["error"]({
+                    message: "خطا", description: "خطا در دریافت اطلاعات سرباز"
+                });
             });
-        });
     }
 
     useEffect(() => {
@@ -165,22 +175,22 @@ function EditSoldier() {
     }, []);
 
     function handleOk() {
-        invoke("set_avatar", {
-            "oid": params.key,
-            "profilePath": profileImage,
-            "normalizedProfilePath": normalizeImage
-        }).then((res) => {
-            api["success"]({
-                message: "انجام شد",
-                description: "پروفایل با موفقیت بروز شد!"
-            });
-            fetchData();
-        }).catch((err) => {
-            api["error"]({
-                message: "خطا",
-                description: err
-            });
-        })
+        // invoke("set_avatar", {
+        //     "oid": params.key,
+        //     "profilePath": profileImage,
+        //     "normalizedProfilePath": normalizeImage
+        // }).then((res) => {
+        //     api["success"]({
+        //         message: "انجام شد",
+        //         description: "پروفایل با موفقیت بروز شد!"
+        //     });
+        //     fetchData();
+        // }).catch((err) => {
+        //     api["error"]({
+        //         message: "خطا",
+        //         description: err
+        //     });
+        // })
         setIsModalOpen(false);
     }
 
@@ -199,32 +209,34 @@ function EditSoldier() {
         setModalHelpText("لطفا چشم اول را انتخاب کنید.");
     }
 
-    function uploadProfile() {
-        open({multiple: false, directory: false, extensions: ['jpg', 'jpeg']})
-            .then((res) => {
-                resetData();
-                if (res === null) {
-                    return;
-                }
-
-                invoke("profile_image_to_base64", {"path": res.path})
-                    .then((res) => {
-                        setProfileImage(res);
-                        setIsModalOpen(true);
-                    })
-                    .catch((err) => {
-                        api["error"]({
-                            message: "خطا",
-                            description: err
-                        });
-                    })
-            })
-            .catch((err) => {
-                api["error"]({
-                    message: "خطا",
-                    description: err
-                });
-            });
+    function uploadProfile(e) {
+        console.log(e);
+        // inputProfile.current.click();
+        // open({multiple: false, directory: false, extensions: ['jpg', 'jpeg']})
+        //     .then((res) => {
+        //         resetData();
+        //         if (res === null) {
+        //             return;
+        //         }
+        //
+        //         invoke("profile_image_to_base64", {"path": res.path})
+        //             .then((res) => {
+        //                 setProfileImage(res);
+        //                 setIsModalOpen(true);
+        //             })
+        //             .catch((err) => {
+        //                 api["error"]({
+        //                     message: "خطا",
+        //                     description: err
+        //                 });
+        //             })
+        //     })
+        //     .catch((err) => {
+        //         api["error"]({
+        //             message: "خطا",
+        //             description: err
+        //         });
+        //     });
     }
 
     function onImageClick(event) {
@@ -236,14 +248,13 @@ function EditSoldier() {
             setSecondEye([event.nativeEvent.offsetX, event.nativeEvent.offsetY]);
             setModalHelpText("لطفا پس زمینه را انتخاب کنید.");
         } else {
-            invoke("normalize_profile", {
-                "path": profileImage,
-                "firstEye": firstEye,
-                "secondEye": secondEye,
+            axios.post(getApiUrl(`soldier/normalize_avatar/${params.key}`), {
+                "first_eye": firstEye,
+                "second_eye": secondEye,
                 "background": [event.nativeEvent.offsetX, event.nativeEvent.offsetY]
-            })
+            }, {withCredentials: true})
                 .then((res) => {
-                    setNormalizeImage(res);
+                    fetchData();
                     setNormalizeHidden(false);
                     setIsModalOpen(true);
                     setDisableOkModal(false);
@@ -254,7 +265,7 @@ function EditSoldier() {
                 .catch((err) => {
                     api["error"]({
                         message: "خطا",
-                        description: err
+                        description: err.response.data
                     });
                     resetData();
                 })
@@ -265,16 +276,12 @@ function EditSoldier() {
         console.log(db_key, value);
         let temp = {}
         temp[db_key] = value;
-        invoke("edit_soldier_profile", {
-            "oid": params.key,
-            "query": {"update": temp, "type": type, "need_calculate": needCalculate}
-        })
-            .then((_) => {
-                fetchData();
-            }).catch((err) => {
+        axios.post(getApiUrl(`soldier/edit_soldier/${params.key}`), {"update": temp, "type": type, "need_calculate": needCalculate} , {withCredentials: true}).then(()=>{
+            fetchData();
+        }).catch((err) => {
             api["error"]({
                 message: "خطا",
-                description: err
+                description: err.data.message,
             });
         })
     }
@@ -303,10 +310,18 @@ function EditSoldier() {
         }
     }
 
+    function uploadChange(e) {
+        console.log(e);
+        if (e.file.status === "done") {
+            fetchData();
+            setIsModalOpen(true);
+        }
+    }
+
     return (
         <Flex vertical={true}>
             {contextHolder}
-            <Modal title="آپلود پروفایل" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} width={800}
+            <Modal title="آپلود پروفایل" open={isModalOpen} onOk={handleOk} width={800} cancelButtonProps={{hidden: true}}
                    okButtonProps={{
                        disabled: disableOkModal,
                    }}>
@@ -314,15 +329,27 @@ function EditSoldier() {
                     <Typography.Text>{modalHelpText}</Typography.Text>
                 </Flex>
                 <Flex align={"center"} justify={"center"} gap={"small"}>
-                    <img src={convertFileSrc(profileImage)} alt={"err"} width={300} height={400}
+                    <img src={getApiUrl("files/serve_file/" + soldier["profile"])} alt={"err"} width={300} height={400}
                          onClick={onImageClick}/>
-                    <img src={convertFileSrc(normalizeImage)} alt={"err"} width={300} height={400}
-                         onClick={onImageClick} hidden={normalizeHidden}/>
+                    <img src={getApiUrl("files/serve_file/" + soldier["normalized_profile"])} alt={"err"} width={300} height={400}
+                         hidden={normalizeHidden}/>
                 </Flex>
             </Modal>
 
-            <Divider orientation={"left"}>ویرایش عکس<Button type={"text"} icon={<EditOutlined/>}
-                                                            onClick={uploadProfile}/></Divider>
+            <Divider orientation={"left"}>ویرایش عکس<Upload
+                action={getApiUrl(`soldier/set_avatar/${params.key}`)}
+                name={"profile"} withCredentials={true} showUploadList={false} onChange={uploadChange}
+                beforeUpload={(file)=>{
+                    const isJPG = file.type === 'image/jpeg';
+                    if (!isJPG) {
+                        api.error({
+                            message: "خطا",
+                            description: "فقط فرمت jpg مورد قبول است!"
+                    });
+                    }
+                    return isJPG || Upload.LIST_IGNORE;
+                }}
+            ><Button type={"text"} icon={<UploadOutlined/>}/></Upload></Divider>
             <Flex vertical={false} justify={"center"} align={"center"} gap={"small"}>
                 {
                     soldier["profile"] === null || soldier["profile"] === undefined || soldier["profile"] === ""
@@ -330,7 +357,7 @@ function EditSoldier() {
                         <Avatar shape="square" size={180} icon={<UserOutlined/>}/>
                         :
                         <Image shape="square" width={180}
-                               src={GetUrl("files/serve_file/" + soldier["profile"])}/>
+                               src={getApiUrl("files/serve_file/" + soldier["profile"])}/>
                 }
                 {
                     soldier["profile"] === null || soldier["profile"] === undefined || soldier["profile"] === ""
@@ -338,7 +365,7 @@ function EditSoldier() {
                         <Avatar shape="square" size={180} icon={<UserOutlined/>}/>
                         :
                         <Image shape="square" width={180}
-                               src={GetUrl("files/serve_file/" + soldier["normalized_profile"])}/>
+                               src={getApiUrl("files/serve_file/" + soldier["normalized_profile"])}/>
                 }
             </Flex>
 
@@ -398,19 +425,19 @@ function EditSoldier() {
                             label: elem["relative"],
                             key: index,
                             children: <>
-                                <Row gutter={24} justify={"center"} align={"bottom"}
+                                <Row gutter={24} justify={"center"} align={"stretch"}
                                      style={{height: "70px", marginTop: "10px"}}>
                                     {
                                         [
-                                            <InputFieldForm label={"نام"} validator={justStringValidator}
-                                                            initValue={elem["first_name"]}
+                                            <InputFieldForm label={"نام و نشان"} validator={justStringValidator}
+                                                            initValue={elem["full_name"]}
                                                             onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.first_name`, v, "str", false)}/>,
-                                            <InputFieldForm label={"نشان"} validator={justStringValidator}
-                                                            initValue={elem["last_name"]}
-                                                            onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.last_name`, v, "str", false)}/>,
                                             <InputFieldForm label={"نام پدر"} validator={justStringValidator}
                                                             initValue={elem["father_name"]}
-                                                            onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.father_name`, v, "str", false)}/>
+                                                            onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.father_name`, v, "str", false)}/>,
+                                            <InputFieldForm label={"کد ملی"} validator={registerNationalCodeValidator}
+                                                            initValue={elem["national_code"]}
+                                                            onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.national_code`, v, "str", false)}/>
                                         ].map((elem, index, array) => {
                                             return (
                                                 <Col gutter={10} style={{width: "400px"}}>
@@ -420,19 +447,17 @@ function EditSoldier() {
                                         })
                                     }
                                 </Row>
-                                <Row gutter={24} justify={"center"} align={"bottom"}
+                                <Row gutter={24} justify={"center"} align={"stretch"}
                                      style={{height: "70px", marginTop: "10px"}}>
                                     {
                                         [
-                                            <InputFieldForm label={"کد ملی"} validator={registerNationalCodeValidator}
-                                                            initValue={elem["national_code"]}
-                                                            onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.national_code`, v, "str", false)}/>,
                                             <InputFieldForm label={"محل صدور شناسنامه"} validator={justStringValidator}
                                                             initValue={elem["birth_certificate_issuing_place"]}
                                                             onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.birth_certificate_issuing_place`, v, "str", false)}/>,
                                             <InputFieldForm label={"شغل"} validator={justStringValidator}
                                                             initValue={elem["job"]}
-                                                            onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.job`, v, "str", false)}/>
+                                                            onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.job`, v, "str", false)}/>,
+                                            <br/>
                                         ].map((elem, index, array) => {
                                             return (
                                                 <Col gutter={10} style={{width: "400px"}}>

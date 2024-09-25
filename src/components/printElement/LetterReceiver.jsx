@@ -1,6 +1,7 @@
 import {Popover, Select, Typography} from "antd";
 import {useEffect, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
+import axios from "axios";
+import {getApiUrl} from "../../utils/Config.js";
 
 function LetterReceiver({defaultValue}) {
 
@@ -12,18 +13,16 @@ function LetterReceiver({defaultValue}) {
     const [title, setTitle] = useState("");
 
     useEffect(()=>{
-        invoke("get_config", {configName: "send-letter-title"})
-            .then((res) => {
-                setReceivers(res.config.map(({key, value}) => {
-                    return {
-                        unit: key,
-                        letterTitle: value
-                    };
-                }));
-                setValue(defaultValue);
-            })
-            .catch((_) => {
-            });
+        axios.get(getApiUrl("config/send-letter-title"), {withCredentials: true}).then((res) => {
+            setReceivers(res.data.config.map(({key, value}) => {
+                return {
+                    unit: key,
+                    letterTitle: value
+                };
+            }));
+            setValue(defaultValue);
+        }).catch(() => {
+        });
     }, [defaultValue]);
 
     useEffect(()=>{

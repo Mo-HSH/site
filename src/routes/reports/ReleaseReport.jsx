@@ -1,10 +1,11 @@
 import {Button, Divider, Flex, Form, Input, notification, Select, Table, Tooltip, Typography} from "antd";
 import {dateValidator} from "../../utils/Validates.js";
 import {useCallback, useEffect, useRef, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
 import {GetQueryDate} from "../../utils/Calculative.js";
 import {DateRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
+import axios from "axios";
+import {getApiUrl} from "../../utils/Config.js";
 
 function ReleaseReport() {
 
@@ -15,21 +16,19 @@ function ReleaseReport() {
     const printComponent = useRef(null);
 
     useEffect(() => {
-        invoke("get_config", {configName: "unit"})
-            .then((res) => {
-                setUnitSelectOptions(res.config.map(v => {
-                    return {
-                        label: v.name,
-                        value: v.name
-                    }
-                }))
-            })
-            .catch((err) => {
-                api["error"]({
-                    message: "خطا",
-                    description: "خطا در دریافت اطلاعات."
-                });
+        axios.get(getApiUrl("config/unit"), {withCredentials: true}).then((res) => {
+            setUnitSelectOptions(res.data.config.map(v => {
+                return {
+                    label: v.name,
+                    value: v.name
+                }
+            }))
+        }).catch(() => {
+            api["error"]({
+                message: "خطا",
+                description: "خطا در دریافت تنظیمات یگان!"
             });
+        });
     }, [])
 
     function onFinish(value) {
@@ -53,35 +52,34 @@ function ReleaseReport() {
             }
         }
 
-        invoke("get_soldiers", {
-            "query": {
-                "filter": filter,
-                "projection": {
-                    "first_name": 1,
-                    "last_name": 1,
-                    "national_code": 1,
-                    "father_name": 1,
-                    "unit": 1,
-                    "section": 1,
-                    "status": 1,
-                    "is_native": 1,
-                    "absence_discharge": 1,
-                    "extra_annual_leave": 1,
-                    "extra_medical_leave": 1,
-                    "run_discharge": 1,
-                    "run_punish": 1,
-                    "arrest_punish": 1,
-                    "additional_service_day": 1,
-                    "deployment_date": 1,
-                    "legal_release_date": 1,
-                    "overall_release_date": 1,
-                }
+        axios.post(getApiUrl("soldier/list"), {
+            "filter": filter,
+            "projection": {
+                "first_name": 1,
+                "last_name": 1,
+                "national_code": 1,
+                "father_name": 1,
+                "unit": 1,
+                "section": 1,
+                "status": 1,
+                "is_native": 1,
+                "absence_discharge": 1,
+                "extra_annual_leave": 1,
+                "extra_medical_leave": 1,
+                "run_discharge": 1,
+                "run_punish": 1,
+                "arrest_punish": 1,
+                "additional_service_day": 1,
+                "deployment_date": 1,
+                "legal_release_date": 1,
+                "overall_release_date": 1,
             }
-        })
-            .then((res) => {
+        }, {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 const transformedData = res.flatMap((soldier, index) => {
                     return ({
-                        rowIndex: index+1,
+                        rowIndex: index + 1,
                         first_name: soldier.first_name,
                         last_name: soldier.last_name,
                         national_code: soldier.national_code,
@@ -106,7 +104,7 @@ function ReleaseReport() {
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             });
     }
@@ -135,26 +133,26 @@ function ReleaseReport() {
                     onFinish={onFinish}
                 >
                     <Tooltip title={"از تاریخ ترخیص قانونی"}>
-                    <Form.Item
-                        label={"از تاریخ"}
-                        name={"from_date"}
-                        rules={[{
-                            validator: dateValidator, required: true,
-                        }]}
-                    >
-                        <Input/>
-                    </Form.Item>
+                        <Form.Item
+                            label={"از تاریخ"}
+                            name={"from_date"}
+                            rules={[{
+                                validator: dateValidator, required: true,
+                            }]}
+                        >
+                            <Input/>
+                        </Form.Item>
                     </Tooltip>
                     <Tooltip title={"تا تاریخ ترخیص قانونی"}>
-                    <Form.Item
-                        label={"تا تاریخ"}
-                        name={"to_date"}
-                        rules={[{
-                            validator: dateValidator, required: true,
-                        }]}
-                    >
-                        <Input/>
-                    </Form.Item>
+                        <Form.Item
+                            label={"تا تاریخ"}
+                            name={"to_date"}
+                            rules={[{
+                                validator: dateValidator, required: true,
+                            }]}
+                        >
+                            <Input/>
+                        </Form.Item>
                     </Tooltip>
                     <Form.Item
                         label={"یگان"}

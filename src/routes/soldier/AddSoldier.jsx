@@ -14,7 +14,6 @@ import {
     Row,
     Select, Space
 } from "antd";
-import {StepsForm} from "@ant-design/pro-components";
 import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {
     dateValidator,
@@ -22,34 +21,12 @@ import {
     justStringValidator,
     registerNationalCodeValidator
 } from "../../utils/Validates.js";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {PairedSelect} from "../../components/Inputs.jsx";
 import axios from "axios";
-import {GetUrl} from "../../utils/Config.js";
+import {getApiUrl} from "../../utils/Config.js";
 
 function AddSoldier() {
-    function onFinish(v) {
-        v["organization_job"] = selectedOrganizationJob;
-        if (!v.hasOwnProperty("foreign_travels")) {
-            v["foreign_travels"] = [];
-        }
-        console.log(v);
-        axios.post(
-            GetUrl("soldier/register"),
-            v,
-            {withCredentials: true}
-        ).then(() => {
-            api["success"]({
-                message: "انجام شد.",
-                description: "عملیات با موفقیت انجام شد."
-            });
-        }).catch((err) => {
-            api["error"]({
-                message: "خطا",
-                description: err.message
-            });
-        });
-    }
 
     const [familyEmptyError, setFamilyEmptyError] = useState(false);
     const [religion, setReligion] = useState([]);
@@ -68,10 +45,9 @@ function AddSoldier() {
     const [selectedOrganizationJob, setSelectedOrganizationJob] = useState([]);
     const [api, contextHolder] = notification.useNotification();
 
-    const form = useRef(null);
+    const [form] = Form.useForm();
 
     useEffect(() => {
-        console.log("dd")
         const configs = [
             {configName: "religion", setData: setReligion},
             {configName: "relation", setData: setRelation},
@@ -85,7 +61,7 @@ function AddSoldier() {
         ];
 
         configs.forEach(({configName, setData}) => {
-            axios.get(GetUrl(`config/${configName}`), {withCredentials: true})
+            axios.get(getApiUrl(`config/${configName}`), {withCredentials: true})
                 .then((response) => {
                     let temp = [];
                     response.data.config.forEach((value) => {
@@ -106,7 +82,7 @@ function AddSoldier() {
                 });
         });
 
-        axios.get(GetUrl("config/unit"), {withCredentials: true})
+        axios.get(getApiUrl("config/unit"), {withCredentials: true})
             .then((res) => {
                 setUnitAndSections(res.data.config);
                 console.log(res.data.config);
@@ -117,7 +93,7 @@ function AddSoldier() {
                     description: err.message
                 });
             });
-        axios.get(GetUrl("config/state"), {withCredentials: true})
+        axios.get(getApiUrl("config/state"), {withCredentials: true})
             .then((res) => {
                 setStateAndCity(res.data.config);
             })
@@ -127,11 +103,11 @@ function AddSoldier() {
                     description: err.message
                 });
             });
-        axios.get(GetUrl("config/organization-job"), {withCredentials: true})
+        axios.get(getApiUrl("config/organization-job"), {withCredentials: true})
             .then((res) => {
                 let temp = [];
                 res.data.config.forEach((v) => {
-                    axios.post(GetUrl("soldier/list"), {
+                    axios.post(getApiUrl("soldier/list"), {
                         
                         "filter": {
                             "organization_job": {
@@ -171,8 +147,9 @@ function AddSoldier() {
     }, []);
 
     function rankChange() {
-        const selectedRank = form.current.getFieldValue("military_rank");
+        const selectedRank = form.getFieldValue("military_rank");
         let temp = [];
+        console.log("tt");
         organizationJob.forEach((v, i) => {
             if (v["allow_ranks"].includes(selectedRank)) {
                 temp.push({
@@ -182,6 +159,8 @@ function AddSoldier() {
                 })
             }
         });
+        console.log("org job: ", organizationJob);
+        console.log("temp: ", temp);
         setOrganizationJobOption(temp);
     }
 
@@ -195,12 +174,38 @@ function AddSoldier() {
     const filterOption = (input, option) =>
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
+    function onFinish(v) {
+        v["organization_job"] = selectedOrganizationJob;
+        if (!v.hasOwnProperty("foreign_travels")) {
+            v["foreign_travels"] = [];
+        }
+        else if (v["foreign_travels"] === undefined) {
+            v["foreign_travels"] = [];
+        }
+        console.log(v);
+        axios.post(
+            getApiUrl("soldier/register"),
+            v,
+            {withCredentials: true}
+        ).then(() => {
+            api["success"]({
+                message: "انجام شد.",
+                description: "عملیات با موفقیت انجام شد."
+            });
+        }).catch((err) => {
+            api["error"]({
+                message: "خطا",
+                description: err.message
+            });
+        });
+    }
 
     return (<Flex align={"center"} justify={"center"}>
         {contextHolder}
-        <StepsForm onFinish={onFinish} autoComplete="off" formRef={form}>
-            <StepsForm.StepForm name="first" title="اطلاعات فردی">
-                <Row gutter={8} style={{width: "890px"}}>
+        <Form onFinish={onFinish} autoComplete="off" form={form} layout={"horizontal"}>
+            <Flex gap={"middle"} vertical={true}>
+            <Card name="first" title="اطلاعات فردی">
+                <Row gutter={8}>
                     <Col flex={1}>
                         <Form.Item
                             label={"نام"}
@@ -333,7 +338,7 @@ function AddSoldier() {
                     style={{marginBottom: "8px"}}
                 /> : null}
 
-                <Row gutter={8} style={{width: "890px"}}>
+                <Row gutter={8}>
                     <Col span={24}>
                         <Form.List name="family" rules={[{
                             validator: (rule, value) => {
@@ -450,10 +455,10 @@ function AddSoldier() {
                 </Row>
 
 
-            </StepsForm.StepForm>
-            <StepsForm.StepForm name="second" title="اطلاعات خدمتی">
+            </Card>
+            <Card name="second" title="اطلاعات خدمتی">
 
-                <Row gutter={8} style={{width: "890px"}}>
+                <Row gutter={8}>
                     <Col span={8}>
                         <Form.Item
                             label={"تاریخ اعزام"}
@@ -665,9 +670,9 @@ function AddSoldier() {
                     </Col>
                 </Row>
                 <br/>
-            </StepsForm.StepForm>
-            <StepsForm.StepForm name="third" title="مهارت">
-                <Row gutter={8} style={{width: "890px"}}>
+            </Card>
+            <Card name="third" title="مهارت">
+                <Row gutter={8}>
                     <Col flex={1}>
                         <Form.Item
                             label={"تحصیلات"}
@@ -729,9 +734,9 @@ function AddSoldier() {
                         </Form.Item>
                     </Col>
                 </Row>
-            </StepsForm.StepForm>
-            <StepsForm.StepForm name="forth" title="اطلاعات پزشکی">
-                <Row gutter={8} style={{width: "890px"}}>
+            </Card>
+            <Card name="forth" title="اطلاعات پزشکی">
+                <Row gutter={8}>
                     <Col flex={1}>
                         <Form.Item
                             label={"سلامت روان"}
@@ -807,9 +812,9 @@ function AddSoldier() {
                         </Form.Item>
                     </Col>
                 </Row>
-            </StepsForm.StepForm>
-            <StepsForm.StepForm name="fifth" title="آدرس">
-                <Row gutter={8} style={{width: "890px"}}>
+            </Card>
+            <Card name="fifth" title="آدرس">
+                <Row gutter={8}>
                     <PairedSelect
                         data={stateAndCity}
                         parentLabel={"استان"}
@@ -881,8 +886,8 @@ function AddSoldier() {
                         </Form.Item>
                     </Col>
                 </Row>
-            </StepsForm.StepForm>
-            <StepsForm.StepForm name="sixth" title="گذرنامه">
+            </Card>
+            <Card name="sixth" title="گذرنامه">
                 <Row gutter={8}>
                     <Col flex={1}>
                         <Form.Item
@@ -900,7 +905,7 @@ function AddSoldier() {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Row gutter={8} style={{width: "890px"}}>
+                <Row gutter={8}>
                     <Col flex={1}>
                         <Divider>سفر های خارجی</Divider>
                     </Col>
@@ -978,8 +983,10 @@ function AddSoldier() {
                         </Form.List>
                     </Col>
                 </Row>
-            </StepsForm.StepForm>
-        </StepsForm>
+            </Card>
+                <Button type={"primary"} block={true} htmlType={"submit"}>ذخیره</Button>
+            </Flex>
+        </Form>
     </Flex>);
 }
 

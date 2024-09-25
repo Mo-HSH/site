@@ -1,7 +1,7 @@
 import {Divider, Flex, Form, Button, InputNumber, notification, Spin} from "antd";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {GetUrl} from "../../utils/Config.js";
+import {getApiUrl} from "../../utils/Config.js";
 
 function EditCalculative() {
     const [api, contextHolder] = notification.useNotification();
@@ -17,7 +17,7 @@ function EditCalculative() {
 
     function onFinish(native, duration) {
         console.log(native, duration);
-        axios.post(GetUrl("config/calculative/create/duty_duration"),
+        axios.post(getApiUrl("config/calculative/create/duty_duration"),
             {"native": native, "duty_month": duration},
             {withCredentials: true})
             .then(() => {
@@ -35,7 +35,7 @@ function EditCalculative() {
 
     useEffect(() => {
         setDurationDataLoading(true);
-        axios.get(GetUrl("config/duty-duration"), {withCredentials: true})
+        axios.get(getApiUrl("config/duty-duration"), {withCredentials: true})
             .then((res) => {
                 console.log(res.data.config);
                 setDutyDurationData(res.data.config);

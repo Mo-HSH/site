@@ -1,10 +1,11 @@
 import {Button, Divider, Flex, Form, Input, notification, Select, Table, Tooltip, Typography} from "antd";
 import {dateValidator} from "../../utils/Validates.js";
 import {useCallback, useEffect, useRef, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
 import {GetQueryDate} from "../../utils/Calculative.js";
 import {DateRenderer} from "../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
+import {getApiUrl} from "../../utils/Config.js";
+import axios from "axios";
 
 function AbsenceIgnoredReport() {
 
@@ -15,21 +16,19 @@ function AbsenceIgnoredReport() {
     const printComponent = useRef(null);
 
     useEffect(() => {
-        invoke("get_config", {configName: "unit"})
-            .then((res) => {
-                setUnitSelectOptions(res.config.map(v => {
-                    return {
-                        label: v.name,
-                        value: v.name
-                    }
-                }))
-            })
-            .catch((err) => {
-                api["error"]({
-                    message: "خطا",
-                    description: "خطا در دریافت اطلاعات."
-                });
+        axios.get(getApiUrl("config/unit"), {withCredentials: true}).then((res) => {
+            setUnitSelectOptions(res.data.config.map(v => {
+                return {
+                    label: v.name,
+                    value: v.name
+                }
+            }))
+        }).catch(() => {
+            api["error"]({
+                message: "خطا",
+                description: "خطا در دریافت تنظیمات یگان!"
             });
+        });
     }, [])
 
     function onFinish(value) {
@@ -55,8 +54,7 @@ function AbsenceIgnoredReport() {
             }
         }
 
-        invoke("get_soldiers", {
-            "query": {
+        axios.post(getApiUrl("soldier/list"), {
                 "filter": filter,
                 "projection": {
                     "first_name": 1,
@@ -80,9 +78,9 @@ function AbsenceIgnoredReport() {
                         }
                     }
                 }
-            }
-        })
-            .then((res) => {
+        }, {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 let rowIndexCounter = 1;
 
                 const transformedData = res.flatMap(soldier => {
@@ -116,7 +114,7 @@ function AbsenceIgnoredReport() {
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             });
     }

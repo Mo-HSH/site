@@ -22,7 +22,6 @@ import {
 } from "antd";
 import {dateValidator, justStringValidator, nationalCodeValidator} from "../../utils/Validates.js";
 import {DateRenderer, DutyGroupRenderer} from "../../utils/TableRenderer.jsx";
-import {invoke} from "@tauri-apps/api/core";
 import EditableTable from "../../utils/EditableTable.jsx";
 import {numberTh} from "../../utils/Data.js";
 import {
@@ -38,6 +37,8 @@ import {GetDutyDuration, IsDutyStopped} from "../../utils/Calculative.js";
 import ReturnLetter from "../Print/run/ReturnLetter.jsx";
 import DeployToCourt from "../Print/run/DeployToCourt.jsx";
 import ReturnMD from "../Print/run/ReturnMD.jsx";
+import axios from "axios";
+import {getApiUrl} from "../../utils/Config.js";
 
 function LeaveAbsenceEscapeDeficitRun() {
     const [selectedSoldier, setSelectedSoldier] = useState({"leave": [], "absence": []});
@@ -64,13 +65,12 @@ function LeaveAbsenceEscapeDeficitRun() {
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
     useEffect(() => {
-        invoke("get_date_time_now").then((res) => {
-            let temp = DateRenderer({"$date": {"$numberLong": res}});
-            setToday(temp);
-        }).catch((err) => {
+        axios.get(getApiUrl("utils/get_date_now"), {withCredentials: true}).then((res) => {
+            setToday(DateRenderer({"$date": {"$numberLong": res.data}}));
+        }).catch(() => {
             api["error"]({
                 message: "خطا",
-                description: err
+                description: "خطا در دریافت تاریخ!"
             });
         });
     }, []);
@@ -208,21 +208,21 @@ function LeaveAbsenceEscapeDeficitRun() {
     }, [selectedSoldier]);
 
     useEffect(() => {
-        invoke("get_config", {configName: "deficit-names"}).then((res) => {
+        axios.get(getApiUrl("config/deficit-names"), {withCredentials: true}).then((res) => {
             let temp = [];
-            res.config.forEach((value) => {
+            res.data.config.forEach((value) => {
                 temp.push({
                     value: value,
                     label: value
                 });
             });
             setDeficitNames(temp);
-        }).catch((err) => {
+        }).catch(() => {
             api["error"]({
                 message: "خطا",
-                description: err
+                description: "خطا در دریافت تنظیمات امضا!"
             });
-        })
+        });
     }, []);
 
     const leaveColumns = [
@@ -446,31 +446,30 @@ function LeaveAbsenceEscapeDeficitRun() {
     ];
 
     function fetchData() {
-        invoke("get_soldiers", {
-            "query": {
-                "filter":
-                    {
-                        "_id":
-                            {
-                                "$oid": selectedSoldierOid
-                            }
-                    }
-                ,
-                "projection":
-                    {
-                        "leave": 1,
-                        "absence": 1,
-                        "arrest": 1,
-                        "deficit": 1,
-                        "duty_group_data": 1,
-                        "duty_group": 1,
-                        "run": 1,
-                        "mission": 1,
-                        "legal_release_date": 1,
-                        "overall_release_date": 1,
-                    }
-            }
-        }).then((res) => {
+        axios.post(getApiUrl("soldier/list"), {
+            "filter":
+                {
+                    "_id":
+                        {
+                            "$oid": selectedSoldierOid
+                        }
+                }
+            ,
+            "projection":
+                {
+                    "leave": 1,
+                    "absence": 1,
+                    "arrest": 1,
+                    "deficit": 1,
+                    "duty_group_data": 1,
+                    "duty_group": 1,
+                    "run": 1,
+                    "mission": 1,
+                    "legal_release_date": 1,
+                    "overall_release_date": 1,
+                }
+        }, {withCredentials: true}).then((response) => {
+            let res = response.data;
             if (res.length === 0) {
                 api["error"]({
                     message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -525,25 +524,21 @@ function LeaveAbsenceEscapeDeficitRun() {
             }
         }).catch((err) => {
             api["error"]({
-                message: "خطا", description: err
+                message: "خطا", description: "خطا در دریافت سرباز مورد نظر!"
             });
         })
     }
 
     function onCreate(value, queryTarget) {
-        invoke("create_leave_or_absence", {
-            "oid": selectedSoldierOid,
-            "query": value,
-            "queryTarget": queryTarget
-        }).then((_) => {
+        axios.post(getApiUrl(`document/${queryTarget}/create/${selectedSoldierOid}`), value, {withCredentials: true}).then(() => {
             fetchData();
         }).catch((err) => {
             fetchData();
-            if (typeof err === "object") {
-                DateConflictErrorHandler(err);
+            if (typeof err.response.data === "object") {
+                DateConflictErrorHandler(err.response.data);
             } else {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             }
 
@@ -582,28 +577,28 @@ function LeaveAbsenceEscapeDeficitRun() {
         api["error"]({
             message: "مغایرت در تاریخ", description: <Flex justify={"start"} align={"start"}>
                 {
-                    err["leave"].length > 0
+                    err["leave"] !== undefined && err["leave"].length > 0
                         ?
                         <Typography.Text>مرخصی: {err["leave"].length} مورد</Typography.Text>
                         :
                         null
                 }
                 {
-                    err["arrest"].length > 0
+                    err["arrest"] !== undefined && err["arrest"].length > 0
                         ?
                         <Typography.Text>بازداشت: {err["arrest"].length} مورد</Typography.Text>
                         :
                         null
                 }
                 {
-                    err["absence"].length > 0
+                    err["absence"] !== undefined && err["absence"].length > 0
                         ?
                         <Typography.Text>نهست: {err["absence"].length} مورد</Typography.Text>
                         :
                         null
                 }
                 {
-                    err["mission"].length > 0
+                    err["mission"] !== undefined && err["mission"].length > 0
                         ?
                         <Typography.Text>ماموریت: {err["mission"].length} مورد</Typography.Text>
                         :
@@ -614,17 +609,13 @@ function LeaveAbsenceEscapeDeficitRun() {
     }
 
     function onDelete(index, queryTarget) {
-        console.log("delete", selectedSoldierOid);
-        invoke("delete_leave_or_absence", {
-            "oid": selectedSoldierOid,
-            "index": index,
-            "queryTarget": queryTarget
-        }).then((_) => {
+        axios.delete(getApiUrl(`document/${queryTarget}/delete/${selectedSoldierOid}/${index}`), {withCredentials: true})
+        .then(() => {
             fetchData();
         }).catch((err) => {
             fetchData();
             api["error"]({
-                message: "خطا", description: err
+                message: "خطا", description: err.data.message
             });
         })
     }
@@ -660,20 +651,15 @@ function LeaveAbsenceEscapeDeficitRun() {
     function onEdit(index, form, queryTarget) {
         return new Promise((resolve, _) => {
             form.validateFields().then((res) => {
-                invoke("edit_leave_or_absence", {
-                    "oid": selectedSoldierOid,
-                    "index": index,
-                    "query": res,
-                    "queryTarget": queryTarget
-                }).then((_) => {
+                axios.patch(getApiUrl(`document/${queryTarget}/edit/${selectedSoldierOid}/${index}`), res,{withCredentials: true}).then(() => {
                     fetchData();
                     resolve(true);
                 }).catch((err) => {
-                    if (typeof err === "object") {
-                        DateConflictErrorHandler(err);
+                    if (typeof err.response.data === "object") {
+                        DateConflictErrorHandler(err.response.data);
                     } else {
                         api["error"]({
-                            message: "خطا", description: err
+                            message: "خطا", description: err.data.message
                         });
                     }
                     resolve(false);
@@ -733,22 +719,18 @@ function LeaveAbsenceEscapeDeficitRun() {
             }
         }
         value["md_return"] = undefined;
-        invoke("edit_leave_or_absence", {
-            "oid": selectedSoldierOid,
-            "index": runEditIndex,
-            "query": value,
-            "queryTarget": "run"
-        }).then((_) => {
+        axios.patch(getApiUrl(`document/run/edit/${selectedSoldierOid}/${runEditIndex}}`), value, {withCredentials: true})
+        .then(() => {
             fetchData();
             api["success"]({
                 message: "انجام شد!"
             });
         }).catch((err) => {
-            if (typeof err === "object") {
-                DateConflictErrorHandler(err);
+            if (typeof err.response.data === "object") {
+                DateConflictErrorHandler(err.response.data);
             } else {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             }
         });
@@ -880,8 +862,8 @@ function LeaveAbsenceEscapeDeficitRun() {
                                         type={"primary"}
                                         block={true}
                                         onClick={() => openPrintModal(<ReturnMD setPrintTitle={setPrintTitle}
-                                                                                    soldierKey={selectedSoldierOid}
-                                                                                    runIndex={runEditIndex}
+                                                                                soldierKey={selectedSoldierOid}
+                                                                                runIndex={runEditIndex}
                                                                                 forceRefresh={Date.now()}/>)}
                                     >
                                         ماده دستور مراجعت
@@ -1619,10 +1601,12 @@ function LeaveAbsenceEscapeDeficitRun() {
 
                                                                             <Row gutter={[24, 12]}>
                                                                                 <Col span={24}>
-                                                                                    <Flex vertical={false} gap={"small"}>
+                                                                                    <Flex vertical={false}
+                                                                                          gap={"small"}>
                                                                                         <Flex justify={"center"}>
                                                                                             <Typography.Title
-                                                                                                level={"h5"}>بازگشت به سنگر</Typography.Title>
+                                                                                                level={"h5"}>بازگشت به
+                                                                                                سنگر</Typography.Title>
                                                                                         </Flex>
                                                                                         <Form.Item
                                                                                             label={"تاریخ تماس"}

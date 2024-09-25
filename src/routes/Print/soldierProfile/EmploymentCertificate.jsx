@@ -1,11 +1,12 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {Button, Col, ConfigProvider, Flex, Form, Image, Input, notification, Row, Typography} from "antd";
-import {invoke} from "@tauri-apps/api/core";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
 import padafandLogo from "../../../assets/img/Padafand_Logo.svg";
 import Sign from "../../../components/printElement/Sign.jsx";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
+import axios from "axios";
+import {getApiUrl} from "../../../utils/Config.js";
 
 
 function EmploymentCertificate({setPrintTitle, soldierKey}) {
@@ -16,31 +17,20 @@ function EmploymentCertificate({setPrintTitle, soldierKey}) {
     const [today, setToday] = useState("");
     const [readyForPrint, setReadyForPrint] = useState(false);
     const [input, setInput] = useState({});
-    const [apiUrl, setApiUrl] = useState("");
 
     useEffect(() => {
         setPrintTitle("گواهی اشتغال");
 
-        invoke("get_date_time_now").then((res) => {
-            setToday(DateRenderer({"$date": {"$numberLong": res}}));
-        }).catch((err) => {
+        axios.get(getApiUrl("utils/get_date_now"), {withCredentials: true}).then((res) => {
+            setToday(DateRenderer({"$date": {"$numberLong": res.data}}));
+        }).catch(() => {
             api["error"]({
                 message: "خطا",
-                description: err
+                description: "خطا در دریافت تاریخ!"
             });
         });
 
-        invoke("get_api_url").then((res) => {
-            setApiUrl(res);
-        }).catch((err) => {
-            api["error"]({
-                message: "خطا",
-                description: err
-            });
-        });
-
-        invoke("get_soldiers", {
-            "query": {
+        axios.post(getApiUrl("soldier/list"), {
                 "filter":
                     {
                         "_id":
@@ -60,9 +50,11 @@ function EmploymentCertificate({setPrintTitle, soldierKey}) {
                         "deployment_date": 1,
                         "national_code": 1,
                     }
-            }
-        })
-            .then((res) => {
+            },
+            {withCredentials: true}
+        )
+            .then((response) => {
+                let res = response.data;
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -78,7 +70,7 @@ function EmploymentCertificate({setPrintTitle, soldierKey}) {
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data
                 });
             });
 
@@ -250,7 +242,7 @@ function EmploymentCertificate({setPrintTitle, soldierKey}) {
                                                 <Flex vertical={true} style={{width: "100%", height: "100%"}}
                                                       justify={"center"} align={"end"}>
                                                     <Image preview={false} shape="square" width={115}
-                                                           src={"http://" + apiUrl + "/files/serve_file/" + soldier["profile"]}
+                                                           src={getApiUrl("files/serve_file/" + soldier["profile"])}
                                                            style={{border: "solid black 2px", borderRadius: "5px"}}/>
                                                 </Flex>
                                             </Col>

@@ -1,15 +1,16 @@
 import {useEffect, useState} from "react";
 import {Col, Flex, notification, Row, Typography} from "antd";
-import {invoke} from "@tauri-apps/api/core";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
+import axios from "axios";
+import {getApiUrl} from "../../../utils/Config.js";
 
 function FolderLabel({soldierKey}) {
     const [api, contextHolder] = notification.useNotification();
     const [soldier, setSoldier] = useState({});
 
     useEffect(()=>{
-        invoke("get_soldiers", {
-            "query": {
+        axios.post(getApiUrl("soldier/list"),
+            {
                 "filter":
                     {
                         "_id":
@@ -28,9 +29,11 @@ function FolderLabel({soldierKey}) {
                         "deployment_date": 1,
                         "folder_number": 1,
                     }
-            }
-        })
-            .then((res) => {
+            },
+            {withCredentials: true}
+        )
+            .then((response) => {
+                let res = response.data;
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."

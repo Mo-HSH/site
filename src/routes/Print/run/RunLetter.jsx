@@ -1,11 +1,12 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {Button, Col, ConfigProvider, Flex, Form, Input, notification, Row, Table, Typography} from "antd";
-import {invoke} from "@tauri-apps/api/core";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
 import {GetNumberLabel} from "../../../utils/Data.js";
 import LetterReceiver from "../../../components/printElement/LetterReceiver.jsx";
+import {getApiUrl} from "../../../utils/Config.js";
+import axios from "axios";
 
 function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
     const [soldier, setSoldier] = useState({
@@ -28,47 +29,46 @@ function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
     useEffect(() => {
         setPrintTitle("نامه فرار");
 
-        invoke("get_date_time_now").then((res) => {
-            setToday(DateRenderer({"$date": {"$numberLong": res}}));
-        }).catch((err) => {
+        axios.get(getApiUrl("utils/get_date_now"), {withCredentials: true}).then((res) => {
+            setToday(DateRenderer({"$date": {"$numberLong": res.data}}));
+        }).catch(() => {
             api["error"]({
                 message: "خطا",
-                description: err
+                description: "خطا در دریافت تاریخ!"
             });
         });
     }, []);
 
     useEffect(() => {
-        invoke("get_soldiers", {
-            "query": {
-                "filter":
-                    {
-                        "_id":
-                            {
-                                "$oid": soldierKey
-                            }
-                    }
-                ,
-                "projection":
-                    {
-                        "first_name": 1,
-                        "last_name": 1,
-                        "military_rank": 1,
-                        "national_code": 1,
-                        "father_name": 1,
-                        "deployment_date": 1,
-                        "phone": 1,
-                        "run": 1,
-                        "state": 1,
-                        "city": 1,
-                        "address_street": 1,
-                        "address_house_number": 1,
-                        "address_home_unit": 1,
-                        "unit": 1,
-                    }
-            }
-        })
-            .then((res) => {
+        axios.post(getApiUrl("soldier/list"), {
+            "filter":
+                {
+                    "_id":
+                        {
+                            "$oid": soldierKey
+                        }
+                }
+            ,
+            "projection":
+                {
+                    "first_name": 1,
+                    "last_name": 1,
+                    "military_rank": 1,
+                    "national_code": 1,
+                    "father_name": 1,
+                    "deployment_date": 1,
+                    "phone": 1,
+                    "run": 1,
+                    "state": 1,
+                    "city": 1,
+                    "address_street": 1,
+                    "address_house_number": 1,
+                    "address_home_unit": 1,
+                    "unit": 1,
+                }
+        }, {withCredentials: true})
+            .then((response) => {
+                let res = response.data;
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -97,7 +97,7 @@ function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err
+                    message: "خطا", description: err.data.message
                 });
             });
     }, [soldierKey, runIndex, forceRefresh]);
@@ -235,23 +235,23 @@ function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                             </Flex>
                         </Flex>
                         <Flex style={{width: "90%"}}>
-                            <Row style={{width: "100%"}} gutter={[24,24]}>
+                            <Row style={{width: "100%"}} gutter={[24, 24]}>
                                 <Col>
                                     <Typography.Text>
                                         موضوع:
-                                        {" "+ soldier["military_rank"] + " وظیفه " + soldier["first_name"] + " "+ soldier["last_name"] + " "}
+                                        {" " + soldier["military_rank"] + " وظیفه " + soldier["first_name"] + " " + soldier["last_name"] + " "}
                                     </Typography.Text>
                                 </Col>
                                 <Col>
                                     <Typography.Text>
                                         کد ملی:
-                                        {" "+ soldier["national_code"]}
+                                        {" " + soldier["national_code"]}
                                     </Typography.Text>
                                 </Col>
                                 <Col>
                                     <Typography.Text>
                                         اعزامی:
-                                        {" "+ soldier["deployment_date"]}
+                                        {" " + soldier["deployment_date"]}
                                     </Typography.Text>
                                 </Col>
                             </Row>
@@ -366,7 +366,8 @@ function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                 گیرنده:
                             </Typography.Text>
                             <Typography.Text strong>
-                                - ریاست محترم دایره بازجویی و قضایی فرماندهی پشتیبانی نیروی پدافند هوایی آجا - جهت آگاهی و هرگونه اقدام بایسته.
+                                - ریاست محترم دایره بازجویی و قضایی فرماندهی پشتیبانی نیروی پدافند هوایی آجا - جهت آگاهی
+                                و هرگونه اقدام بایسته.
                             </Typography.Text>
                             <Typography.Text strong>
                                 - <LetterReceiver defaultValue={soldier["unit"]}/> {" "}

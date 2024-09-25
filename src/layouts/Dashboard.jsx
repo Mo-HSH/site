@@ -67,10 +67,7 @@ function Dashboard() {
     return (
         <Layout>
             <Layout.Sider trigger={null} collapsible collapsed={collapsed}>
-                <Space>
-                    <Typography.Text/>
-                </Space>
-                <Flex align={"center"} justify={collapsed ? "center" : "right"} vertical={false} gap={"small"} style={{height:"52px"}}>
+                <Flex align={"center"} justify={collapsed ? "center" : "right"} vertical={false} gap={"small"} style={{height:"93px", borderBottom: "solid 1px #DBDBDB"}}>
                     {!collapsed &&
                         <>
                             <Typography.Text/>
@@ -83,7 +80,6 @@ function Dashboard() {
                     <Button type="Typography.Text" icon={collapsed ? <DoubleLeftOutlined/> : <DoubleRightOutlined/>}
                             onClick={toggleCollapsed}/>
                 </Flex>
-                <Divider/>
                 <Menu
                     mode="inline"
                     defaultSelectedKeys={['1']}
@@ -93,7 +89,7 @@ function Dashboard() {
             </Layout.Sider>
             <Layout>
                 <Layout.Header style={{
-                    height: "99px"
+                    height: "93px"
                 }}>
                     <Flex align={"center"} justify={"left"} style={{
                         height: "100%",

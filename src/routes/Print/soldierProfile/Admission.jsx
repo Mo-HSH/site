@@ -2,10 +2,11 @@ import {Button, Card, Col, ConfigProvider, Divider, Flex, Image, notification, R
 import {useCallback, useEffect, useRef, useState} from "react";
 import padafandLogo from "../../../assets/img/Padafand_Logo.svg";
 import bimehOmr from "../../../assets/img/BimehOmr.png";
-import {invoke} from "@tauri-apps/api/core";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import {BorderOutlined} from "@ant-design/icons";
 import {useReactToPrint} from "react-to-print";
+import axios from "axios";
+import {getApiUrl} from "../../../utils/Config.js";
 
 
 function Admission({setPrintTitle, soldierKey}) {
@@ -21,35 +22,32 @@ function Admission({setPrintTitle, soldierKey}) {
     useEffect(() => {
         setPrintTitle("پذیرش");
 
-        invoke("get_date_time_now").then((res) => {
-            setToday(DateRenderer({"$date": {"$numberLong": res}}));
-        }).catch((err) => {
+        axios.get(getApiUrl("utils/get_date_now"), {withCredentials: true}).then((res) => {
+            setToday(DateRenderer({"$date": {"$numberLong": res.data}}));
+        }).catch(() => {
             api["error"]({
                 message: "خطا",
-                description: err
+                description: "خطا در دریافت تاریخ!"
             });
         });
 
-        invoke("get_config", {configName: "signs"})
-            .then((res) => {
-                Object.entries(res.config).forEach((v) => {
-                    if (v[1]["key"] === "رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا") {
-                        setSign1(v[1]["value"]);
-                    }
-                    if (v[1]["key"] === "مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا") {
-                        setSign2(v[1]["value"]);
-                    }
-                });
-            })
-            .catch((err) => {
-                api["error"]({
-                    message: "خطا",
-                    description: err
-                });
+        axios.get(getApiUrl("config/duty-duration"), {withCredentials: true}).then((res) => {
+            Object.entries(res.data.config).forEach((v) => {
+                if (v[1]["key"] === "رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا") {
+                    setSign1(v[1]["value"]);
+                }
+                if (v[1]["key"] === "مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا") {
+                    setSign2(v[1]["value"]);
+                }
             });
+        }).catch(() => {
+            api["error"]({
+                message: "خطا",
+                description: "خطا در دریافت تنظیمات امضا!"
+            });
+        });
 
-        invoke("get_soldiers", {
-            "query": {
+        axios.post(getApiUrl("soldier/list"), {
                 "filter":
                     {
                         "_id":
@@ -104,9 +102,11 @@ function Admission({setPrintTitle, soldierKey}) {
                         "have_passport": 1,
                         "foreign_travels": 1,
                     }
-            }
-        })
-            .then((res) => {
+            },
+            {withCredentials: true}
+        )
+            .then((response) => {
+                let res = response.data;
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -706,10 +706,10 @@ function Admission({setPrintTitle, soldierKey}) {
                                     {fontSize: "9.5", x: 497, y: 98 - 18, text: soldier["first_name"]},
                                     {fontSize: "9.5", x: 395, y: 98 - 18, text: soldier["last_name"]},
                                     {fontSize: "9.5", x: 302 - 14, y: 98 - 18, text: soldier["father_name"]},
-                                    {fontSize: "9.5", x: 475, y: 114- 18, text: soldier["national_code"]},
-                                    {fontSize: "9.5", x: 377 - 14, y: 114- 18, text: soldier["national_code"]},
-                                    {fontSize: "9.5", x: 300 - 14, y: 114- 18, text: soldier["birthday"]},
-                                    {fontSize: "9.5", x: 330 - 14, y: 127- 18, text: soldier["phone"]},
+                                    {fontSize: "9.5", x: 475, y: 114 - 18, text: soldier["national_code"]},
+                                    {fontSize: "9.5", x: 377 - 14, y: 114 - 18, text: soldier["national_code"]},
+                                    {fontSize: "9.5", x: 300 - 14, y: 114 - 18, text: soldier["birthday"]},
+                                    {fontSize: "9.5", x: 330 - 14, y: 127 - 18, text: soldier["phone"]},
                                     {fontSize: "9.5", x: 282, y: 179, text: today},
                                     {fontSize: "9.5", x: 562, y: 215, text: soldier["full_name"]},
                                     {fontSize: "9.5", x: 350, y: 240, text: today},

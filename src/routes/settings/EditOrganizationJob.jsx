@@ -2,7 +2,7 @@ import {Button, Divider, Flex, Form, Input, InputNumber, notification, Select, T
 import EditableTable from "../../utils/EditableTable.jsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {GetUrl} from "../../utils/Config.js";
+import {getApiUrl} from "../../utils/Config.js";
 
 function EditOrganizationJob() {
 
@@ -12,7 +12,7 @@ function EditOrganizationJob() {
     const [api, contextHolder] = notification.useNotification();
 
     useEffect(() => {
-        axios.get(GetUrl("config/rank"), {withCredentials: true})
+        axios.get(getApiUrl("config/rank"), {withCredentials: true})
             .then((res) => {
                 let temp = [];
                 res.data.config.forEach((value) => {
@@ -33,7 +33,7 @@ function EditOrganizationJob() {
     }, []);
 
     function fetchData() {
-        axios.get(GetUrl("config/organization-job"), {withCredentials: true})
+        axios.get(getApiUrl("config/organization-job"), {withCredentials: true})
             .then((res)=>{
                 let temp = [];
                 res.data.config.forEach((value, index)=>{
@@ -65,7 +65,7 @@ function EditOrganizationJob() {
 
     function onCreate(value) {
         console.log(value);
-        axios.post(GetUrl("config/organizational_job/create"), value, {withCredentials: true})
+        axios.post(getApiUrl("config/organizational_job/create"), value, {withCredentials: true})
             .then(()=>{
                 fetchData();
             }).catch((err)=>{

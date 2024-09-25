@@ -1,10 +1,11 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import {Button, Col, ConfigProvider, Flex, notification, Row, Table, Typography} from "antd";
 import {useReactToPrint} from "react-to-print";
 import Sign from "../../../components/printElement/Sign.jsx";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
+import axios from "axios";
+import {getApiUrl} from "../../../utils/Config.js";
 
 function IntroductionLetter({setPrintTitle, soldierKey}) {
     const [today, setToday] = useState("");
@@ -17,17 +18,17 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
     useEffect(() => {
         setPrintTitle("معرفی نامه");
 
-        invoke("get_date_time_now").then((res) => {
-            setToday(DateRenderer({"$date": {"$numberLong": res}}));
-        }).catch((err) => {
+        axios.get(getApiUrl("utils/get_date_now"), {withCredentials: true}).then((res) => {
+            setToday(DateRenderer({"$date": {"$numberLong": res.data}}));
+        }).catch(() => {
             api["error"]({
                 message: "خطا",
-                description: err
+                description: "خطا در دریافت تاریخ!"
             });
         });
 
-        invoke("get_soldiers", {
-            "query": {
+        axios.post(getApiUrl("soldier/list"),
+            {
                 "filter":
                     {
                         "_id":
@@ -53,9 +54,11 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                         "extra_info": 1,
                         "mental_health": 1,
                     }
-            }
-        })
-            .then((res) => {
+            },
+            {withCredentials: true}
+        )
+            .then((response) => {
+                let res = response.data;
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -117,8 +120,8 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                         `}
                     </style>
                     {
-                        [...Array(2)].map((_)=> {
-                            return(
+                        [...Array(2)].map((_) => {
+                            return (
                                 <Flex vertical={true} align={"center"}
                                       style={{
                                           border: "solid gray 2px",
@@ -129,9 +132,11 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                                 >
                                     <Row style={{width: "90%", marginTop: "20px"}}>
                                         <Col flex={3}>
-                                            <Flex style={{width: "100%", height: "100%"}} vertical={true} align={"start"}
+                                            <Flex style={{width: "100%", height: "100%"}} vertical={true}
+                                                  align={"start"}
                                                   justify={"center"}>
-                                                <Typography.Text>از: مدیریت نیروی انسانی فرماندهی پشتیبانی مرکز نپاجا(وظیفه
+                                                <Typography.Text>از: مدیریت نیروی انسانی فرماندهی پشتیبانی مرکز
+                                                    نپاجا(وظیفه
                                                     ها)</Typography.Text>
                                                 <Typography.Text>به: فرماندهی محترم گروه خدمات پاسداری پشتیبانی مرکز
                                                     نپاجا</Typography.Text>
@@ -155,7 +160,8 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                                                             <Typography.Text>شماره پرونده:</Typography.Text>
                                                         </Col>
                                                         <Col flex={1}>
-                                                            <Flex style={{width: "100%", height: "100%"}} justify={"end"} align={"end"}>
+                                                            <Flex style={{width: "100%", height: "100%"}}
+                                                                  justify={"end"} align={"end"}>
                                                                 <Typography.Text>
                                                                     {soldier["folder_number"]}
                                                                 </Typography.Text>
@@ -168,7 +174,8 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                                                             <Typography.Text>شماره:</Typography.Text>
                                                         </Col>
                                                         <Col flex={1}>
-                                                            <Flex style={{width: "100%", height: "100%"}} justify={"end"} align={"end"}>
+                                                            <Flex style={{width: "100%", height: "100%"}}
+                                                                  justify={"end"} align={"end"}>
                                                                 <Typography.Text>
                                                                     1613-1
                                                                 </Typography.Text>
@@ -180,7 +187,8 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                                                             <Typography.Text>تاریخ:</Typography.Text>
                                                         </Col>
                                                         <Col flex={1}>
-                                                            <Flex style={{width: "100%", height: "100%"}} justify={"end"} align={"end"}>
+                                                            <Flex style={{width: "100%", height: "100%"}}
+                                                                  justify={"end"} align={"end"}>
                                                                 <Typography.Text>
                                                                     {today}
                                                                 </Typography.Text>
@@ -262,7 +270,9 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                                             </Typography.Text>
 
                                             <Typography.Text style={{textAlign: "justify"}}>
-                                                2- مشارالیه می بایست قبل از هرگونه بکارگیری جهت تعیین سطح سلامت روان و انجام معاینات روان سنجی به مرکز سلامت روان مستقر در این پشتیبانی اعزام گردد.
+                                                2- مشارالیه می بایست قبل از هرگونه بکارگیری جهت تعیین سطح سلامت روان و
+                                                انجام معاینات روان سنجی به مرکز سلامت روان مستقر در این پشتیبانی اعزام
+                                                گردد.
                                             </Typography.Text>
                                             <Typography.Text style={{textAlign: "justify"}}>
                                                 3- وضعیت پذیرش و سلامت نامبرده شرح جدول ذیل می باشد. همچنین مشارالیه با
@@ -276,7 +286,9 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                                         </ConfigProvider>
                                     </Flex>
                                     <Flex style={{width: "90%", marginTop: "30px"}} justify={"end"}>
-                                        <Sign.SingleInline defaultSign={"مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا"} fontSize={12}/>
+                                        <Sign.SingleInline
+                                            defaultSign={"مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا"}
+                                            fontSize={12}/>
                                     </Flex>
 
                                     <Flex style={{width: "100%", height: "100%"}} justify={"center"} align={"center"}>
@@ -291,12 +303,12 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                                             columns={[
                                                 {
                                                     title: "عقیدتی سیاسی",
-                                                    render: ()=> "پذیرش گردیده",
+                                                    render: () => "پذیرش گردیده",
                                                     align: "center",
                                                 },
                                                 {
                                                     title: "حفاظت اطلاعات",
-                                                    render: ()=> "پذیرش گردیده",
+                                                    render: () => "پذیرش گردیده",
                                                     align: "center",
                                                 },
                                                 {
