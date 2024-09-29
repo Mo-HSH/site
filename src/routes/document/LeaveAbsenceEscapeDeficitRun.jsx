@@ -718,8 +718,11 @@ function LeaveAbsenceEscapeDeficitRun() {
                 value["court_order"] = undefined;
             }
         }
-        value["md_return"] = undefined;
-        axios.patch(getApiUrl(`document/run/edit/${selectedSoldierOid}/${runEditIndex}}`), value, {withCredentials: true})
+        // value["md_return"] = undefined;
+        if (value["call_date"] === undefined) {
+            value["call_date"] = "";
+        }
+        axios.patch(getApiUrl(`document/run/edit/${selectedSoldierOid}/${runEditIndex}`), value, {withCredentials: true})
         .then(() => {
             fetchData();
             api["success"]({
