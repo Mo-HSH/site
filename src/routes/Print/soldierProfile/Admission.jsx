@@ -19,6 +19,124 @@ function Admission({setPrintTitle, soldierKey}) {
     const [sign2, setSign2] = useState("");
     const [travelData, setTravelData] = useState([]);
 
+    function ForeignTravelPart() {
+        return (
+            <>
+                <Flex justify={"start"} style={{width: "90%", margin: "20px 0px"}}>
+                    <Typography.Text strong={true}>3-اطلاعات گذرنامه:</Typography.Text>
+                </Flex>
+                <Flex vertical={true} align={"start"} style={{width: "90%"}}>
+                    <Flex>
+                        <Typography.Text style={{marginBottom: "8px"}}>
+                            1- دارای گذرنامه
+                            &nbsp;
+                        </Typography.Text>
+                        <Typography.Text strong={true}>
+                            {soldier["have_passport_text"]}
+                        </Typography.Text>
+                    </Flex>
+                    <Flex justify={"center"} style={{width: "100%"}}>
+                        <Table
+                            size={"small"}
+                            pagination={false}
+                            bordered={true}
+                            dataSource={travelData}
+                            locale={{
+                                emptyText: <span
+                                    style={{fontSize: '16px'}}>به سفر های خارجه نرفته ام</span>, // Custom text for "No Data" view
+                            }}
+                            columns={foreignTravelInfoColumn}
+                            style={{width: "100%"}}
+                        />
+                    </Flex>
+                </Flex>
+
+                <Flex vertical={true} align={"start"} style={{width: "90%"}}>
+                    <Typography.Text style={{marginTop: "8px", marginBottom: "8px"}}>2-
+                        تعهدنامه</Typography.Text>
+                    <Typography.Text>
+                        اینجانب
+                        {" " + soldier["military_rank"] + " "}
+                        وظیفه
+                        {" " + soldier["full_name"] + " "}
+                        اعزامی
+                        {" " + soldier["deployment_date"] + " "}
+                        با شماره ملی
+                        {" " + soldier["national_code"] + " "}
+                        متعهد میگردم که چنانچه دارای گذرنامه می باشم، گذرنامه خود را در اولین فرصت تحویل
+                        دایره
+                        وظیفه های نیروی انسانی ف پش مرکز نمایم و در صورت عدم تحویل برابر روش با اینجانب
+                        رفتار
+                        گردد.
+                    </Typography.Text>
+                    <Flex justify={"end"} style={{width: "100%"}}>
+                        <Row
+                            gutter={[32, 32]}
+                            style={{marginTop: "32px"}}
+                        >
+                            <Col>
+                                درجه: {soldier["military_rank"]}
+                            </Col>
+                            <Col>
+                                نام و نشان: {soldier["full_name"]}
+                            </Col>
+                            <Col>
+                                تاریخ: {today}
+                            </Col>
+                            <Col>
+                                امضا و اثر انگشت
+                            </Col>
+                        </Row>
+                    </Flex>
+                </Flex>
+            </>
+        )
+    }
+
+    function InterviewPart() {
+        return (
+            <>
+                <Flex justify={"start"} style={{width: "90%", marginBottom: "20px"}}>
+                    <Typography.Text strong={true}>4-مصاحبه:</Typography.Text>
+                </Flex>
+                <Flex vertical={true} align={"center"} gap={10} style={{width: "100%"}}>
+                    <Row gutter={10} style={{width: "90%"}}>
+                        {
+                            [
+                                "دایره وظیفه ها",
+                                "نماینده عقیدتی سیاسی ف پش",
+                                "نماینده حفاظت اطلاعات ف پش",
+                            ].map(title => (
+                                <Col span={8}>
+                                    <Card title={<Flex justify={"center"}>{title}</Flex>} bordered={true}
+                                          style={{borderColor: "black"}}>
+                                        <div style={{height: "60px"}}></div>
+                                    </Card>
+                                </Col>
+                            ))
+                        }
+                    </Row>
+                    <Row gutter={10} style={{width: "90%"}}>
+                        {
+                            [
+                                "نماینده بازرسی و ایمنی",
+                                "مهارت آموزی",
+                                "نماینده بهداشت و درمان",
+                            ].map(title => (
+                                <Col span={8}>
+                                    <Card title={<Flex justify={"center"}>{title}</Flex>} bordered={true}
+                                          style={{borderColor: "black"}}>
+                                        <div style={{height: "60px"}}></div>
+                                    </Card>
+                                </Col>
+                            ))
+                        }
+                    </Row>
+                </Flex>
+            </>
+        );
+    }
+
     useEffect(() => {
         setPrintTitle("پذیرش");
 
@@ -556,153 +674,129 @@ function Admission({setPrintTitle, soldierKey}) {
                           }}
                           className={"break-after A4-portrait"}
                     >
-                        <Flex justify={"start"} style={{width: "90%", margin: "20px 0px"}}>
-                            <Typography.Text strong={true}>2-مشخصات بستگان و عائله تحت تکفل:</Typography.Text>
-                        </Flex>
-                        <Table
-                            size={"small"}
-                            pagination={false}
-                            bordered={true}
-                            dataSource={soldier["family"]}
-                            locale={{
-                                emptyText: <span
-                                    style={{fontSize: '16px'}}>اطلاعاتی موجود نیست</span>, // Custom text for "No Data" view
-                            }}
-                            columns={familyInfoColumn}
-                            style={{width: "90%"}}
-                        />
                         <Flex vertical={true} align={"center"}
                               style={{width: "100%"}}>
-                            <Row
-                                gutter={[32, 32]}
-                                style={{marginTop: "32px"}}
-                            >
-                                <Col>
-                                    صحت مندرجات فوق مورد تایید است.
-                                </Col>
-                                <Col>
-                                    درجه: {soldier["military_rank"]}
-                                </Col>
-                                <Col>
-                                    نام و نشان: {soldier["full_name"]}
-                                </Col>
-                                <Col>
-                                    تاریخ: {today}
-                                </Col>
-                            </Row>
-                            <Flex justify={"end"} style={{width: "90%", marginTop: "32px"}}>
-                                <Typography.Text>امضا و اثر انگشت</Typography.Text>
-                            </Flex>
 
-                            <Flex justify={"start"} style={{width: "90%", margin: "20px 0px"}}>
-                                <Typography.Text strong={true}>3-اطلاعات گذرنامه:</Typography.Text>
-                            </Flex>
-                            <Flex vertical={true} align={"start"} style={{width: "90%"}}>
-                                <Flex>
-                                    <Typography.Text style={{marginBottom: "8px"}}>
-                                        1- دارای گذرنامه
-                                        &nbsp;
-                                    </Typography.Text>
-                                    <Typography.Text strong={true}>
-                                        {soldier["have_passport_text"]}
-                                    </Typography.Text>
+                            <>
+                                <Flex justify={"start"} style={{width: "90%", margin: "20px 0px"}}>
+                                    <Typography.Text strong={true}>2-مشخصات بستگان و عائله تحت تکفل:</Typography.Text>
                                 </Flex>
-                                <Flex justify={"center"} style={{width: "100%"}}>
-                                    <Table
-                                        size={"small"}
-                                        pagination={false}
-                                        bordered={true}
-                                        dataSource={travelData}
-                                        locale={{
-                                            emptyText: <span
-                                                style={{fontSize: '16px'}}>به سفر های خارجه نرفته ام</span>, // Custom text for "No Data" view
-                                        }}
-                                        columns={foreignTravelInfoColumn}
-                                        style={{width: "100%"}}
-                                    />
-                                </Flex>
-                            </Flex>
-
-                            <Flex vertical={true} align={"start"} style={{width: "90%"}}>
-                                <Typography.Text style={{marginTop: "8px", marginBottom: "8px"}}>2-
-                                    تعهدنامه</Typography.Text>
-                                <Typography.Text>
-                                    اینجانب
-                                    {" " + soldier["military_rank"] + " "}
-                                    وظیفه
-                                    {" " + soldier["full_name"] + " "}
-                                    اعزامی
-                                    {" " + soldier["deployment_date"] + " "}
-                                    با شماره ملی
-                                    {" " + soldier["national_code"] + " "}
-                                    متعهد میگردم که چنانچه دارای گذرنامه می باشم، گذرنامه خود را در اولین فرصت تحویل
-                                    دایره
-                                    وظیفه های نیروی انسانی ف پش مرکز نمایم و در صورت عدم تحویل برابر روش با اینجانب
-                                    رفتار
-                                    گردد.
-                                </Typography.Text>
-                                <Flex justify={"end"} style={{width: "100%"}}>
-                                    <Row
-                                        gutter={[32, 32]}
-                                        style={{marginTop: "32px"}}
-                                    >
-                                        <Col>
-                                            درجه: {soldier["military_rank"]}
-                                        </Col>
-                                        <Col>
-                                            نام و نشان: {soldier["full_name"]}
-                                        </Col>
-                                        <Col>
-                                            تاریخ: {today}
-                                        </Col>
-                                        <Col>
-                                            امضا و اثر انگشت
-                                        </Col>
-                                    </Row>
-                                </Flex>
-                            </Flex>
-
-                            <Flex justify={"start"} style={{width: "90%", marginBottom: "20px"}}>
-                                <Typography.Text strong={true}>4-مصاحبه:</Typography.Text>
-                            </Flex>
-                            <Flex vertical={true} align={"center"} gap={10} style={{width: "100%"}}>
-                                <Row gutter={10} style={{width: "90%"}}>
-                                    {
-                                        [
-                                            "دایره وظیفه ها",
-                                            "نماینده عقیدتی سیاسی ف پش",
-                                            "نماینده حفاظت اطلاعات ف پش",
-                                        ].map(title => (
-                                            <Col span={8}>
-                                                <Card title={<Flex justify={"center"}>{title}</Flex>} bordered={true}
-                                                      style={{borderColor: "black"}}>
-                                                    <div style={{height: "60px"}}></div>
-                                                </Card>
-                                            </Col>
-                                        ))
-                                    }
+                                <Table
+                                    size={"small"}
+                                    pagination={false}
+                                    bordered={true}
+                                    dataSource={soldier["family"]}
+                                    locale={{
+                                        emptyText: <span
+                                            style={{fontSize: '16px'}}>اطلاعاتی موجود نیست</span>, // Custom text for "No Data" view
+                                    }}
+                                    columns={familyInfoColumn}
+                                    style={{width: "90%"}}
+                                />
+                                <Row
+                                    gutter={[32, 32]}
+                                    style={{marginTop: "32px"}}
+                                >
+                                    <Col>
+                                        صحت مندرجات فوق مورد تایید است.
+                                    </Col>
+                                    <Col>
+                                        درجه: {soldier["military_rank"]}
+                                    </Col>
+                                    <Col>
+                                        نام و نشان: {soldier["full_name"]}
+                                    </Col>
+                                    <Col>
+                                        تاریخ: {today}
+                                    </Col>
                                 </Row>
-                                <Row gutter={10} style={{width: "90%"}}>
-                                    {
-                                        [
-                                            "نماینده بازرسی و ایمنی",
-                                            "مهارت آموزی",
-                                            "نماینده بهداشت و درمان",
-                                        ].map(title => (
-                                            <Col span={8}>
-                                                <Card title={<Flex justify={"center"}>{title}</Flex>} bordered={true}
-                                                      style={{borderColor: "black"}}>
-                                                    <div style={{height: "60px"}}></div>
-                                                </Card>
-                                            </Col>
-                                        ))
-                                    }
-                                </Row>
-                            </Flex>
+                                <Flex justify={"end"} style={{width: "90%", marginTop: "32px"}}>
+                                    <Typography.Text>امضا و اثر انگشت</Typography.Text>
+                                </Flex>
+                            </>
 
+                            {
+                                soldier["family"].length + (travelData.length > 0 ? travelData.length : 1) <= 18
+                                    ?
+                                    <ForeignTravelPart/>
+                                    :
+                                    null
+                            }
+
+                            {
+                                soldier["family"].length + (travelData.length > 0 ? travelData.length : 1) <= 8
+                                    ?
+                                    <InterviewPart/>
+                                    :
+                                    null
+                            }
 
                         </Flex>
                     </Flex>
+
+                    {
+                        soldier["family"].length + (travelData.length > 0 ? travelData.length : 1) > 18
+                            ?
+                            <Flex vertical={true} align={"center"}
+                                  style={{
+                                      border: "solid gray 2px",
+                                      borderRadius: "10px",
+                                  }}
+                                  className={"break-after A4-portrait"}
+                            >
+                                <Flex vertical={true} align={"center"}
+                                      style={{width: "100%"}}>
+                                    <ForeignTravelPart/>
+                                    {
+                                        travelData.length <= 9
+                                            ?
+                                            <InterviewPart/>
+                                            :
+                                            null
+                                    }
+                                </Flex>
+                            </Flex>
+                            :
+                            null
+                    }
+
+                    {
+                        soldier["family"].length + (travelData.length > 0 ? travelData.length : 1) > 8
+                            ?
+                            soldier["family"].length + (travelData.length > 0 ? travelData.length : 1) > 18
+                                ?
+                                travelData.length > 9
+                                    ?
+                                    <Flex vertical={true} align={"center"}
+                                          style={{
+                                              border: "solid gray 2px",
+                                              borderRadius: "10px",
+                                          }}
+                                          className={"break-after A4-portrait"}
+                                    >
+                                        <Flex vertical={true} align={"center"}
+                                              style={{width: "100%"}}>
+                                            <InterviewPart/>
+                                        </Flex>
+                                    </Flex>
+                                    :
+                                    null
+                                :
+                                <Flex vertical={true} align={"center"}
+                                      style={{
+                                          border: "solid gray 2px",
+                                          borderRadius: "10px",
+                                      }}
+                                      className={"break-after A4-portrait"}
+                                >
+                                    <Flex vertical={true} align={"center"}
+                                          style={{width: "100%", marginTop: 20}}>
+                                        <InterviewPart/>
+                                    </Flex>
+                                </Flex>
+                            :
+                            null
+                    }
 
                     <Flex vertical={true} align={"center"}
                           style={{
