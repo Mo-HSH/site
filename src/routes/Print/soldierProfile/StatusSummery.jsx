@@ -41,7 +41,6 @@ function StatusSummery({setPrintTitle, soldierKey}) {
     const [readyForPrint, setReadyForPrint] = useState(false);
     const [absence, setAbsence] = useState([]);
     const [dutyData, setDutyData] = useState({});
-    const [attachmentOrder, setAttachmentOrder] = useState([]);
 
     const [leftSideFontSize, setLeftSideFontSize] = useState(10);
     const [leftSidePadding, setLeftSidePadding] = useState(4);
@@ -49,15 +48,13 @@ function StatusSummery({setPrintTitle, soldierKey}) {
     const [leftSideDividerFontSize, setLeftSideDividerFontSize] = useState(13);
     const [dutyDuration, setDutyDuration] = useState({"native_duty_month": 21, "none_native_duty_month": 18});
     const [legalLeaveLimit, setLegalLeaveLimit] = useState(0);
+    const [tables, setTables] = useState([]);
+    const [lastPageIndex, setLastPageIndex] = useState(0);
 
     const dutyTable = useRef(null);
-    const familyTable = useRef(null);
-    const leaveTable = useRef(null);
     const absenceTable = useRef(null);
-    const arrestTable = useRef(null);
-    const deficitTable = useRef(null);
-    const runTable = useRef(null);
-    const missionTable = useRef(null);
+
+    const maxDataEachPage = 35;
 
     useEffect(() => {
         setPrintTitle("خلاصه وضعیت");
@@ -219,6 +216,123 @@ function StatusSummery({setPrintTitle, soldierKey}) {
             });
 
     }, [soldierKey]);
+
+    function chunk(arr, size) {
+        return Array.from({length: Math.ceil(arr.length / size)}, (v, i) =>
+            arr.slice(i * size, i * size + size));
+    }
+
+    function separateArrayByTitle(arr) {
+        const result = [];
+
+        arr.forEach(element => {
+            const {title, data} = element;
+
+            let index = -1;
+            for (let i = 0; i < result.length; i++) {
+                if (result[i].title === title) {
+                    index = i;
+                }
+            }
+            if (index !== -1) {
+                result[index].data.push(data);
+            } else {
+                result.push({
+                    title: title,
+                    data: [data]
+                });
+            }
+        });
+
+        return result;
+    }
+
+    useEffect(() => {
+        let flattenedData = [];
+        let lastTitle = "";
+        [
+            {title: "مرخصی", data: soldier["leave"]},
+            {title: "نهست", data: absence},
+            {title: "بازداشت", data: soldier["arrest"]},
+            {title: "کسری", data: soldier["deficit"]},
+            {title: "فرار", data: soldier["run"]},
+            {title: "ماموریت", data: soldier["mission"]},
+            {title: "خانواده", data: soldier["family"]},
+        ].forEach(({title, data}) => {
+            if (data.length > 0) {
+                data.forEach((item) => {
+                    flattenedData.push({title: title, data: item});
+                })
+            } else {
+                flattenedData.push({title: title, data: {}});
+            }
+            if (title !== lastTitle) {
+                flattenedData.push({title: title, data: {}});
+                flattenedData.push({title: title, data: {}});
+                lastTitle = title;
+            }
+        });
+
+        let chunkedData = chunk(flattenedData, maxDataEachPage);
+        let titleCounter = {};
+
+        for (let i = 0, len = chunkedData.length; i < len; i++) {
+            if (i + 1 >= len) break;
+
+            const firstTitle = chunkedData[i][chunkedData[i].length - 1].title;
+            const secondTitle = chunkedData[i + 1][0].title;
+            if (firstTitle === secondTitle) {
+                if (titleCounter[firstTitle] === undefined) {
+                    titleCounter[firstTitle] = {
+                        current: 0,
+                        overall: 2
+                    };
+                } else {
+                    titleCounter[firstTitle].overall++;
+                }
+            }
+        }
+        let temp = [];
+        if (chunkedData[chunkedData.length - 1].length + 4 <= maxDataEachPage) {
+            chunkedData[chunkedData.length - 1].push({title: "پایان خدمت", data: []});
+        } else {
+            chunkedData.push([{title: "پایان خدمت", data: []}]);
+        }
+        console.log(dutyData);
+        chunkedData.forEach((pageTables, index) => {
+            setLastPageIndex(index);
+            let separatedTable = separateArrayByTitle(pageTables);
+            separatedTable.forEach((eachTable) => {
+                let title = eachTable.title;
+                if (titleCounter[eachTable.title]) {
+                    title += " " + ++titleCounter[eachTable.title].current + " از " + titleCounter[eachTable.title].overall;
+                }
+                let dataSource = eachTable.data;
+                if (titleCounter[eachTable.title]) {
+                    if (titleCounter[eachTable.title].current === titleCounter[eachTable.title].overall) {
+                        if (lastColTables[eachTable.title]) {
+                            if (lastColTables[eachTable.title].dataSource) {
+                                dataSource.push(lastColTables[eachTable.title].dataSource);
+                            }
+                        }
+                    }
+                } else {
+                    if (lastColTables[eachTable.title].dataSource) {
+                        dataSource.push(lastColTables[eachTable.title].dataSource);
+                    }
+                }
+                dataSource = dataSource.filter((eachData)=> Object.keys(eachData).length > 0);
+                temp.push({
+                    title: title,
+                    dataSource: dataSource,
+                    page: index,
+                    columns: lastColTables[eachTable.title].columns,
+                    extraColumns: lastColTables[eachTable.title].extraColumns
+                })
+            })
+        })
+        setTables(temp);
+    }, [soldier, dutyData]);
 
     const dataSource = [
         {
@@ -406,8 +520,8 @@ function StatusSummery({setPrintTitle, soldierKey}) {
         }
     ];
 
-    const leaveOnCell = (_, index) => {
-        if (index >= soldier["leave"].length) {
+    const lastCellMerge = (record) => {
+        if (record.text) {
             return {
                 colSpan: 0,
             };
@@ -416,19 +530,21 @@ function StatusSummery({setPrintTitle, soldierKey}) {
         }
     };
 
+    const rowCounterMerge = (text, record, index) => {
+        if (record.text) {
+            return record.text;
+        } else {
+            return <>{index + 1}</>;
+        }
+    }
+
     const leaveColumns = [
         {
             title: "ردیف",
             align: "center",
-            render: (text, record, index) => {
-                if (index >= soldier["leave"].length) {
-                    return record.text;
-                } else {
-                    return <>{index + 1}</>;
-                }
-            },
-            onCell: (_, index) => {
-                if (index >= soldier["leave"].length) {
+            render: rowCounterMerge,
+            onCell: (record) => {
+                if (record.text) {
                     return {
                         colSpan: 3,
                     };
@@ -448,7 +564,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: leaveOnCell
+            onCell: lastCellMerge
         },
         {
             title: "تاریخ شروع",
@@ -461,7 +577,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: leaveOnCell
+            onCell: lastCellMerge
         },
         {
             title: "سالیانه",
@@ -490,29 +606,13 @@ function StatusSummery({setPrintTitle, soldierKey}) {
         }
     ];
 
-    const absenceOnCell = (_, index) => {
-        if (index === absence.length) {
-            return {
-                colSpan: 0,
-            };
-        } else {
-            return {};
-        }
-    };
-
     const absenceColumns = [
         {
             title: "ردیف",
             align: "center",
-            render: (text, record, index) => {
-                if (index === absence.length) {
-                    return record.text;
-                } else {
-                    return <>{index + 1}</>;
-                }
-            },
-            onCell: (_, index) => {
-                if (index === absence.length) {
+            render: rowCounterMerge,
+            onCell: (record) => {
+                if (record.text) {
                     return {
                         colSpan: 4,
                     };
@@ -532,7 +632,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: absenceOnCell
+            onCell: lastCellMerge
         },
         {
             title: "تاریخ شروع",
@@ -545,7 +645,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: absenceOnCell
+            onCell: lastCellMerge
         },
         {
             title: "تاریخ خاتمه",
@@ -558,7 +658,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: absenceOnCell
+            onCell: lastCellMerge
         },
         {
             title: "مدت غیبت",
@@ -573,27 +673,11 @@ function StatusSummery({setPrintTitle, soldierKey}) {
         }
     ];
 
-    const arrestOnCell = (_, index) => {
-        if (index === soldier["arrest"].length) {
-            return {
-                colSpan: 0,
-            };
-        } else {
-            return {};
-        }
-    };
-
     const arrestColumns = [
         {
             title: "ردیف",
             align: "center",
-            render: (text, record, index) => {
-                if (index === soldier["arrest"].length) {
-                    return record.text;
-                } else {
-                    return <>{index + 1}</>;
-                }
-            },
+            render: rowCounterMerge,
             onCell: (_, index) => {
                 if (index === soldier["arrest"].length) {
                     return {
@@ -615,7 +699,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: arrestOnCell,
+            onCell: lastCellMerge,
         },
         {
             title: "تاریخ شروع",
@@ -628,13 +712,13 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: arrestOnCell,
+            onCell: lastCellMerge,
         },
         {
             title: "علت",
             dataIndex: "reason",
             align: "center",
-            onCell: arrestOnCell,
+            onCell: lastCellMerge,
         },
         {
             title: "مدت",
@@ -643,27 +727,11 @@ function StatusSummery({setPrintTitle, soldierKey}) {
         },
     ];
 
-    const missionOnCell = (_, index) => {
-        if (index === soldier["mission"].length) {
-            return {
-                colSpan: 0,
-            };
-        } else {
-            return {};
-        }
-    };
-
     const missionColumns = [
         {
             title: "ردیف",
             align: "center",
-            render: (text, record, index) => {
-                if (index === soldier["mission"].length) {
-                    return record.text;
-                } else {
-                    return <>{index + 1}</>;
-                }
-            },
+            render: rowCounterMerge,
             onCell: (_, index) => {
                 if (index === soldier["mission"].length) {
                     return {
@@ -685,7 +753,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: missionOnCell,
+            onCell: lastCellMerge,
         },
         {
             title: "تاریخ شروع",
@@ -698,13 +766,13 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: missionOnCell,
+            onCell: lastCellMerge,
         },
         {
             title: "امریه ماموریت",
             dataIndex: "order",
             align: "center",
-            onCell: missionOnCell,
+            onCell: lastCellMerge,
         },
         {
             title: "مدت",
@@ -713,27 +781,11 @@ function StatusSummery({setPrintTitle, soldierKey}) {
         },
     ];
 
-    const deficitOnCell = (_, index) => {
-        if (index === soldier["deficit"].length) {
-            return {
-                colSpan: 0,
-            };
-        } else {
-            return {};
-        }
-    };
-
     const deficitColumns = [
         {
             title: "ردیف",
             align: "center",
-            render: (text, record, index) => {
-                if (index === soldier["deficit"].length) {
-                    return record.text;
-                } else {
-                    return <>{index + 1}</>;
-                }
-            },
+            render: rowCounterMerge,
             onCell: (_, index) => {
                 if (index === soldier["deficit"].length) {
                     return {
@@ -755,13 +807,13 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: deficitOnCell
+            onCell: lastCellMerge
         },
         {
             title: "نوع کسری",
             dataIndex: "name",
             align: "center",
-            onCell: deficitOnCell
+            onCell: lastCellMerge
         },
         {
             title: "مدت",
@@ -770,27 +822,11 @@ function StatusSummery({setPrintTitle, soldierKey}) {
         }
     ];
 
-    const runOnCell = (_, index) => {
-        if (index === soldier["run"].length) {
-            return {
-                colSpan: 0,
-            };
-        } else {
-            return {};
-        }
-    };
-
     const runColumns = [
         {
             title: "ردیف",
             align: "center",
-            render: (text, record, index) => {
-                if (index === soldier["run"].length) {
-                    return record.text;
-                } else {
-                    return <>{index + 1}</>;
-                }
-            },
+            render: rowCounterMerge,
             onCell: (_, index) => {
                 if (index === soldier["run"].length) {
                     return {
@@ -812,7 +848,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: runOnCell
+            onCell: lastCellMerge
         },
         {
             title: "تاریخ فرار",
@@ -825,13 +861,13 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: runOnCell
+            onCell: lastCellMerge
         },
         {
             title: "م/د فرار",
             dataIndex: "md_run",
             align: "center",
-            onCell: runOnCell
+            onCell: lastCellMerge
         },
         {
             title: "تاریخ مراجعت",
@@ -844,19 +880,19 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                     return DateRenderer(v);
                 }
             },
-            onCell: runOnCell
+            onCell: lastCellMerge
         },
         {
             title: "م/د مراجعت",
             dataIndex: "md_return",
             align: "center",
-            onCell: runOnCell
+            onCell: lastCellMerge
         },
         {
             title: "حکم قضایی",
             dataIndex: "court_order",
             align: "center",
-            onCell: runOnCell
+            onCell: lastCellMerge
         },
         {
             title: "اضافه تنبیهی",
@@ -870,11 +906,10 @@ function StatusSummery({setPrintTitle, soldierKey}) {
         },
     ];
 
-    const tables = [
-        {
+    const lastColTables = {
+        "مرخصی": {
             title: "مرخصی",
-            ref: leaveTable,
-            dataSource: [...soldier["leave"], {
+            dataSource: {
                 annual: soldier.leave.reduce((sum, leave) => sum + leave.annual, 0),
                 vacation: soldier.leave.reduce((sum, leave) => sum + leave.vacation, 0),
                 medical: soldier.leave.reduce((sum, leave) => sum + leave.medical, 0),
@@ -882,12 +917,6 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                 bonus: soldier.leave.reduce((sum, leave) => sum + leave.bonus, 0),
                 text: "جمع کل"
             },
-            // {
-            //     annual: legalLeaveLimit - soldier.leave.reduce((sum, leave) => sum + leave.annual, 0),
-            //     medical: legalLeaveLimit - soldier.leave.reduce((sum, leave) => sum + leave.medical, 0),
-            //     text: "مانده استفاده نشده"
-            // }
-            ],
             columns: leaveColumns,
             rowClassName: (_, index) => {
                 if (index >= soldier["leave"].length) {
@@ -897,13 +926,13 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                 }
             }
         },
-        {
+        "نهست": {
             title: "نهست",
             ref: absenceTable,
-            dataSource: [...absence, {
+            dataSource: {
                 duration: absence.reduce((sum, absence) => sum + absence.duration, 0),
                 text: "جمع کل"
-            }],
+            },
             columns: absenceColumns,
             rowClassName: (_, index) => {
                 if (index === absence.length) {
@@ -913,13 +942,12 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                 }
             }
         },
-        {
+        "بازداشت": {
             title: "بازداشت",
-            ref: arrestTable,
-            dataSource: [...soldier["arrest"], {
+            dataSource: {
                 duration: soldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
                 text: "جمع کل"
-            }],
+            },
             columns: arrestColumns,
             rowClassName: (_, index) => {
                 if (index === soldier["arrest"].length) {
@@ -929,13 +957,12 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                 }
             }
         },
-        {
+        "کسری": {
             title: "کسری",
-            ref: deficitTable,
-            dataSource: [...soldier["deficit"], {
+            dataSource: {
                 day: soldier.deficit.reduce((sum, deficit) => sum + deficit.day, 0),
                 text: "جمع کل"
-            }],
+            },
             columns: deficitColumns,
             rowClassName: (_, index) => {
                 if (index === soldier["deficit"].length) {
@@ -945,14 +972,13 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                 }
             }
         },
-        {
+        "فرار": {
             title: "فرار",
-            ref: runTable,
-            dataSource: [...soldier["run"], {
+            dataSource: {
                 "run_duration": soldier.run.reduce((sum, run) => sum + run["run_duration"], 0),
                 "run_punish": soldier.run.reduce((sum, run) => sum + run["run_punish"], 0),
                 text: "جمع کل"
-            }],
+            },
             columns: runColumns,
             rowClassName: (_, index) => {
                 if (index === soldier["run"].length) {
@@ -962,13 +988,12 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                 }
             }
         },
-        {
+        "ماموریت": {
             title: "ماموریت",
-            ref: missionTable,
-            dataSource: [...soldier["mission"], {
+            dataSource: {
                 duration: soldier.mission.reduce((sum, mission) => sum + mission.duration, 0),
                 text: "جمع کل"
-            }],
+            },
             columns: missionColumns,
             rowClassName: (_, index) => {
                 if (index === soldier["mission"].length) {
@@ -978,29 +1003,28 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                 }
             }
         },
-        {
+        "خانواده": {
             title: "خانواده",
-            ref: familyTable,
-            dataSource: soldier["family"],
             columns: familyColumns,
             rowClassName: ""
         },
-        {
+        "پایان خدمت": {
             title: "پایان خدمت",
             ref: dutyTable,
-            dataSource: [{...dutyData,
-                "additional_service": dutyData["additional_service_day"] + absence.reduce((sum, absence) => sum + absence.duration, 0)*2 + soldier.run.reduce((sum, run) => sum + run["run_punish"], 0) + soldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
+            dataSource: {
+                ...dutyData,
+                "additional_service": dutyData["additional_service_day"] + absence.reduce((sum, absence) => sum + absence.duration, 0) * 2 + soldier.run.reduce((sum, run) => sum + run["run_punish"], 0) + soldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
                 "discharge_service":
                     (legalLeaveLimit - soldier.leave.reduce((sum, leave) => sum + leave.annual, 0) < 0 ? -1 * (legalLeaveLimit - soldier.leave.reduce((sum, leave) => sum + leave.annual, 0)) : 0)
                     + (legalLeaveLimit - soldier.leave.reduce((sum, leave) => sum + leave.medical, 0) < 0 ? -1 * (legalLeaveLimit - soldier.leave.reduce((sum, leave) => sum + leave.medical, 0)) : 0)
                     + soldier.run.reduce((sum, run) => sum + run["run_duration"], 0)
                     + absence.reduce((sum, absence) => sum + absence.duration, 0)
-            }],
+            },
             columns: dutyColumns,
             extraColumns: extraDutyColumns,
             rowClassName: ""
         },
-    ];
+    };
 
     function TablePart({
                            width: width,
@@ -1015,90 +1039,9 @@ function StatusSummery({setPrintTitle, soldierKey}) {
 
         return (
             <>
-                <Popover content={() => {
-                    return (
-                        <Flex>
-                            <Form
-                                layout={"inline"}
-                                size={"small"}
-                                onFinish={(e) => {
-                                    const page = e.page;
-                                    const row = e.row;
-                                    if (page === 1) {
-                                        setAttachmentOrder((prev) => {
-                                            let temp = [...prev];
-                                            let index = temp.findIndex(v => v.table.title === title);
-                                            if (index !== -1) {
-                                                temp.splice(index, 1);
-                                            }
-                                            return temp;
-                                        })
-                                    } else {
-                                        setAttachmentOrder((prev) => {
-                                            let temp = [...prev];
-                                            let index = temp.findIndex(v => v.table.title === title);
-                                            if (index !== -1) {
-                                                temp[index] = {
-                                                    ...temp[index],
-                                                    page: page,
-                                                    row: row
-                                                }
-                                            } else {
-                                                temp.push({
-                                                    table: {
-                                                        title: title,
-                                                        ref: ref,
-                                                        dataSource: dataSource,
-                                                        columns: columns,
-                                                        rowClassName: rowClassName,
-                                                        extraColumns: extraColumns
-                                                    },
-                                                    page: page,
-                                                    row: row
-                                                })
-                                            }
-                                            return temp;
-                                        })
-                                    }
-                                }}
-                            >
-                                <Form.Item
-                                    label="شماره صفحه"
-                                    name="page"
-                                    rules={[
-                                        {
-                                            required: true,
-                                        },
-                                    ]}
-                                    initialValue={1}
-                                >
-                                    <InputNumber/>
-                                </Form.Item>
-                                <Form.Item
-                                    label="شماره سطر"
-                                    name="row"
-                                    rules={[
-                                        {
-                                            required: true,
-                                        },
-                                    ]}
-                                    initialValue={1}
-                                >
-                                    <InputNumber/>
-                                </Form.Item>
-                                <Form.Item>
-                                    <Button type="primary" htmlType="submit">
-                                        انتقال
-                                    </Button>
-                                </Form.Item>
-                            </Form>
-                        </Flex>
-                    );
-                }}>
-                    <Divider
-                        className="print-divider-size">{title}
-                    </Divider>
-                </Popover>
+                <Divider
+                    className="print-divider-size">{title}
+                </Divider>
                 <Flex vertical={true} align={"center"} gap={"small"} style={{width: "100%"}}>
                     <Table
                         ref={ref}
@@ -1146,31 +1089,36 @@ function StatusSummery({setPrintTitle, soldierKey}) {
 
     function Pages() {
         let pages = new Set();
-        attachmentOrder.forEach((v) => {
-            pages.add(v.page);
+        tables.forEach((v) => {
+            if (v.page > 0)
+            pages.add(v);
         })
 
         let arrPages = Array.from(pages).sort();
+        let res = [];
 
-        let temp = [];
-
-        arrPages.forEach(page => {
-            let pageElements = [];
-            attachmentOrder.forEach(v => {
-                if (v.page === page) {
-                    pageElements.push(v)
+        let i = 1;
+        while (true) {
+            let temp = [];
+            arrPages.forEach((elem)=>{
+                if (elem.page === i) {
+                    temp.push(elem)
                 }
-            })
-            pageElements.sort((a, b) => a.row - b.row);
-            temp.push(pageElements);
-        })
+            });
+            i++;
+            if (temp.length === 0) {
+                break;
+            } else {
+                res.push(temp);
+            }
+        }
 
-        let lastPageNumber = arrPages.at(-1);
+        let lastPageNumber = res.length;
 
         return (
             <>
                 {
-                    temp.map(v => {
+                    res.map(v => {
                         return (
                             <Flex vertical={true} align={"center"}
                                   style={{
@@ -1182,19 +1130,18 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                             >
                                 {
                                     v.map(pageElements =>
-                                        <TablePart width={"90%"} title={pageElements.table.title}
-                                                   extraColumns={pageElements.table.extraColumns}
-                                                   ref={pageElements.table.ref}
-                                                   dataSource={pageElements.table.dataSource}
-                                                   columns={pageElements.table.columns}
-                                                   rowClassName={pageElements.table.rowClassName}/>
+                                        <TablePart width={"90%"} title={pageElements.title}
+                                                   extraColumns={pageElements.extraColumns}
+                                                   dataSource={pageElements.dataSource}
+                                                   columns={pageElements.columns}
+                                                   rowClassName={pageElements.rowClassName}/>
                                     )
                                 }
                                 {
                                     v[0].page === lastPageNumber
                                         ?
                                         <Flex justify={"flex-end"} align={"end"}
-                                              style={{width: "90%", height: "100%", marginBottom: "30px"}}>
+                                              style={{width: "90%", marginTop: "20px"}}>
                                             <Sign.Single
                                                 defaultSign={"رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا"}/>
                                         </Flex>
@@ -1210,7 +1157,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
     }
 
     return (
-        <div>
+        <div className={"highlighter"}>
             <ConfigProvider
                 theme={{
                     components: {
@@ -1325,6 +1272,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                                             tables.map(({
                                                             title,
                                                             ref,
+                                                            page,
                                                             dataSource,
                                                             columns,
                                                             rowClassName,
@@ -1333,7 +1281,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                                                 return (
                                                     <>
                                                         {
-                                                            attachmentOrder.findIndex(v => v.table.title === title) !== -1
+                                                            page > 0
                                                                 ?
                                                                 null
                                                                 :
@@ -1349,24 +1297,15 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                                         }
                                     </Flex>
                                     {
-                                        attachmentOrder.length > 0
+                                        lastPageIndex > 0
                                             ?
                                             null
                                             :
-                                            <div
-                                                style={{
-                                                    position: "absolute",
-                                                    left: 0,
-                                                    right: 0,
-                                                    bottom: 0,
-                                                }}
-                                            >
-                                                <Flex justify={"flex-end"} align={"end"}
-                                                      style={{height: "100%", marginBottom: "20px", zIndex: 22}}>
-                                                    <Sign.Single
-                                                        defaultSign={"رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا"}/>
-                                                </Flex>
-                                            </div>
+                                            <Flex justify={"flex-end"} align={"end"}
+                                                  style={{ marginTop: "20px", zIndex: 22}}>
+                                                <Sign.Single
+                                                    defaultSign={"رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا"}/>
+                                            </Flex>
                                     }
                                 </div>
 
