@@ -313,7 +313,7 @@ function EmploymentCertificate({setPrintTitle, soldierKey}) {
                                             </Typography.Text>
                                         </Flex>
                                     </ConfigProvider>
-                                    <Flex justify={"flex-end"} align={"center"}
+                                    <Flex justify={"flex-end"} align={"start"}
                                           style={{width: "90%", height: "100%", marginTop: "60px"}}>
                                         <Sign.Single
                                             defaultSign={"مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا"}

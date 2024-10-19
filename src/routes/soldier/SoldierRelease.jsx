@@ -129,7 +129,7 @@ function SoldierRelease({oid}) {
                 form.setFieldValue("release_reason", "6 ماه معاف موقت");
                 break;
             case "فوت":
-                form.setFieldValue("release_reason", "درگذشت");
+                form.setFieldValue("release_reason", "فوت");
                 break;
             case "پایان خدمت":
                 let text = [];

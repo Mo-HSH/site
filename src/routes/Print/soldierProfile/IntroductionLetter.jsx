@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
-import {Button, Col, ConfigProvider, Flex, notification, Row, Table, Typography} from "antd";
+import {Button, Col, ConfigProvider, Flex, notification, Row, Space, Table, Typography} from "antd";
 import {useReactToPrint} from "react-to-print";
 import Sign from "../../../components/printElement/Sign.jsx";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
@@ -99,7 +99,7 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
     });
 
     return (
-        <div>
+        <div className={"highlighter"}>
             <ConfigProvider
 
             >
@@ -133,13 +133,15 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                                     <Row style={{width: "90%", marginTop: "20px"}}>
                                         <Col flex={3}>
                                             <Flex style={{width: "100%", height: "100%"}} vertical={true}
-                                                  align={"start"}
-                                                  justify={"center"}>
-                                                <Typography.Text>از: مدیریت نیروی انسانی فرماندهی پشتیبانی مرکز
-                                                    نپاجا(وظیفه
-                                                    ها)</Typography.Text>
-                                                <Typography.Text>به: فرماندهی محترم گروه خدمات پاسداری پشتیبانی مرکز
-                                                    نپاجا</Typography.Text>
+                                                  align={"start"} justify={"space-between"}
+                                            >
+                                                <Typography.Text>
+                                                    از: مدیریت نیروی انسانی فرماندهی پشتیبانی مرکز نپاجا(وظیفه ها)
+                                                </Typography.Text>
+                                                <Space/>
+                                                <Typography.Text>
+                                                    به: فرماندهی محترم گروه خدمات پاسداری پشتیبانی مرکز نپاجا
+                                                </Typography.Text>
                                             </Flex>
                                         </Col>
                                         <Col flex={1}>

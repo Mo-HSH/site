@@ -435,7 +435,7 @@ function Admission({setPrintTitle, soldierKey}) {
     ];
 
     return (
-        <div>
+        <div className={"highlighter"}>
             <ConfigProvider
                 theme={{
                     components: {
@@ -472,6 +472,11 @@ function Admission({setPrintTitle, soldierKey}) {
                             }
                         `}
                     </style>
+                    <style>
+                        {`
+                            
+                        `}
+                    </style>
                     <Flex vertical={true} align={"center"}
                           style={{
                               border: "solid gray 2px",
@@ -484,7 +489,9 @@ function Admission({setPrintTitle, soldierKey}) {
                             <Typography.Title level={5} style={{marginTop: "5px"}}>برگه پذیرش کارکنان وظیفه جدیدالورود
                                 فرماندهی پشتیبانی مرکز نپاجا</Typography.Title>
                         </Flex>
-                        <Divider dashed orientation={"left"}>فرم اطلاعات فردی و مهارت آموزی</Divider>
+                        <Flex justify={"start"} style={{width: "90%", margin: "20px 0px"}}>
+                            <Typography.Text strong={true}>1-فرم اطلاعات فردی و مهارت آموزی:</Typography.Text>
+                        </Flex>
                         <Flex vertical={true} style={{width: "100%"}} align={"center"} gap={"middle"}>
                             {
                                 [
@@ -549,7 +556,9 @@ function Admission({setPrintTitle, soldierKey}) {
                           }}
                           className={"break-after A4-portrait"}
                     >
-                        <Divider dashed orientation={"left"}>مشخصات بستگان و عائله تحت تکفل</Divider>
+                        <Flex justify={"start"} style={{width: "90%", margin: "20px 0px"}}>
+                            <Typography.Text strong={true}>2-مشخصات بستگان و عائله تحت تکفل:</Typography.Text>
+                        </Flex>
                         <Table
                             size={"small"}
                             pagination={false}
@@ -585,7 +594,9 @@ function Admission({setPrintTitle, soldierKey}) {
                                 <Typography.Text>امضا و اثر انگشت</Typography.Text>
                             </Flex>
 
-                            <Divider dashed orientation={"left"}>اطلاعات گذرنامه</Divider>
+                            <Flex justify={"start"} style={{width: "90%", margin: "20px 0px"}}>
+                                <Typography.Text strong={true}>3-اطلاعات گذرنامه:</Typography.Text>
+                            </Flex>
                             <Flex vertical={true} align={"start"} style={{width: "90%"}}>
                                 <Flex>
                                     <Typography.Text style={{marginBottom: "8px"}}>
@@ -651,7 +662,9 @@ function Admission({setPrintTitle, soldierKey}) {
                                 </Flex>
                             </Flex>
 
-                            <Divider dashed orientation={"left"}>مصاحبه</Divider>
+                            <Flex justify={"start"} style={{width: "90%", marginBottom: "20px"}}>
+                                <Typography.Text strong={true}>4-مصاحبه:</Typography.Text>
+                            </Flex>
                             <Flex vertical={true} align={"center"} gap={10} style={{width: "100%"}}>
                                 <Row gutter={10} style={{width: "90%"}}>
                                     {
@@ -661,7 +674,8 @@ function Admission({setPrintTitle, soldierKey}) {
                                             "نماینده حفاظت اطلاعات ف پش",
                                         ].map(title => (
                                             <Col span={8}>
-                                                <Card title={<Flex justify={"center"}>{title}</Flex>} bordered={true}>
+                                                <Card title={<Flex justify={"center"}>{title}</Flex>} bordered={true}
+                                                      style={{borderColor: "black"}}>
                                                     <div style={{height: "60px"}}></div>
                                                 </Card>
                                             </Col>
@@ -676,7 +690,8 @@ function Admission({setPrintTitle, soldierKey}) {
                                             "نماینده بهداشت و درمان",
                                         ].map(title => (
                                             <Col span={8}>
-                                                <Card title={<Flex justify={"center"}>{title}</Flex>} bordered={true}>
+                                                <Card title={<Flex justify={"center"}>{title}</Flex>} bordered={true}
+                                                      style={{borderColor: "black"}}>
                                                     <div style={{height: "60px"}}></div>
                                                 </Card>
                                             </Col>
@@ -697,7 +712,9 @@ function Admission({setPrintTitle, soldierKey}) {
                           className={"break-after A4-portrait"}
                           gap={"small"}
                     >
-                        <Divider dashed orientation={"left"}>فرم ذی نفعان بیمه عمر</Divider>
+                        <Flex justify={"start"} style={{width: "90%", margin: "20px 0px"}}>
+                            <Typography.Text strong={true}>5-فرم تایین ذی نفعان بیمه عمر:</Typography.Text>
+                        </Flex>
                         <Flex style={{width: "100%"}}>
                             <svg width="100%" height="auto" viewBox="0 0 800 600">
                                 <image href={bimehOmr} x="0" y="0" width="800" height="600"/>
@@ -731,7 +748,9 @@ function Admission({setPrintTitle, soldierKey}) {
                                 ))}
                             </svg>
                         </Flex>
-                        <Divider dashed orientation={"left"}>تعیین وضعیت سلامت روان</Divider>
+                        <Flex justify={"start"} style={{width: "90%", margin: "20px 0px"}}>
+                            <Typography.Text strong={true}>6-تعیین وضعیت سلامت روان:</Typography.Text>
+                        </Flex>
                         <Flex style={{marginTop: "10px"}} vertical={true} align={"center"}>
                             <Image preview={false} src={padafandLogo} width={50}/>
                             <Typography.Text style={{marginTop: "5px", fontSize: "10px"}}>

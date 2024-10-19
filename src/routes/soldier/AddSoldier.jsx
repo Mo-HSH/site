@@ -626,7 +626,7 @@ function AddSoldier() {
                     </Col>
                     <Col flex={1}>
                         <Form.Item
-                            label={"غیبت اولیه"}
+                            label={"تاخیر در معرفی"}
                             name={"initial_absence"}
                             rules={[{
                                 required: true,

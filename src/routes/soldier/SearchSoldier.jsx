@@ -300,7 +300,7 @@ function SearchSoldier() {
                                         <Button type={"primary"} block={true}
                                                 onClick={() => openPrintModal(<IntroductionLetter
                                                     setPrintTitle={setPrintTitle} soldierKey={key}/>)}
-                                        >معرفی نامه</Button>
+                                        >نامه معرفی به یگان</Button>
                                         <Button type={"primary"} block={true}
                                                 onClick={() => openPrintModal(<Admission setPrintTitle={setPrintTitle}
                                                                                          soldierKey={key}/>)}

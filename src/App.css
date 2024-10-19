@@ -132,12 +132,20 @@ aside {
   height: 794px;
 }
 
+.highlighter * {
+  border-color: black !important;
+}
+
 @media print {
+  * {
+    border-color: black !important;
+  }
+
   .break-after {
-    width: 99vw;
-    height: 99vh;
-    page-break-before: always;
-    page-break-after: always;
+    width: 100vw;
+    height: 100vh;
+    /*page-break-before: always;*/
+    /*page-break-after: always;*/
   }
 
   .A4-portrait .ant-divider-vertical {
@@ -145,12 +153,12 @@ aside {
   }
 
   .A5-landscape {
-    width: 99vw;
-    height: 99vh;
+    width: 100vw;
+    height: 100vh;
   }
 
   .A5-portrait {
-    width: 99vw;
-    height: 99vh;
+    width: 100vw;
+    height: 100vh;
   }
 }
