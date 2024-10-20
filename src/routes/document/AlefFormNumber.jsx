@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
-import {Button, Checkbox, Flex, Form, Input, notification, Table, Typography} from "antd";
+import {Button, Checkbox, Flex, Form, Input, Modal, notification, Popover, Table, Typography} from "antd";
 import {DateRenderer} from "../../utils/TableRenderer.jsx";
 import {dateValidator} from "../../utils/Validates.js";
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
+import AlefForm from "../Print/release/AlefForm.jsx";
 
 function AlefFormNumber() {
 
@@ -11,6 +12,10 @@ function AlefFormNumber() {
     const [today, setToday] = useState("");
     const [lastAlef, setLastAlef] = useState("");
     const [reFetch, setReFetch] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [printTitle, setPrintTitle] = useState("");
+    const [printTarget, setPrintTarget] = useState(<div>printable</div>);
+    const [targetAlefForm, setTargetAlefForm] = useState("");
 
     const [api, contextHolder] = notification.useNotification();
     const [form] = Form.useForm();
@@ -18,6 +23,11 @@ function AlefFormNumber() {
     useEffect(() => {
         form.setFieldValue("alef_create_date", today);
     }, [today]);
+
+    function openPrintModal(page) {
+        setPrintTarget(page);
+        setIsModalOpen(true);
+    }
 
     useEffect(() => {
         axios.get(getApiUrl("config/alef"), {withCredentials: true}).then((res) => {
@@ -137,7 +147,32 @@ function AlefFormNumber() {
                     <Form.Item>
                         <Button block={true} type={"primary"} htmlType="submit">ثبت</Button>
                     </Form.Item>
+
+                    <Form.Item>
+                        <Popover trigger="click" content={
+                            <Flex vertical={true} align={"center"} gap={"middle"}>
+                                <Input value={targetAlefForm} onChange={(e)=>setTargetAlefForm(e.target.value)} placeHolder={"َشماره فرم الف"}/>
+                                <Flex gap={"small"}>
+                                    <Button type={"primary"} onClick={()=>openPrintModal(<AlefForm refresher={targetAlefForm} alefFormNumber={targetAlefForm} setPrintTitle={setPrintTitle}/>)}>فرم الف</Button>
+                                    <Button type={"primary"}>نامه فرم الف</Button>
+                                </Flex>
+                            </Flex>
+                        }>
+                            <Button block={true}>پرینت</Button>
+                        </Popover>
+                    </Form.Item>
                 </Form>
+
+                <Modal
+                    open={isModalOpen}
+                    onCancel={() => setIsModalOpen(false)}
+                    footer={null}
+                    title={printTitle}
+                    width={"80%"}
+                    centered={true}
+                >
+                    {printTarget}
+                </Modal>
 
                 <Flex justify={"end"} align={"center"} style={{width: "20%"}}>
                     <Typography.Text>
