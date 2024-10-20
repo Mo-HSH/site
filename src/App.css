@@ -101,8 +101,13 @@ aside {
 }
 
 .gray-background {
-  background-color: #ececec;
+  background-color: #dcdcdc;
   direction: ltr;
+  border: none !important;
+}
+
+.gray-background td:last-child {
+  border-left: 1px solid black;
 }
 
 .print-title-size {

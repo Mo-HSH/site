@@ -88,6 +88,8 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                     "phone": 1,
                     "unit": 1,
                     "is_native": 1,
+                    "mental_health": 1,
+                    "duty_group": 1
                 }
         }, {withCredentials: true})
             .then((response) => {
@@ -177,7 +179,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
     }
 
     return (
-        <div>
+        <div className={"highlighter"}>
             <ConfigProvider
                 theme={{
                     components: {
@@ -996,6 +998,12 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                     3: soldier["release"]["extra_annual_leave"] + soldier["release"]["extra_medical_leave"],
                                                     4: soldier["release"]["extra_annual_leave"] + soldier["release"]["extra_medical_leave"] + soldier["release"]["additional_service_punish_day"] + soldier["release"]["absence_discharge"] + soldier["release"]["additional_service_day"],
                                                 },
+                                                {
+                                                    0: "گروه سلامت",
+                                                    1: soldier["mental_health"],
+                                                    2: "گروه خدمتی",
+                                                    3: soldier["duty_group"] ? "رزمی" : "غیر رزمی",
+                                                }
                                             ]}
                                         />
                                     </Flex>
