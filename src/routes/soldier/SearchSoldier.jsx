@@ -16,7 +16,7 @@ import {
     Tooltip,
     Typography
 } from "antd";
-import {justStringValidator, nationalCodeValidator} from "../../utils/Validates.js";
+import {justNumericValidator, justStringValidator, nationalCodeValidator} from "../../utils/Validates.js";
 import {getStatusColor} from "../../utils/Color.js";
 import {useState} from "react";
 import {DateRenderer, DutyGroupRenderer, ExtraInfoRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
@@ -486,7 +486,7 @@ function SearchSoldier() {
                         name={"national_code"}
                         rules={[{
                             required: false,
-                            validator: nationalCodeValidator
+                            validator: justNumericValidator
                         }]}
                     >
                         <Input/>

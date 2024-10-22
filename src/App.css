@@ -123,6 +123,11 @@ aside {
   height: 1150px;
 }
 
+.A4-landscape {
+  width: 1150px;
+  height: 794px;
+}
+
 .A4-portrait .ant-divider-vertical {
   height: 1060px;
 }
@@ -141,9 +146,17 @@ aside {
   border-color: black !important;
 }
 
+.no-border {
+  border: none !important;
+}
+
 @media print {
   * {
     border-color: black !important;
+  }
+
+  .no-border {
+    border: none !important;
   }
 
   .break-after {
@@ -154,6 +167,10 @@ aside {
   }
 
   .A4-portrait .ant-divider-vertical {
+    height: 90vh;
+  }
+
+  .A4-landscape {
     height: 90vh;
   }
 

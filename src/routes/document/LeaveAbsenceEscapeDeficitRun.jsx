@@ -242,16 +242,16 @@ function LeaveAbsenceEscapeDeficitRun() {
             inputType: "number",
         },
         {
-            title: "تعطیلات",
-            dataIndex: "vacation",
-            key: "vacation",
+            title: "تشویقی",
+            dataIndex: "bonus",
+            key: "bonus",
             align: "center",
             inputType: "number"
         },
         {
-            title: "استعلاجی",
-            dataIndex: "medical",
-            key: "medical",
+            title: "تعطیلات",
+            dataIndex: "vacation",
+            key: "vacation",
             align: "center",
             inputType: "number"
         },
@@ -263,9 +263,9 @@ function LeaveAbsenceEscapeDeficitRun() {
             inputType: "number"
         },
         {
-            title: "تشویقی",
-            dataIndex: "bonus",
-            key: "bonus",
+            title: "استعلاجی",
+            dataIndex: "medical",
+            key: "medical",
             align: "center",
             inputType: "number"
         }
@@ -554,7 +554,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     }
 
     function onCreateAbsence(value) {
-        onCreate(value, "absence");
+        onCreate({...value, "ignored_date": null}, "absence");
     }
 
     function onCreateArrest(value) {
@@ -980,8 +980,8 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                     </Form.Item>
 
                                                     <Form.Item
-                                                        label={"تعطیلات"}
-                                                        name={"vacation"}
+                                                        label={"تشویقی"}
+                                                        name={"bonus"}
                                                         rules={[{
                                                             required: true,
                                                         }]}
@@ -991,8 +991,8 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                     </Form.Item>
 
                                                     <Form.Item
-                                                        label={"استعلاجی"}
-                                                        name={"medical"}
+                                                        label={"تعطیلات"}
+                                                        name={"vacation"}
                                                         rules={[{
                                                             required: true,
                                                         }]}
@@ -1013,8 +1013,8 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                     </Form.Item>
 
                                                     <Form.Item
-                                                        label={"تشویقی"}
-                                                        name={"bonus"}
+                                                        label={"استعلاجی"}
+                                                        name={"medical"}
                                                         rules={[{
                                                             required: true,
                                                         }]}

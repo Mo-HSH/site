@@ -395,7 +395,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                             data: soldier["release"]["duty_duration"]
                                                         },
                                                         {label: "شماره پرسنلی", data: soldier["personnel_code"]},
-                                                        {label: "کسری", data: soldier["deployment_location"]},
+                                                        {label: "کسری", data: soldier["release"]["release_reason"]},
                                                         {label: "شماره تماس", data: ""},
                                                         {label: "یگان", data: soldier["unit"]},
                                                         {label: "کد تخصص", data: ""},

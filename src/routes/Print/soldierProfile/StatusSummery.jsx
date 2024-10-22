@@ -546,25 +546,12 @@ function StatusSummery({setPrintTitle, soldierKey}) {
             onCell: (record) => {
                 if (record.text) {
                     return {
-                        colSpan: 3,
+                        colSpan: 2,
                     };
                 } else {
                     return {};
                 }
             }
-        },
-        {
-            title: "تاریخ ثبت",
-            dataIndex: "created_date",
-            align: "center",
-            render: (v) => {
-                if (v === undefined || v === null || v === "") {
-                    return "-";
-                } else {
-                    return DateRenderer(v);
-                }
-            },
-            onCell: lastCellMerge
         },
         {
             title: "تاریخ شروع",
@@ -614,25 +601,12 @@ function StatusSummery({setPrintTitle, soldierKey}) {
             onCell: (record) => {
                 if (record.text) {
                     return {
-                        colSpan: 4,
+                        colSpan: 3,
                     };
                 } else {
                     return {};
                 }
             }
-        },
-        {
-            title: "تاریخ ثبت",
-            dataIndex: "created_date",
-            align: "center",
-            render: (v) => {
-                if (v === undefined || v === null || v === "") {
-                    return "-";
-                } else {
-                    return DateRenderer(v);
-                }
-            },
-            onCell: lastCellMerge
         },
         {
             title: "تاریخ شروع",
@@ -681,25 +655,12 @@ function StatusSummery({setPrintTitle, soldierKey}) {
             onCell: (_, index) => {
                 if (index === soldier["arrest"].length) {
                     return {
-                        colSpan: 4,
+                        colSpan: 3,
                     };
                 } else {
                     return {};
                 }
             }
-        },
-        {
-            title: "تاریخ ثبت",
-            dataIndex: "created_date",
-            align: "center",
-            render: (v) => {
-                if (v === undefined || v === null || v === "") {
-                    return "-";
-                } else {
-                    return DateRenderer(v);
-                }
-            },
-            onCell: lastCellMerge,
         },
         {
             title: "تاریخ شروع",
@@ -735,25 +696,12 @@ function StatusSummery({setPrintTitle, soldierKey}) {
             onCell: (_, index) => {
                 if (index === soldier["mission"].length) {
                     return {
-                        colSpan: 4,
+                        colSpan: 3,
                     };
                 } else {
                     return {};
                 }
             }
-        },
-        {
-            title: "تاریخ ثبت",
-            dataIndex: "created_date",
-            align: "center",
-            render: (v) => {
-                if (v === undefined || v === null || v === "") {
-                    return "-";
-                } else {
-                    return DateRenderer(v);
-                }
-            },
-            onCell: lastCellMerge,
         },
         {
             title: "تاریخ شروع",
@@ -789,25 +737,12 @@ function StatusSummery({setPrintTitle, soldierKey}) {
             onCell: (_, index) => {
                 if (index === soldier["deficit"].length) {
                     return {
-                        colSpan: 3,
+                        colSpan: 2,
                     };
                 } else {
                     return {};
                 }
             }
-        },
-        {
-            title: "تاریخ ثبت",
-            dataIndex: "create_date",
-            align: "center",
-            render: (v) => {
-                if (v === undefined || v === null || v === "") {
-                    return "-";
-                } else {
-                    return DateRenderer(v);
-                }
-            },
-            onCell: lastCellMerge
         },
         {
             title: "نوع کسری",

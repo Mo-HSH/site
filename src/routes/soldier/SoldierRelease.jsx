@@ -332,7 +332,7 @@ function SoldierRelease({oid}) {
     }
 
     function alefForSingleSoldier(key, alefFormNumber) {
-        axios.post(getApiUrl(`document/release/single_alef/${targetKey}/${alefFormNumber}`))
+        axios.post(getApiUrl(`document/release/single_alef/${targetKey}/${alefFormNumber}`), {}, {withCredentials: true})
             .then(() => {
                 api["success"]({
                     message: "عملیات موفق!", description: "درخواست با موفقیت انجام شد!"
@@ -341,8 +341,9 @@ function SoldierRelease({oid}) {
                     return !prev;
                 })
             }).catch((err) => {
+                console.error(err);
             api["error"]({
-                message: "خطا", description: err
+                message: "خطا", description: "تغییر فرم الف با خطا مواجه شد!"
             });
         });
     }
@@ -689,16 +690,27 @@ function SoldierRelease({oid}) {
                                             },
                                             {
                                                 label: "شماره فرم الف",
+                                                deletable: true,
                                                 data: soldier["release_progress"]["alef_form_number"],
                                                 key: "alef_form_number"
                                             },
-                                        ].map(({label, data, is_date, editable, key}) => {
+                                        ].map(({label, data, is_date, editable, key, deletable}) => {
                                             return (<>
                                                 <Flex style={{width: "70%"}} gap={"small"}>
                                                     <Flex justify={"start"} style={{width: "100%"}}>
                                                         <Typography.Text>{label}</Typography.Text>
                                                     </Flex>
                                                     <Flex justify={"end"} style={{width: "100%"}}>
+                                                        {
+                                                            deletable
+                                                            ?
+                                                                <Flex>
+                                                                    <Button type={"text"} icon={<DeleteOutlined/>}
+                                                                            onClick={() => editProgress(key, "")}/>
+                                                                </Flex>
+                                                                :
+                                                                null
+                                                        }
                                                         {
                                                             editable
                                                                 ?
