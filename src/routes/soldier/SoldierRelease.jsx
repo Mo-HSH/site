@@ -341,7 +341,7 @@ function SoldierRelease({oid}) {
                     return !prev;
                 })
             }).catch((err) => {
-                console.error(err);
+            console.error(err);
             api["error"]({
                 message: "خطا", description: "تغییر فرم الف با خطا مواجه شد!"
             });
@@ -703,7 +703,7 @@ function SoldierRelease({oid}) {
                                                     <Flex justify={"end"} style={{width: "100%"}}>
                                                         {
                                                             deletable
-                                                            ?
+                                                                ?
                                                                 <Flex>
                                                                     <Button type={"text"} icon={<DeleteOutlined/>}
                                                                             onClick={() => editProgress(key, "")}/>
@@ -762,7 +762,279 @@ function SoldierRelease({oid}) {
                                     }
                                 </>
                                 :
-                                null
+                                soldier["release"]["release_type"] === "انتقالی"
+                                    ?
+                                    <>
+                                        {
+                                            [
+                                                {
+                                                    label: "تاریخ صدور تسویه",
+                                                    is_date: true,
+                                                    data: soldier["release"]["create_date"]
+                                                },
+                                                {
+                                                    label: "تاریخ تحویل نامه انتقالی",
+                                                    is_date: true,
+                                                    editable: true,
+                                                    data: soldier["release_progress"]["received_move_letter_date"],
+                                                    key: "received_move_letter_date"
+                                                },
+                                                {
+                                                    label: "تاریخ ارسال پرونده",
+                                                    is_date: true,
+                                                    editable: true,
+                                                    data: soldier["release_progress"]["send_file_date"],
+                                                    key: "send_file_date"
+                                                },
+                                            ].map(({label, data, is_date, editable, key, deletable}) => {
+                                                return (<>
+                                                    <Flex style={{width: "70%"}} gap={"small"}>
+                                                        <Flex justify={"start"} style={{width: "100%"}}>
+                                                            <Typography.Text>{label}</Typography.Text>
+                                                        </Flex>
+                                                        <Flex justify={"end"} style={{width: "100%"}}>
+                                                            {
+                                                                deletable
+                                                                    ?
+                                                                    <Flex>
+                                                                        <Button type={"text"} icon={<DeleteOutlined/>}
+                                                                                onClick={() => editProgress(key, "")}/>
+                                                                    </Flex>
+                                                                    :
+                                                                    null
+                                                            }
+                                                            {
+                                                                editable
+                                                                    ?
+                                                                    <Flex>
+                                                                        <Popover
+                                                                            trigger={"click"}
+                                                                            content={
+                                                                                <Form
+                                                                                    onFinish={(v) => {
+                                                                                        editProgress(key, v.date)
+                                                                                    }}
+                                                                                >
+                                                                                    <Form.Item
+                                                                                        name={"date"}
+                                                                                        label={"تاریخ"}
+                                                                                        rules={[{
+                                                                                            validator: dateValidator,
+                                                                                            required: true,
+                                                                                        }]}
+                                                                                    >
+                                                                                        <Input/>
+                                                                                    </Form.Item>
+                                                                                    <Form.Item>
+                                                                                        <Button block={true}
+                                                                                                type={"primary"}
+                                                                                                htmlType="submit">ثبت</Button>
+                                                                                    </Form.Item>
+                                                                                </Form>
+                                                                            }
+                                                                        >
+                                                                            <Button type={"text"}
+                                                                                    icon={<EditOutlined/>}/>
+                                                                        </Popover>
+                                                                        <Button type={"text"} icon={<DeleteOutlined/>}
+                                                                                onClick={() => editProgress(key, "")}/>
+                                                                        <Tooltip title={"تبدیل به تاریخ امروز"}>
+                                                                            <Button type={"text"}
+                                                                                    icon={<ReloadOutlined/>}
+                                                                                    onClick={() => editProgress(key, today)}/>
+                                                                        </Tooltip>
+                                                                    </Flex>
+                                                                    :
+                                                                    null
+                                                            }
+                                                            <Typography.Text>{is_date ? DateRenderer(data) : data}</Typography.Text>
+                                                        </Flex>
+                                                    </Flex>
+                                                    <Divider/>
+                                                </>);
+                                            })
+                                        }
+                                    </>
+                                    :
+                                     ["ایست خدمت", "معافیت", "معافیت موقت"].find(v=>v===soldier["release"]["release_type"])
+                                        ?
+                                        <>
+                                            {
+                                                [
+                                                    {
+                                                        label: "تاریخ صدور تسویه",
+                                                        is_date: true,
+                                                        data: soldier["release"]["create_date"]
+                                                    },
+                                                    {
+                                                        label: "تاریخ تحویل نامه معافیت/ایست خدمت",
+                                                        is_date: true,
+                                                        editable: true,
+                                                        data: soldier["release_progress"]["stop_exempt_letter_date"],
+                                                        key: "stop_exempt_letter_date"
+                                                    }
+                                                ].map(({label, data, is_date, editable, key, deletable}) => {
+                                                    return (<>
+                                                        <Flex style={{width: "70%"}} gap={"small"}>
+                                                            <Flex justify={"start"} style={{width: "100%"}}>
+                                                                <Typography.Text>{label}</Typography.Text>
+                                                            </Flex>
+                                                            <Flex justify={"end"} style={{width: "100%"}}>
+                                                                {
+                                                                    deletable
+                                                                        ?
+                                                                        <Flex>
+                                                                            <Button type={"text"}
+                                                                                    icon={<DeleteOutlined/>}
+                                                                                    onClick={() => editProgress(key, "")}/>
+                                                                        </Flex>
+                                                                        :
+                                                                        null
+                                                                }
+                                                                {
+                                                                    editable
+                                                                        ?
+                                                                        <Flex>
+                                                                            <Popover
+                                                                                trigger={"click"}
+                                                                                content={
+                                                                                    <Form
+                                                                                        onFinish={(v) => {
+                                                                                            editProgress(key, v.date)
+                                                                                        }}
+                                                                                    >
+                                                                                        <Form.Item
+                                                                                            name={"date"}
+                                                                                            label={"تاریخ"}
+                                                                                            rules={[{
+                                                                                                validator: dateValidator,
+                                                                                                required: true,
+                                                                                            }]}
+                                                                                        >
+                                                                                            <Input/>
+                                                                                        </Form.Item>
+                                                                                        <Form.Item>
+                                                                                            <Button block={true}
+                                                                                                    type={"primary"}
+                                                                                                    htmlType="submit">ثبت</Button>
+                                                                                        </Form.Item>
+                                                                                    </Form>
+                                                                                }
+                                                                            >
+                                                                                <Button type={"text"}
+                                                                                        icon={<EditOutlined/>}/>
+                                                                            </Popover>
+                                                                            <Button type={"text"}
+                                                                                    icon={<DeleteOutlined/>}
+                                                                                    onClick={() => editProgress(key, "")}/>
+                                                                            <Tooltip title={"تبدیل به تاریخ امروز"}>
+                                                                                <Button type={"text"}
+                                                                                        icon={<ReloadOutlined/>}
+                                                                                        onClick={() => editProgress(key, today)}/>
+                                                                            </Tooltip>
+                                                                        </Flex>
+                                                                        :
+                                                                        null
+                                                                }
+                                                                <Typography.Text>{is_date ? DateRenderer(data) : data}</Typography.Text>
+                                                            </Flex>
+                                                        </Flex>
+                                                        <Divider/>
+                                                    </>);
+                                                })
+                                            }
+                                        </>
+                                        :
+                                        soldier["release"]["release_type"] === "فوت"
+                                            ?
+                                            <>
+                                                {
+                                                    [
+                                                        {
+                                                            label: "تاریخ صدور تسویه",
+                                                            is_date: true,
+                                                            data: soldier["release"]["create_date"]
+                                                        },
+                                                        {
+                                                            label: "تاریخ صدور نامه به نیروی انسانی",
+                                                            is_date: true,
+                                                            editable: true,
+                                                            data: soldier["release_progress"]["send_letter_date"],
+                                                            key: "send_letter_date"
+                                                        }
+                                                    ].map(({label, data, is_date, editable, key, deletable}) => {
+                                                        return (<>
+                                                            <Flex style={{width: "70%"}} gap={"small"}>
+                                                                <Flex justify={"start"} style={{width: "100%"}}>
+                                                                    <Typography.Text>{label}</Typography.Text>
+                                                                </Flex>
+                                                                <Flex justify={"end"} style={{width: "100%"}}>
+                                                                    {
+                                                                        deletable
+                                                                            ?
+                                                                            <Flex>
+                                                                                <Button type={"text"}
+                                                                                        icon={<DeleteOutlined/>}
+                                                                                        onClick={() => editProgress(key, "")}/>
+                                                                            </Flex>
+                                                                            :
+                                                                            null
+                                                                    }
+                                                                    {
+                                                                        editable
+                                                                            ?
+                                                                            <Flex>
+                                                                                <Popover
+                                                                                    trigger={"click"}
+                                                                                    content={
+                                                                                        <Form
+                                                                                            onFinish={(v) => {
+                                                                                                editProgress(key, v.date)
+                                                                                            }}
+                                                                                        >
+                                                                                            <Form.Item
+                                                                                                name={"date"}
+                                                                                                label={"تاریخ"}
+                                                                                                rules={[{
+                                                                                                    validator: dateValidator,
+                                                                                                    required: true,
+                                                                                                }]}
+                                                                                            >
+                                                                                                <Input/>
+                                                                                            </Form.Item>
+                                                                                            <Form.Item>
+                                                                                                <Button block={true}
+                                                                                                        type={"primary"}
+                                                                                                        htmlType="submit">ثبت</Button>
+                                                                                            </Form.Item>
+                                                                                        </Form>
+                                                                                    }
+                                                                                >
+                                                                                    <Button type={"text"}
+                                                                                            icon={<EditOutlined/>}/>
+                                                                                </Popover>
+                                                                                <Button type={"text"}
+                                                                                        icon={<DeleteOutlined/>}
+                                                                                        onClick={() => editProgress(key, "")}/>
+                                                                                <Tooltip title={"تبدیل به تاریخ امروز"}>
+                                                                                    <Button type={"text"}
+                                                                                            icon={<ReloadOutlined/>}
+                                                                                            onClick={() => editProgress(key, today)}/>
+                                                                                </Tooltip>
+                                                                            </Flex>
+                                                                            :
+                                                                            null
+                                                                    }
+                                                                    <Typography.Text>{is_date ? DateRenderer(data) : data}</Typography.Text>
+                                                                </Flex>
+                                                            </Flex>
+                                                            <Divider/>
+                                                        </>);
+                                                    })
+                                                }
+                                            </>
+                                            :
+                                            null
                         }
                     </Flex>
                 </Card>
@@ -825,27 +1097,33 @@ function SoldierRelease({oid}) {
 
 
                     </Card>
-                    <Card title={"فرم الف"} style={{width: "100%"}}>
-                        <Form
-                            onFinish={(v) => {
-                                alefForSingleSoldier(targetKey, v["form_number"]);
-                            }}
-                            layout={"inline"}
-                        >
-                            <Form.Item
-                                name={"form_number"}
-                                label={"شماره فرم الف"}
-                                rules={[{
-                                    required: true,
-                                }]}
-                            >
-                                <Input/>
-                            </Form.Item>
-                            <Form.Item>
-                                <Button block={true} type={"primary"} htmlType="submit">ثبت</Button>
-                            </Form.Item>
-                        </Form>
-                    </Card>
+                    {
+                        soldier["release"]["release_type"] === "پایان خدمت"
+                            ?
+                            <Card title={"فرم الف"} style={{width: "100%"}}>
+                                <Form
+                                    onFinish={(v) => {
+                                        alefForSingleSoldier(targetKey, v["form_number"]);
+                                    }}
+                                    layout={"inline"}
+                                >
+                                    <Form.Item
+                                        name={"form_number"}
+                                        label={"شماره فرم الف"}
+                                        rules={[{
+                                            required: true,
+                                        }]}
+                                    >
+                                        <Input/>
+                                    </Form.Item>
+                                    <Form.Item>
+                                        <Button block={true} type={"primary"} htmlType="submit">ثبت</Button>
+                                    </Form.Item>
+                                </Form>
+                            </Card>
+                            :
+                            null
+                    }
                 </Flex>
 
             </Flex>
