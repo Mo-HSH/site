@@ -49,6 +49,7 @@ function SoldierRelease({oid}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reFetch, setReFetch] = useState(false);
     const [printTitle, setPrintTitle] = useState("تیتر پرینت");
+    const [initial, setInitial] = useState(false);
 
     const [form] = Form.useForm();
 
@@ -80,7 +81,9 @@ function SoldierRelease({oid}) {
 
 
     useEffect(() => {
+        let temp = form.getFieldValue("release_date");
         form.resetFields();
+        form.setFieldValue("release_date", temp);
         if (Object.keys(soldier["release"]).length !== 0) {
             for (const soldKey in soldier["release"]) {
                 if (soldKey.includes("date")) {
@@ -92,7 +95,11 @@ function SoldierRelease({oid}) {
         } else {
             form.setFieldValue("create_date", today);
             form.setFieldValue("duty_duration", soldier["duty_duration"]);
-            form.setFieldValue("release_date", DateRenderer(soldier["overall_release_date"]));
+            if (!initial && soldier["overall_release_date"]) {
+                form.setFieldValue("release_date", DateRenderer(soldier["overall_release_date"]));
+                console.log("tetst", soldier["overall_release_date"]);
+                setInitial(true);
+            }
             form.setFieldValue("extra_medical_leave", soldier["extra_medical_leave"]);
             form.setFieldValue("additional_service_punish_day", soldier["additional_service_day"]);
             form.setFieldValue("extra_annual_leave", soldier["extra_annual_leave"]);
@@ -206,26 +213,6 @@ function SoldierRelease({oid}) {
                         ...res[0],
                         "duty_duration": <Spin/>
                     });
-                    GetDutyDuration(targetKey)
-                        .then((res) => {
-                            let temp = "";
-                            temp = `${res.month} ماه و ${res.day} روز`
-                            setSoldier((lastValue) => {
-                                let newFilter = {...lastValue};
-                                newFilter["duty_duration"] = temp;
-                                return newFilter;
-                            });
-                        })
-                        .catch((err) => {
-                            setSoldier((lastValue) => {
-                                let newFilter = {...lastValue};
-                                newFilter["duty_duration"] = "err";
-                                return newFilter;
-                            });
-                            api["error"]({
-                                message: "خطا", description: err
-                            });
-                        })
                 }
             })
             .catch((err) => {
@@ -347,6 +334,28 @@ function SoldierRelease({oid}) {
             });
         });
     }
+
+    useEffect(() => {
+        console.log(releaseDate);
+        GetDutyDuration(targetKey, releaseDate)
+            .then((res) => {
+                let temp = "";
+                temp = `${res.month} ماه و ${res.day} روز`
+                setSoldier((lastValue) => {
+                    let newFilter = {...lastValue};
+                    newFilter["duty_duration"] = temp;
+                    newFilter["duty_duration"] = temp;
+                    return newFilter;
+                });
+            })
+            .catch(() => {
+                setSoldier((lastValue) => {
+                    let newFilter = {...lastValue};
+                    newFilter["duty_duration"] = "err";
+                    return newFilter;
+                });
+            })
+    }, [releaseDate])
 
     return (
         <Flex vertical={true} align={"center"} gap={"middle"}>
@@ -856,7 +865,7 @@ function SoldierRelease({oid}) {
                                         }
                                     </>
                                     :
-                                     ["ایست خدمت", "معافیت", "معافیت موقت"].find(v=>v===soldier["release"]["release_type"])
+                                    ["ایست خدمت", "معافیت", "معافیت موقت"].find(v => v === soldier["release"]["release_type"])
                                         ?
                                         <>
                                             {

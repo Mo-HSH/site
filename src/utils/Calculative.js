@@ -2,8 +2,8 @@ import moment from "jalali-moment";
 import axios from "axios";
 import {getApiUrl} from "./Config.js";
 
-function GetDutyDuration(oid) {
-    return axios.get(getApiUrl(`soldier/get_duty_duration/${oid}`), {withCredentials: true}).then((res) => {
+function GetDutyDuration(oid, jDate) {
+    return axios.post(getApiUrl(`soldier/get_duty_duration/${oid}`), {end_span: jDate? jDate : ""}, {withCredentials: true}).then((res) => {
         return Promise.resolve(res.data);
     }).catch((err)=>{
         console.log(err);

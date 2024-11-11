@@ -50,6 +50,10 @@ function EditCalculative() {
         })
     }, [needFetch]);
 
+    function calculateAllSoldier() {
+        
+    }
+
     return (
         <Flex vertical={true} gap={"small"}>
             {contextHolder}
@@ -107,6 +111,9 @@ function EditCalculative() {
                             <Button type="primary" htmlType="submit">ثبت</Button>
                         </Form.Item>
                     </Form>
+
+                    <Divider>محاسبه مجدد خدمت</Divider>
+                    <Button type={"primary"} onClick={()=>calculateAllSoldier()}>محاسبه مجدد برای کل سربازان</Button>
                 </>
             }
         </Flex>
