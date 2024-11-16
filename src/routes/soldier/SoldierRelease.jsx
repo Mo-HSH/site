@@ -455,7 +455,7 @@ function SoldierRelease({oid}) {
                                             validator: dateValidator, required: true,
                                         }]}
                                     >
-                                        <Input/>
+                                        <Input />
                                     </Form.Item>
                                     {
                                         releaseType === "انتقالی"

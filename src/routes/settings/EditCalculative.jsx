@@ -1,4 +1,4 @@
-import {Divider, Flex, Form, Button, InputNumber, notification, Spin} from "antd";
+import {Divider, Flex, Form, Button, InputNumber, notification, Spin, Progress} from "antd";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
@@ -9,6 +9,8 @@ function EditCalculative() {
     const [isDurationDataError, setDurationDataError] = useState(false);
     const [dutyDurationData, setDutyDurationData] = useState([]);
     const [needFetch, setNeedFetch] = useState(false);
+    const [onCalculate, setOnCalculate] = useState(false);
+    const [calculatePercent, setCalculatePercent] = useState(false);
 
 
     function fetch() {
@@ -50,8 +52,41 @@ function EditCalculative() {
         })
     }, [needFetch]);
 
-    function calculateAllSoldier() {
-        
+    async function calculateAllSoldier() {
+        setOnCalculate(true);
+        let response = await axios.post(getApiUrl("soldier/list"), {
+            "filter": {},
+            "projection": {
+                "_id": 1
+            }
+        }, {withCredentials: true});
+        for (const key in response.data) {
+            const id = response.data[key]._id.$oid;
+            try {
+                let temp = await axios.post(getApiUrl(`config/calculative/calculate/${id}`), {}, {withCredentials: true});
+                if (temp.status !== 200) {
+                    console.error(temp);
+                }
+            } catch { /* empty */ }
+
+            setCalculatePercent(parseInt(key/ response.data.length * 100));
+        }
+        setOnCalculate(false);
+        //     .then((response) => {
+        //         for (const key in response.data) {
+        //             const id = response.data[key]._id.$oid;
+        //             axios.post(getApiUrl(`config/calculative/calculate/${id}`), {}, {withCredentials: true})
+        //                 .then(() => {
+        //                     setCalculatePercent(key/response.data.length);
+        //                 }).catch((err) => {
+        //                     console.error(err);
+        //             })
+        //             setOnCalculate(false);
+        //         }
+        //     }).catch((error) => {
+        //     console.error(error);
+        //     setOnCalculate(false);
+        // })
     }
 
     return (
@@ -113,7 +148,15 @@ function EditCalculative() {
                     </Form>
 
                     <Divider>محاسبه مجدد خدمت</Divider>
-                    <Button type={"primary"} onClick={()=>calculateAllSoldier()}>محاسبه مجدد برای کل سربازان</Button>
+                    <Button type={onCalculate ? "default" : "primary"} onClick={() => calculateAllSoldier()}>
+                        {
+                            onCalculate
+                                ?
+                                <Progress type="line" percent={calculatePercent}/>
+                                :
+                                "محاسبه مجدد برای کل سربازان"
+                        }
+                    </Button>
                 </>
             }
         </Flex>
