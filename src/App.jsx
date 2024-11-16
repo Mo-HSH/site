@@ -32,6 +32,7 @@ import ReturnReport from "./routes/reports/ReturnReport.jsx";
 import ReleaseReport from "./routes/reports/ReleaseReport.jsx";
 import InitAdditionalServiceReport from "./routes/reports/InitAdditionalServiceReport.jsx";
 import EditOrganizationJob from "./routes/settings/EditOrganizationJob.jsx";
+import User from "./routes/settings/User.jsx";
 
 function App() {
     const navigate = useNavigate();
@@ -111,6 +112,7 @@ function App() {
                     <Route path="/edit-options" element={<EditOptions/>}/>
                     <Route path="/edit-calculative" element={<EditCalculative/>}/>
                     <Route path="/edit-organization-job" element={<EditOrganizationJob/>}/>
+                    <Route path="/user" element={<User/>}/>
                 </Route>
             </Routes>
         </ConfigProvider>

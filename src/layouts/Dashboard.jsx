@@ -61,6 +61,7 @@ function Dashboard() {
                 getItem('گزینه ها', '/edit-options'),
                 getItem('محاسباتی', '/edit-calculative'),
                 getItem('شغل سازمانی', '/edit-organization-job'),
+                getItem('کاربران', '/user'),
             ]),
     ];
 
