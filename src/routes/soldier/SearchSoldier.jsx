@@ -11,16 +11,26 @@ import {
     Image,
     Input,
     Modal,
-    notification,
-    Table,
+    notification, Popconfirm, Popover,
+    Table, Tabs,
     Tooltip,
     Typography
 } from "antd";
-import {justNumericValidator, justStringValidator, nationalCodeValidator} from "../../utils/Validates.js";
+import {
+    dateValidator,
+    justNumericValidator,
+    justStringValidator,
+} from "../../utils/Validates.js";
 import {getStatusColor} from "../../utils/Color.js";
 import {useState} from "react";
 import {DateRenderer, DutyGroupRenderer, ExtraInfoRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
-import {EditOutlined, UserOutlined, WarningTwoTone} from "@ant-design/icons";
+import {
+    CloseCircleTwoTone,
+    DeleteOutlined,
+    EditOutlined,
+    UserOutlined,
+    WarningTwoTone
+} from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
 import SearchSelect from "../../layouts/SearchSelect.jsx";
 import StatusSummery from "../Print/soldierProfile/StatusSummery.jsx";
@@ -32,7 +42,16 @@ import {getApiUrl} from "../../utils/Config.js";
 
 function SearchSoldier() {
 
-    const [targetSoldier, setTargetSoldier] = useState({"family": []});
+    const [targetSoldier, setTargetSoldier] = useState({
+        family: [],
+        leave: [],
+        absence: [],
+        run: [],
+        deficit: [],
+        mission: [],
+        arrest: [],
+        duty_group_data: []
+    });
     const [key, setKey] = useState("");
     const [showMore, setShowMore] = useState(false);
     const [openDrawer, setOpenDrawer] = useState(false);
@@ -41,6 +60,320 @@ function SearchSoldier() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [printTarget, setPrintTarget] = useState(<div>printable</div>);
     const [printTitle, setPrintTitle] = useState("تیتر پرینت");
+
+    const lastCellMerge = (record) => {
+        if (record.text) {
+            return {
+                colSpan: 0,
+            };
+        } else {
+            return {};
+        }
+    };
+
+    const rowCounterMerge = (text, record, index) => {
+        if (record.text) {
+            return record.text;
+        } else {
+            return <>{index + 1}</>;
+        }
+    }
+
+    const dutyGroupColumns = [
+        {
+            title: "ردیف",
+            align: "center",
+            render: rowCounterMerge,
+        },
+        {
+            title: "تاریخ ثبت",
+            dataIndex: "submit_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            },
+        },
+        {
+            title: "گروه خدمتی",
+            dataIndex: "is_in_combat_group",
+            render: DutyGroupRenderer
+        },
+    ].map(v=>({...v, align: "center"}));
+
+    const leaveColumns = [
+        {
+            title: "ردیف",
+            align: "center",
+            render: rowCounterMerge,
+            onCell: (record) => {
+                if (record.text) {
+                    return {
+                        colSpan: 2,
+                    };
+                } else {
+                    return {};
+                }
+            }
+        },
+        {
+            title: "تاریخ شروع",
+            dataIndex: "start_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            },
+            onCell: lastCellMerge
+        },
+        {
+            title: "سالیانه",
+            dataIndex: "annual",
+        },
+        {
+            title: "تعطیلات",
+            dataIndex: "vacation",
+        },
+        {
+            title: "استعلاجی",
+            dataIndex: "medical",
+        },
+        {
+            title: "تو راهی",
+            dataIndex: "on_road",
+        },
+        {
+            title: "تشویقی",
+            dataIndex: "bonus",
+        }
+    ].map(v=>({...v, align: "center"}));
+
+    const absenceColumns = [
+        {
+            title: "ردیف",
+            render: rowCounterMerge,
+            onCell: (record) => {
+                if (record.text) {
+                    return {
+                        colSpan: 3,
+                    };
+                } else {
+                    return {};
+                }
+            }
+        },
+        {
+            title: "تاریخ شروع",
+            dataIndex: "start_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            },
+            onCell: lastCellMerge
+        },
+        {
+            title: "تاریخ خاتمه",
+            dataIndex: "end_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            },
+            onCell: lastCellMerge
+        },
+        {
+            title: "مدت غیبت",
+            dataIndex: "duration",
+        },
+        {
+            title: "مدت بازداشت",
+            dataIndex: "duration",
+            render: v => v * 2,
+        }
+    ].map(v=>({...v, align: "center"}));
+
+    const arrestColumns = [
+        {
+            title: "ردیف",
+            render: rowCounterMerge,
+            onCell: (_, index) => {
+                if (index === targetSoldier.arrest.length) {
+                    return {
+                        colSpan: 3,
+                    };
+                } else {
+                    return {};
+                }
+            }
+        },
+        {
+            title: "تاریخ شروع",
+            dataIndex: "start_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            },
+            onCell: lastCellMerge,
+        },
+        {
+            title: "علت",
+            dataIndex: "reason",
+            onCell: lastCellMerge,
+        },
+        {
+            title: "مدت",
+            dataIndex: "duration",
+        },
+    ].map(v=>({...v, align: "center"}));
+
+    const missionColumns = [
+        {
+            title: "ردیف",
+            render: rowCounterMerge,
+            onCell: (_, index) => {
+                if (index === targetSoldier.mission.length) {
+                    return {
+                        colSpan: 3,
+                    };
+                } else {
+                    return {};
+                }
+            }
+        },
+        {
+            title: "تاریخ شروع",
+            dataIndex: "start_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            },
+            onCell: lastCellMerge,
+        },
+        {
+            title: "امریه ماموریت",
+            dataIndex: "order",
+            onCell: lastCellMerge,
+        },
+        {
+            title: "مدت",
+            dataIndex: "duration",
+        },
+    ].map(v=>({...v, align: "center"}));
+
+    const deficitColumns = [
+        {
+            title: "ردیف",
+            render: rowCounterMerge,
+            onCell: (_, index) => {
+                if (index === targetSoldier.deficit.length) {
+                    return {
+                        colSpan: 2,
+                    };
+                } else {
+                    return {};
+                }
+            }
+        },
+        {
+            title: "نوع کسری",
+            dataIndex: "name",
+            onCell: lastCellMerge
+        },
+        {
+            title: "مدت",
+            dataIndex: "day",
+        }
+    ].map(v=>({...v, align: "center"}));
+
+    const runColumns = [
+        {
+            title: "ردیف",
+            render: rowCounterMerge,
+            onCell: (_, index) => {
+                if (index === targetSoldier.run.length) {
+                    return {
+                        colSpan: 7,
+                    };
+                } else {
+                    return {};
+                }
+            }
+        },
+        {
+            title: "تاریخ نهست",
+            dataIndex: "absence_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            },
+            onCell: lastCellMerge
+        },
+        {
+            title: "تاریخ فرار",
+            dataIndex: "run_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            },
+            onCell: lastCellMerge
+        },
+        {
+            title: "م/د فرار",
+            dataIndex: "md_run",
+            onCell: lastCellMerge
+        },
+        {
+            title: "تاریخ مراجعت",
+            dataIndex: "return_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            },
+            onCell: lastCellMerge
+        },
+        {
+            title: "م/د مراجعت",
+            dataIndex: "md_return",
+            onCell: lastCellMerge
+        },
+        {
+            title: "حکم قضایی",
+            dataIndex: "court_order",
+            onCell: lastCellMerge
+        },
+        {
+            title: "اضافه تنبیهی",
+            dataIndex: "run_punish",
+        },
+        {
+            title: "مدت فرار",
+            dataIndex: "run_duration",
+        },
+    ].map(v=>({...v, align: "center"}));
 
 
     const collapseItems = [
@@ -253,6 +586,99 @@ function SearchSoldier() {
 
                        ]}/>
             </Flex>
+        },
+        {
+            key: '6',
+            label: 'ثبتی ها',
+            children: <Flex style={{width: "100%"}}>
+                <Tabs
+                    style={{width: "100%"}}
+                    defaultActiveKey={0}
+                    type="card"
+                    items={[
+                        {
+                            label: "مرخصی",
+                            key: 0,
+                            children: <Table
+                                pagination={false} bordered={true} style={{width: "100%"}}
+                                columns={leaveColumns} dataSource={[...targetSoldier.leave, {
+                                annual: targetSoldier.leave.reduce((sum, leave) => sum + leave.annual, 0),
+                                vacation: targetSoldier.leave.reduce((sum, leave) => sum + leave.vacation, 0),
+                                medical: targetSoldier.leave.reduce((sum, leave) => sum + leave.medical, 0),
+                                on_road: targetSoldier.leave.reduce((sum, leave) => sum + leave.on_road, 0),
+                                bonus: targetSoldier.leave.reduce((sum, leave) => sum + leave.bonus, 0),
+                                text: "جمع کل"
+                            }]}
+                            />
+                        },
+                        {
+                            label: "نهست",
+                            key: 1,
+                            children: <Table
+                                pagination={false} bordered={true} style={{width: "100%"}}
+                                columns={absenceColumns} dataSource={[...targetSoldier.absence, {
+                                duration: targetSoldier.absence.reduce((sum, absence) => sum + absence.duration, 0),
+                                text: "جمع کل"
+                            }]}
+                            />
+                        },
+                        {
+                            label: "بازداشت",
+                            key: 2,
+                            children: <Table
+                                pagination={false} bordered={true} style={{width: "100%"}}
+                                columns={arrestColumns} dataSource={[...targetSoldier.arrest, {
+                                duration: targetSoldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
+                                text: "جمع کل"
+                            }]}
+                            />
+                        },
+                        {
+                            label: "ماموریت",
+                            key: 3,
+                            children: <Table
+                                pagination={false} bordered={true} style={{width: "100%"}}
+                                columns={missionColumns} dataSource={[...targetSoldier.mission, {
+                                duration: targetSoldier.mission.reduce((sum, mission) => sum + mission.duration, 0),
+                                text: "جمع کل"
+                            }]}
+                            />
+                        },
+                        {
+                            label: "کسری",
+                            key: 4,
+                            children: <Table
+                                pagination={false} bordered={true} style={{width: "100%"}}
+                                columns={deficitColumns} dataSource={[...targetSoldier.deficit, {
+                                duration: targetSoldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
+                                text: "جمع کل"
+                            }]}
+                            />
+                        },
+                        {
+                            label: "فرار",
+                            key: 5,
+                            children:
+                                <Table
+                                    pagination={false} bordered={true} style={{width: "100%"}}
+                                    columns={runColumns} dataSource={[...targetSoldier.run, {
+                                    "run_duration": targetSoldier.run.reduce((sum, run) => sum + run["run_duration"], 0),
+                                    "run_punish": targetSoldier.run.reduce((sum, run) => sum + run["run_punish"], 0),
+                                    text: "جمع کل"
+                                }]}
+                                />
+                        },
+                        {
+                            label: "گروه خدمتی",
+                            key: 6,
+                            children: <Table
+                                pagination={false} bordered={true} style={{width: "100%"}}
+                                columns={dutyGroupColumns} dataSource={targetSoldier.duty_group_data}
+                            />
+                        },
+                    ]}
+                />
+            </Flex>
         }
     ]
 
@@ -390,9 +816,10 @@ function SearchSoldier() {
                                                [
                                                    {
                                                        0: "نام و نشان:",
-                                                       1: targetSoldier["first_name"] + " " + targetSoldier["last_name"]
+                                                       1: <Popover trigger={"click"} content={[targetSoldier["first_name"], targetSoldier["last_name"], targetSoldier["national_code"], DateRenderer(targetSoldier["deployment_date"])].join(" ")}>{targetSoldier["first_name"] + " " + targetSoldier["last_name"]}</Popover>
                                                    },
                                                    {0: "درجه:", 1: targetSoldier["military_rank"]},
+                                                   {0: "کد ملی:", 1: targetSoldier["national_code"]},
                                                    {
                                                        0: "تاریخ اعزام:",
                                                        1: DateRenderer(targetSoldier["deployment_date"])
@@ -412,8 +839,7 @@ function SearchSoldier() {
                                                        1: <>{DateRenderer(targetSoldier["overall_release_date"])}
                                                            <ShouldWarnOnReleaseDate/> </>
                                                    },
-                                                   {0: "یگان:", 1: targetSoldier["unit"]},
-                                                   {0: "قسمت:", 1: targetSoldier["section"]},
+                                                   {0: "یگان - قسمت:", 1: targetSoldier["unit"] + " - " + targetSoldier["section"]},
                                                    {0: "شماره پرونده:", 1: targetSoldier["folder_number"]},
                                                ]
                                            }
@@ -495,50 +921,6 @@ function SearchSoldier() {
             }
             selectedSoldierProject={
                 {
-                    "profile": 1,
-                    "normalized_profile": 1,
-                    "status": 1,
-                    "first_name": 1,
-                    "last_name": 1,
-                    "national_code": 1,
-                    "deployment_date": 1,
-                    "duty_group": 1,
-                    "military_rank": 1,
-                    "father_name": 1,
-                    "legal_release_date": 1,
-                    "overall_release_date": 1,
-                    "unit": 1,
-                    "section": 1,
-                    "birthplace": 1,
-                    "birthday": 1,
-                    "birth_certificate_issuing_place": 1,
-                    "bank_account": 1,
-                    "family": 1,
-                    "religion": 1,
-                    "additional_service_day": 1,
-                    "done_service_day": 1,
-                    "personnel_code": 1,
-                    "entry_date": 1,
-                    "order_number": 1,
-                    "previous_unit": 1,
-                    "extra_info": 1,
-                    "education": 1,
-                    "field_of_study": 1,
-                    "skill": 1,
-                    "skill_to_learn": 1,
-                    "mental_health": 1,
-                    "blood_type": 1,
-                    "eye_color": 1,
-                    "height": 1,
-                    "state": 1,
-                    "city": 1,
-                    "address_street": 1,
-                    "address_house_number": 1,
-                    "address_home_unit": 1,
-                    "phone": 1,
-                    "is_native": 1,
-                    "address": 1,
-                    "folder_number": 1,
                 }
             }
             setSoldierOid={setKey}

@@ -6,11 +6,15 @@ import {DateRenderer} from "../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
+import * as XLSX from "xlsx";
+import {saveAs} from "file-saver";
 
 function ReturnReport() {
 
     const [unitSelectOptions, setUnitSelectOptions] = useState([]);
     const [soldiers, setSoldiers] = useState([]);
+    const [data, setData] = useState([]);
+    const [downloading, setDownloading] = useState(false);
 
     const [api, contextHolder] = notification.useNotification();
     const printComponent = useRef(null);
@@ -129,6 +133,31 @@ function ReturnReport() {
         removeAfterPrint: true
     });
 
+    function download() {
+        console.log(data);
+        const worksheet = XLSX.utils.json_to_sheet(data.map((row, index) => ({
+            'ردیف': index + 1,
+            'نام': row["first_name"],
+            'نشان': row["last_name"],
+            'کد ملی': row["national_code"],
+            'نام پدر': row["father_name"],
+            'تاریخ اعزام': row["deployment_date"],
+            'یگان': row["unit"],
+            'قسمت': row["section"],
+            'تاریخ نهست': row["run_absence_date"],
+            'تاریخ فرار': row["run_date"],
+            'تاریخ مراجعت': row["run_return_date"],
+            'حکم قضایی': row["run_court_order"],
+            'اضافه تنبیهی': row["run_day_punish"],
+            'مدت فرار': row["run_duration"],
+        })));
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+        const excelBuffer = XLSX.write(workbook, {bookType: 'xlsx', type: 'array'});
+        const blob = new Blob([excelBuffer], {type: 'application/octet-stream'});
+        saveAs(blob, `گزارش.xlsx`);
+    }
+
     return (
         <Flex vertical={true} style={{width: "100%"}}>
             {contextHolder}
@@ -182,6 +211,13 @@ function ReturnReport() {
                     </Form.Item>
                     <Form.Item>
                         <Button block={true} type={"primary"} onClick={handlePrint}>پرینت</Button>
+                    </Form.Item>
+                    <Form.Item>
+                        <Button block={true} type={"primary"} loading={downloading} onClick={()=> {
+                            setDownloading(true);
+                            download();
+                            setDownloading(false);
+                        }}>دانلود</Button>
                     </Form.Item>
                 </Form>
             </Flex>
