@@ -148,6 +148,7 @@ function AbsenceReport() {
             'قسمت': row["section"],
             'تاریخ نهست': row["absence_start_date"],
             'مدت نهست': row["absence_duration"],
+            'مدت اضافه خدمت': row["absence_duration"] * 2,
         })));
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
@@ -302,6 +303,11 @@ function AbsenceReport() {
                         {
                             title: "مدت",
                             dataIndex: "absence_duration",
+                        },
+                        {
+                            title: "اضافه خدمت",
+                            dataIndex: "absence_duration",
+                            render: (v)=> v*2
                         },
                     ].map(v => {
                         v["align"] = "center";

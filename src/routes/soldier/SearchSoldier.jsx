@@ -601,14 +601,14 @@ function SearchSoldier() {
                             key: 0,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={leaveColumns} dataSource={[...targetSoldier.leave, {
+                                columns={leaveColumns} dataSource={targetSoldier.leave ? [...targetSoldier.leave, {
                                 annual: targetSoldier.leave.reduce((sum, leave) => sum + leave.annual, 0),
                                 vacation: targetSoldier.leave.reduce((sum, leave) => sum + leave.vacation, 0),
                                 medical: targetSoldier.leave.reduce((sum, leave) => sum + leave.medical, 0),
                                 on_road: targetSoldier.leave.reduce((sum, leave) => sum + leave.on_road, 0),
                                 bonus: targetSoldier.leave.reduce((sum, leave) => sum + leave.bonus, 0),
                                 text: "جمع کل"
-                            }]}
+                            }]: []}
                             />
                         },
                         {
@@ -616,10 +616,10 @@ function SearchSoldier() {
                             key: 1,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={absenceColumns} dataSource={[...targetSoldier.absence, {
+                                columns={absenceColumns} dataSource={targetSoldier.absence?[...targetSoldier.absence, {
                                 duration: targetSoldier.absence.reduce((sum, absence) => sum + absence.duration, 0),
                                 text: "جمع کل"
-                            }]}
+                            }]: []}
                             />
                         },
                         {
@@ -627,10 +627,10 @@ function SearchSoldier() {
                             key: 2,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={arrestColumns} dataSource={[...targetSoldier.arrest, {
+                                columns={arrestColumns} dataSource={targetSoldier.arrest ?[...targetSoldier.arrest, {
                                 duration: targetSoldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
                                 text: "جمع کل"
-                            }]}
+                            }]: []}
                             />
                         },
                         {
@@ -638,10 +638,10 @@ function SearchSoldier() {
                             key: 3,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={missionColumns} dataSource={[...targetSoldier.mission, {
+                                columns={missionColumns} dataSource={targetSoldier.mission?[...targetSoldier.mission, {
                                 duration: targetSoldier.mission.reduce((sum, mission) => sum + mission.duration, 0),
                                 text: "جمع کل"
-                            }]}
+                            }]: []}
                             />
                         },
                         {
@@ -649,10 +649,10 @@ function SearchSoldier() {
                             key: 4,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={deficitColumns} dataSource={[...targetSoldier.deficit, {
+                                columns={deficitColumns} dataSource={targetSoldier.deficit?[...targetSoldier.deficit, {
                                 duration: targetSoldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
                                 text: "جمع کل"
-                            }]}
+                            }]: []}
                             />
                         },
                         {
@@ -661,11 +661,11 @@ function SearchSoldier() {
                             children:
                                 <Table
                                     pagination={false} bordered={true} style={{width: "100%"}}
-                                    columns={runColumns} dataSource={[...targetSoldier.run, {
+                                    columns={runColumns} dataSource={targetSoldier.run?[...targetSoldier.run, {
                                     "run_duration": targetSoldier.run.reduce((sum, run) => sum + run["run_duration"], 0),
                                     "run_punish": targetSoldier.run.reduce((sum, run) => sum + run["run_punish"], 0),
                                     text: "جمع کل"
-                                }]}
+                                }]: []}
                                 />
                         },
                         {
@@ -673,7 +673,7 @@ function SearchSoldier() {
                             key: 6,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={dutyGroupColumns} dataSource={targetSoldier.duty_group_data}
+                                columns={dutyGroupColumns} dataSource={targetSoldier.duty_group_data? targetSoldier.duty_group_data : []}
                             />
                         },
                     ]}
@@ -816,7 +816,7 @@ function SearchSoldier() {
                                                [
                                                    {
                                                        0: "نام و نشان:",
-                                                       1: <Popover trigger={"click"} content={[targetSoldier["first_name"], targetSoldier["last_name"], targetSoldier["national_code"], DateRenderer(targetSoldier["deployment_date"])].join(" ")}>{targetSoldier["first_name"] + " " + targetSoldier["last_name"]}</Popover>
+                                                       1: <Popover trigger={"click"} content={[targetSoldier["military_rank"], "و", targetSoldier["first_name"], targetSoldier["last_name"], "ش ملی:", targetSoldier["national_code"], "اعزامی:", DateRenderer(targetSoldier["deployment_date"])].join(" ")}>{targetSoldier["first_name"] + " " + targetSoldier["last_name"]}</Popover>
                                                    },
                                                    {0: "درجه:", 1: targetSoldier["military_rank"]},
                                                    {0: "کد ملی:", 1: targetSoldier["national_code"]},
