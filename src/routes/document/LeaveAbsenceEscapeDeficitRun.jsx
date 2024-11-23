@@ -766,6 +766,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                     "run": 1,
                     "mission": 1,
                     "first_name": 1,
+                    "folder_number": 1,
                     "last_name": 1,
                     "national_code": 1,
                     "military_rank": 1,
@@ -907,8 +908,8 @@ function LeaveAbsenceEscapeDeficitRun() {
                         </Modal>
 
                         <Card title="اطلاعات سرباز" style={{width: "100%"}}>
-                            <Card.Grid style={gridStyle}> نام : {selectedSoldier["first_name"]} </Card.Grid>
-                            <Card.Grid style={gridStyle}> نشان : {selectedSoldier["last_name"]} </Card.Grid>
+                            <Card.Grid style={gridStyle}> نام و نشان : {selectedSoldier["first_name"]} {selectedSoldier["last_name"]} </Card.Grid>
+                            <Card.Grid style={gridStyle}> شماره پرونده : &rlm;{selectedSoldier["folder_number"]} </Card.Grid>
                             <Card.Grid style={gridStyle}> کد ملی : {selectedSoldier["national_code"]} </Card.Grid>
                             <Card.Grid style={gridStyle}> درجه : {selectedSoldier["military_rank"]} </Card.Grid>
                             <Card.Grid style={gridStyle}> یگان : {selectedSoldier["unit"]} </Card.Grid>
