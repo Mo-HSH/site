@@ -42,4 +42,17 @@ function DutyGroupRenderer(value) {
     }
 }
 
-export {DateRenderer, OpenProfileRenderer, ExtraInfoRenderer, NativeRenderer, DutyGroupRenderer};
+function MarriageRenderer(family) {
+    try {
+        family.forEach((eachFamily)=>{
+            if (eachFamily.relative === "همسر") {
+                return "متاهل";
+            }
+        })
+        return "مجرد";
+    } catch (e) {
+        return (<Spin/>);
+    }
+}
+
+export {DateRenderer, OpenProfileRenderer, ExtraInfoRenderer, NativeRenderer, DutyGroupRenderer, MarriageRenderer};

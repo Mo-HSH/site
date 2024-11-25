@@ -39,6 +39,7 @@ import IntroductionLetter from "../Print/soldierProfile/IntroductionLetter.jsx";
 import EmploymentCertificate from "../Print/soldierProfile/EmploymentCertificate.jsx";
 import SoldierFolderLabel from "../Print/soldierProfile/SoldierFolderLabel.jsx";
 import {getApiUrl} from "../../utils/Config.js";
+import AccidentComission from "../Print/soldierProfile/AccidentComission.jsx";
 
 function SearchSoldier() {
 
@@ -764,7 +765,10 @@ function SearchSoldier() {
                                     </Flex>
                                     <Flex vertical={false} style={{width: "100%"}} gap={"middle"}>
                                         <Button type={"primary"} block={true}>درخواست بومی/غیر بومی</Button>
-                                        <Button type={"primary"} block={true}>صورت جلسه صانحه</Button>
+                                        <Button type={"primary"} block={true}
+                                                onClick={() => openPrintModal(<AccidentComission
+                                                    setPrintTitle={setPrintTitle} soldierKey={key}/>)}
+                                        >صورت جلسه سانحه</Button>
                                     </Flex>
                                 </Flex>
                             </Card>
