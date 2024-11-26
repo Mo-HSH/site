@@ -1,5 +1,4 @@
 import {useEffect, useRef, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
 import {
     Button,
     Cascader,
@@ -16,11 +15,14 @@ import {
     Table,
     Tooltip
 } from "antd";
-import moment from "jalali-moment";
+
 import {EditOutlined, EyeOutlined, SearchOutlined, SwapLeftOutlined} from "@ant-design/icons";
 import {dateValidator} from "../../utils/Validates.js";
 import {DateRenderer, NativeRenderer, OpenProfileRenderer} from "../../utils/TableRenderer.jsx";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
+import {getApiUrl} from "../../utils/Config.js";
+import {GetQueryDate} from "../../utils/Calculative.js";
 
 function ListSoldier() {
     const [data, setData] = useState([]);
@@ -66,9 +68,9 @@ function ListSoldier() {
                 const [options, setOptions] = useState([]);
 
                 useEffect(() => {
-                    invoke("get_config", {configName: configName})
+                    axios.get(getApiUrl(`config/${configName}`), {withCredentials: true})
                         .then((res) => {
-                            setOptions([...res.config.map(v => {
+                            setOptions([...res.data.config.map(v => {
                                 return ({
                                     value: v.name,
                                     label: v.name
@@ -165,9 +167,9 @@ function ListSoldier() {
                 const [options, setOptions] = useState([]);
 
                 useEffect(() => {
-                    invoke("get_config", {configName: configName})
+                    axios.get(getApiUrl(`config/${configName}`), {withCredentials: true})
                         .then((res) => {
-                            setOptions([...res.config.map((v) => {
+                            setOptions([...res.data.config.map((v) => {
                                 return ({
                                     value: v.name,
                                     label: v.name,
@@ -275,10 +277,10 @@ function ListSoldier() {
                 const [options, setOptions] = useState([]);
 
                 useEffect(() => {
-                    invoke("get_config", {configName: configName})
+                    axios.get(getApiUrl(`config/${configName}`), {withCredentials: true})
                         .then((res) => {
                             let temp = [];
-                            res.config.forEach((value) => {
+                            res.data.config.forEach((value) => {
                                 temp.push({
                                     value: value,
                                     label: value
@@ -352,11 +354,8 @@ function ListSoldier() {
         const fromDate = useRef(null);
         const toDate = useRef(null);
 
-        function getUnix(date) {
-            return `${moment(`${date}  03:30:00`, 'jYYYY/jMM/jDD HH:mm:ss').utc().unix() * 1000}`;
-        }
-
         function handleSearch(selectedKeys, confirm) {
+            console.log(selectedKeys);
             setFilter((currentFilter) => {
                 let newFilter = {...currentFilter};
                 switch (selectedKeys[2]) {
@@ -366,10 +365,9 @@ function ListSoldier() {
                             dateValidator({required: true}, selectedKeys[1]).then((res) => {
                                 fromDate.current.input.classList = "ant-input ant-input-rtl css-dev-only-do-not-override-umqb6y ant-input-outlined";
                                 newFilter[dataIndex] = {
-                                    "$gte": {"$date": {"$numberLong": getUnix(selectedKeys[0])}},
-                                    "$lte": {"$date": {"$numberLong": getUnix(selectedKeys[1])}}
+                                    "$gte": GetQueryDate(selectedKeys[0]),
+                                    "$lte": GetQueryDate(selectedKeys[1])
                                 };
-                                confirm();
                                 return newFilter;
                             }).catch((err) => {
                                 toDate.current.input.classList = "ant-input ant-input-rtl css-dev-only-do-not-override-umqb6y ant-input-outlined ant-input-status-error";
@@ -381,8 +379,8 @@ function ListSoldier() {
                     default:
                         dateValidator({required: true}, selectedKeys[0]).then((res) => {
                             fromDate.current.input.classList = "ant-input ant-input-rtl css-dev-only-do-not-override-umqb6y ant-input-outlined";
-                            newFilter[dataIndex] = {"$date": {"$numberLong": getUnix(selectedKeys[0])}};
-                            confirm();
+                            console.log("dataIndex", dataIndex);
+                            newFilter[dataIndex] = GetQueryDate(selectedKeys[0]);
                             return newFilter;
                         }).catch((err) => {
                             fromDate.current.input.classList = "ant-input ant-input-rtl css-dev-only-do-not-override-umqb6y ant-input-outlined ant-input-status-error";
@@ -390,6 +388,7 @@ function ListSoldier() {
                         break;
                 }
             });
+            confirm();
         }
 
         function handleReset(clearFilters, confirm) {
@@ -1060,15 +1059,17 @@ function ListSoldier() {
     }
 
     useEffect(() => {
+        console.log("filter", filter);
         if (Object.keys(projection).length > 0) {
-            invoke("get_soldiers", {"query": {"filter": filter, "projection": projection}})
-                .then((res) => {
+            axios.post(getApiUrl("soldier/list"), {"filter": filter, "projection": projection}, {withCredentials: true})
+                .then((response) => {
+                    let res = response.data;
                     console.log(res);
                     setData(res);
                 })
                 .catch((err) => {
                     api["error"]({
-                        message: "خطا", description: err
+                        message: "خطا", description: err.response.data
                     });
                 });
         }
