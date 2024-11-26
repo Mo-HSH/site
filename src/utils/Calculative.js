@@ -25,7 +25,8 @@ function IsDutyStopped(oid) {
 }
 
 function GetQueryDate(jDate) {
-    const unix = `${moment(`${jDate}03:30:00`, 'jYYYY/jMM/jDD HH:mm:ss').utc().unix() * 1000}`;
+    const unix = `${moment(`${jDate} 00:00:00`, 'jYYYY/jMM/jDD HH:mm:ss').utc().unix() * 1000}`;
+    console.log(jDate, "->", unix);
     return ({"$date": {"$numberLong": unix}});
 }
 
