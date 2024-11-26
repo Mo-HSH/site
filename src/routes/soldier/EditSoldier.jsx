@@ -25,7 +25,7 @@ import {
 import {
     dateValidator,
     justNumericValidator,
-    justStringValidator,
+    justStringValidator, passAnywayValidator,
     registerNationalCodeValidator
 } from "../../utils/Validates.js";
 import {GetDutyDuration} from "../../utils/Calculative.js";
@@ -104,6 +104,7 @@ function EditSoldier() {
                     "birthplace": 1,
                     "birth_certificate_issuing_place": 1,
                     "family": 1,
+                    "bank_account": 1,
                     "additional_service_day": 1,
                     "entry_date": 1,
                     "personnel_code": 1,
@@ -431,7 +432,7 @@ function EditSoldier() {
                                         [
                                             <InputFieldForm label={"نام و نشان"} validator={justStringValidator}
                                                             initValue={elem["full_name"]}
-                                                            onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.first_name`, v, "str", false)}/>,
+                                                            onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.full_name`, v, "str", false)}/>,
                                             <InputFieldForm label={"نام پدر"} validator={justStringValidator}
                                                             initValue={elem["father_name"]}
                                                             onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.father_name`, v, "str", false)}/>,
@@ -578,7 +579,7 @@ function EditSoldier() {
                 ]}
             />
 
-            <Divider orientation={"left"}>اطلاعات نظامی</Divider>
+            <Divider orientation={"left"}>اطلاعات خدمتی</Divider>
             <Row gutter={24} justify={"center"} align={"top"} style={{height: "70px", marginTop: "10px"}}>
                 {
                     [
@@ -602,13 +603,13 @@ function EditSoldier() {
             <Row gutter={24} justify={"center"} align={"top"} style={{height: "70px", marginTop: "10px"}}>
                 {
                     [
-                        <InputFieldForm label={"کد پرسنلی"} validator={justStringValidator}
+                        <InputFieldForm label={"کد پرسنلی"} validator={passAnywayValidator}
                                         initValue={soldier["personnel_code"]}
                                         onConfirmEdit={(v) => onConfirmEditSingleForm("personnel_code", v, "str", false)}/>,
                         <InputFieldForm label={"تاریخ ورود"} validator={dateValidator}
                                         initValue={DateRenderer(soldier["entry_date"])}
                                         onConfirmEdit={(v) => onConfirmEditSingleForm("entry_date", v, "date", false)}/>,
-                        <InputFieldForm label={"شماره امریه"} validator={justStringValidator}
+                        <InputFieldForm label={"شماره امریه"} validator={passAnywayValidator}
                                         initValue={soldier["order_number"]}
                                         onConfirmEdit={(v) => onConfirmEditSingleForm("order_number", v, "str", false)}/>,
                     ].map((elem, index, array) => {
@@ -654,7 +655,12 @@ function EditSoldier() {
                 }
             </Row>
             <Row gutter={24} justify={"center"} align={"top"} style={{height: "70px", marginTop: "10px"}}>
-                <Col gutter={30} style={{width: "1200px"}}>
+                <Col gutter={10} style={{width: "400px"}}>
+                    <InputFieldForm label={"شماره حساب"} validator={passAnywayValidator}
+                                    initValue={soldier["bank_account"]}
+                                    onConfirmEdit={(v) => onConfirmEditSingleForm("bank_account", v, "str", false)}/>
+                </Col>
+                <Col gutter={30} style={{width: "800px"}}>
                     <TagSelectFieldForm options={[
                         {label: <Tag color={getTagColor("انتقالی")}>انتقالی</Tag>, value: "انتقالی"},
                         {label: <Tag color={getTagColor("دوره کد")}>دوره کد</Tag>, value: "دوره کد"},
@@ -709,7 +715,7 @@ function EditSoldier() {
                         <SelectFieldForm label={"سلامت روان"} configName={"mental-health"}
                                          validator={justStringValidator} initValue={soldier["mental_health"]}
                                          onConfirmEdit={(v) => onConfirmEditSingleForm("mental_health", v, "str", false)}/>,
-                        <SelectFieldForm label={"گروه خون"} configName={"blood-type"} validator={justStringValidator}
+                        <SelectFieldForm label={"گروه خون"} configName={"blood-type"} validator={passAnywayValidator}
                                          initValue={soldier["blood_type"]}
                                          onConfirmEdit={(v) => onConfirmEditSingleForm("blood_type", v, "str", false)}/>,
                         <SelectFieldForm label={"رنگ چشم"} configName={"eye-color"} validator={justStringValidator}

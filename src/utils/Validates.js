@@ -2,6 +2,10 @@ import {getApiUrl} from './Config.js';
 
 import axios from "axios";
 
+function passAnywayValidator(rule, value) {
+    return Promise.resolve();
+}
+
 function justStringValidator(rule, value) {
     if (!rule['required'] && (value === undefined || value === "")) {
         return Promise.resolve();
@@ -88,4 +92,4 @@ function dateValidator(rule, value) {
     return Promise.resolve();
 }
 
-export {justStringValidator, registerNationalCodeValidator, nationalCodeValidator, dateValidator, justNumericValidator};
+export {passAnywayValidator, justStringValidator, registerNationalCodeValidator, nationalCodeValidator, dateValidator, justNumericValidator};
