@@ -14,7 +14,7 @@ import {getApiUrl} from "./utils/Config.js";
 // import Register from "./routes/setup/Register.jsx";
 import AddSoldier from "./routes/soldier/AddSoldier.jsx";
 import EditOptions from "./routes/settings/EditOptions.jsx";
-import ListSoldier from "./routes/soldier/ListSoldier.jsx";
+import ListTwoSoldier from "./routes/soldier/ListTwoSoldier.jsx";
 import EditCalculative from "./routes/settings/EditCalculative.jsx";
 import SearchSoldier from "./routes/soldier/SearchSoldier.jsx";
 import EditSoldier from "./routes/soldier/EditSoldier.jsx";
@@ -33,6 +33,7 @@ import ReleaseReport from "./routes/reports/ReleaseReport.jsx";
 import InitAdditionalServiceReport from "./routes/reports/InitAdditionalServiceReport.jsx";
 import EditOrganizationJob from "./routes/settings/EditOrganizationJob.jsx";
 import User from "./routes/settings/User.jsx";
+import ListSoldier from "./routes/soldier/ListSoldier.jsx";
 
 function App() {
     const navigate = useNavigate();
