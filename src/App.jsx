@@ -14,7 +14,7 @@ import {getApiUrl} from "./utils/Config.js";
 // import Register from "./routes/setup/Register.jsx";
 import AddSoldier from "./routes/soldier/AddSoldier.jsx";
 import EditOptions from "./routes/settings/EditOptions.jsx";
-// import ListSoldier from "./routes/soldier/ListSoldier.jsx";
+import ListSoldier from "./routes/soldier/ListSoldier.jsx";
 import EditCalculative from "./routes/settings/EditCalculative.jsx";
 import SearchSoldier from "./routes/soldier/SearchSoldier.jsx";
 import EditSoldier from "./routes/soldier/EditSoldier.jsx";
@@ -91,7 +91,7 @@ function App() {
                     {/*<Route path="/test" element={<Test/>}/>*/}
 
                     <Route path="/add-soldier" element={<AddSoldier/>}/>
-                    {/*<Route path="/list-soldier" element={<ListSoldier/>}/>*/}
+                    <Route path="/list-soldier" element={<ListSoldier/>}/>
                     <Route path="/search-soldier" element={<SearchSoldier/>}/>
                     <Route path="/edit-soldier/:key" element={<EditSoldier/>}/>
                     <Route path="/soldier-release/:key" element={<SoldierRelease/>}/>
