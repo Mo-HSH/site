@@ -21,12 +21,14 @@ function AbsenceReport() {
 
     useEffect(() => {
         axios.get(getApiUrl("config/unit"), {withCredentials: true}).then((res) => {
-            setUnitSelectOptions(res.data.config.map(v => {
+            let temp = res.data.config.map(v => {
                 return {
                     label: v.name,
                     value: v.name
                 }
-            }))
+            });
+            console.log(temp)
+            setUnitSelectOptions(temp);
         }).catch(() => {
             api["error"]({
                 message: "خطا",

@@ -39,7 +39,6 @@ function Dashboard() {
         getItem('سرباز', 'soldier', <UserOutlined/>, [
             getItem('پذیرش سرباز', '/add-soldier'),
             getItem('جستجو سرباز', '/search-soldier'),
-            getItem('لیست سربازان', '/list-soldier'),
         ]),
         getItem('اسناد', 'document', <AuditOutlined />, [
             getItem('ثبتی ها', '/leave'),
@@ -47,6 +46,7 @@ function Dashboard() {
             getItem('فرم الف', '/alef_form'),
         ]),
         getItem('گزارش', 'report', <FileTextOutlined />, [
+            getItem('گزارش گیری', '/list-soldier'),
             getItem('نهست', '/absence_report'),
             getItem('کان لم یکن', '/absence_ignored_report'),
             getItem('گروه خدمتی', '/duty_group_report'),

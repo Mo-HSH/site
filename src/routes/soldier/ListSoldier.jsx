@@ -7,7 +7,7 @@ import SelectFilterCard from "../../components/filterCards/SelectFilterCard.jsx"
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
 
-const FILTER_CARD_SIZE = 320;
+const FILTER_CARD_SIZE = 200;
 
 function ListSoldier() {
     const [filters, setFilters] = useState([]);
@@ -20,7 +20,9 @@ function ListSoldier() {
         {label: "نام", value: "first_name", type: "string"},
         {label: "نشان", value: "last_name", type: "string"},
         {label: "تاریخ ورود", value: "entry_date", type: "date"},
-        {label: "درجه", value: "rank", type: "select", configName: "rank"},
+        {label: "تاریخ اعزام", value: "deployment_date", type: "date"},
+        {label: "درجه", value: "military_rank", type: "select", configName: "rank"},
+        {label: "وضعیت", value: "status", type: "select", configName: "status"},
         {label: "یگان و قسمت", value: "unit", childQuery: "section", type: "select", configName: "unit"},
     ];
 
@@ -64,6 +66,10 @@ function ListSoldier() {
         {
             title: "کد ملی",
             dataIndex: "national_code",
+        },
+        {
+            title: "وضعیت",
+            dataIndex: "status",
         },
     ];
 
