@@ -26,8 +26,18 @@ function IsDutyStopped(oid) {
 
 function GetQueryDate(jDate) {
     const unix = `${moment(`${jDate} 00:00:00`, 'jYYYY/jMM/jDD HH:mm:ss').utc().unix() * 1000}`;
-    console.log(jDate, "->", unix);
     return ({"$date": {"$numberLong": unix}});
 }
 
-export {GetDutyDuration, IsDutyStopped, GetQueryDate};
+function GetDateMinus(jDate, Month) {
+    let res = moment(`${jDate} 00:00:00`, 'jYYYY/jMM/jDD HH:mm:ss');
+    const unix = res.subtract(Month, 'month').utc().unix() * 1000;
+    return ({"$date": {"$numberLong": `${unix}`}});
+}
+
+function GetYear(jDate) {
+    let res = moment(`${jDate} 00:00:00`, 'jYYYY/jMM/jDD HH:mm:ss');
+    return res.jYear();
+}
+
+export {GetDutyDuration, IsDutyStopped, GetQueryDate, GetDateMinus, GetYear};

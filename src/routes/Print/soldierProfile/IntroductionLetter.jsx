@@ -140,7 +140,17 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                                                 </Typography.Text>
                                                 <Space/>
                                                 <Typography.Text>
-                                                    به: فرماندهی محترم گروه خدمات پاسداری پشتیبانی مرکز نپاجا
+                                                    {
+                                                        soldier["unit"] === "فرماندهی پشتیبانی مرکز نپاجا - گ.خ"
+                                                            ?
+                                                            "به: فرماندهی محترم گروه خدمات پاسداری پشتیبانی مرکز نپاجا"
+                                                            :
+                                                            soldier["unit"] === "فرماندهی پشتیبانی مرکز نپاجا - ت.ح"
+                                                                ?
+                                                                "به: ریاست محترم تامین حفاظتی پشتیبانی مرکز نپاجا"
+                                                                :
+                                                                ""
+                                                    }
                                                 </Typography.Text>
                                             </Flex>
                                         </Col>

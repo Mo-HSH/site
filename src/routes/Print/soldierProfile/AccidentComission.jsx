@@ -426,8 +426,6 @@ function AccidentComission({setPrintTitle, soldierKey}) {
                             return (
                                 <Flex vertical={true} align={"center"}
                                       style={{
-                                          border: "solid gray 2px",
-                                          borderRadius: "10px",
                                           background: `url(${padafandLogoOpacityLow}) center center / contain no-repeat`
                                       }}
                                       className={"break-after A4-portrait"}

@@ -34,6 +34,7 @@ import InitAdditionalServiceReport from "./routes/reports/InitAdditionalServiceR
 import EditOrganizationJob from "./routes/settings/EditOrganizationJob.jsx";
 import User from "./routes/settings/User.jsx";
 import ListSoldier from "./routes/soldier/ListSoldier.jsx";
+import StatsReport from "./routes/reports/StatsReport.jsx";
 
 function App() {
     const navigate = useNavigate();
@@ -108,6 +109,7 @@ function App() {
                     <Route path="/run_report" element={<RunReport />}/>
                     <Route path="/return_report" element={<ReturnReport />}/>
                     <Route path="/release_report" element={<ReleaseReport />}/>
+                    <Route path="/stats_report" element={<StatsReport />}/>
                     <Route path="/init_additional_service_report" element={<InitAdditionalServiceReport />}/>
 
                     <Route path="/edit-options" element={<EditOptions/>}/>

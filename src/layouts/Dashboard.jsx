@@ -55,6 +55,7 @@ function Dashboard() {
             getItem('مراجعت', '/return_report'),
             getItem('ترخیص', '/release_report'),
             getItem('اضافه سنواتی', '/init_additional_service_report'),
+            getItem('آمار پایه خدمتی', '/stats_report'),
         ]),
         localStorage.getItem("user_access") === null ? null : localStorage.getItem("user_access") === undefined ? null : localStorage.getItem("user_access").length === 0 ? null :
             getItem('تنظیمات', 'setting', <SettingOutlined />, [

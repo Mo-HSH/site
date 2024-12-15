@@ -15,7 +15,7 @@ import {
     Tag,
     Typography, Upload
 } from "antd";
-import {EditOutlined, PlusOutlined, UploadOutlined, UserOutlined} from "@ant-design/icons";
+import {PlusOutlined, UploadOutlined, UserOutlined} from "@ant-design/icons";
 import {
     BooleanFieldForm,
     InputFieldForm,
@@ -762,17 +762,17 @@ function EditSoldier() {
             </Row>
             <Row gutter={24} justify={"center"} align={"top"} style={{height: "70px", marginTop: "10px"}}>
                 <Col gutter={12} style={{width: "400px"}}>
-                    <InputFieldForm label={"خیابان"} validator={justStringValidator}
+                    <InputFieldForm label={"خیابان"} validator={passAnywayValidator}
                                     initValue={soldier["address_street"]}
                                     onConfirmEdit={(v) => onConfirmEditSingleForm("address_street", v, "str", false)}/>
                 </Col>
                 <Col gutter={4} style={{width: "400px"}}>
-                    <InputFieldForm label={"پلاک"} validator={justStringValidator}
+                    <InputFieldForm label={"پلاک"} validator={passAnywayValidator}
                                     initValue={soldier["address_house_number"]}
                                     onConfirmEdit={(v) => onConfirmEditSingleForm("address_house_number", v, "str", false)}/>
                 </Col>
                 <Col gutter={4} style={{width: "400px"}}>
-                    <InputFieldForm label={"واحد"} validator={justStringValidator}
+                    <InputFieldForm label={"واحد"} validator={passAnywayValidator}
                                     initValue={soldier["address_home_unit"]}
                                     onConfirmEdit={(v) => onConfirmEditSingleForm("address_home_unit", v, "str", false)}/>
                 </Col>
