@@ -72,6 +72,8 @@ function DutyGroupReport() {
             "deployment_date": 1,
             "unit": 1,
             "section": 1,
+            "military_rank": 1,
+            "extra_info": 1,
             "duty_group_data": {
                 "$filter": {
                     "input": "$duty_group_data",
@@ -99,6 +101,7 @@ function DutyGroupReport() {
                 const transformedData = res.flatMap(soldier => {
                     return soldier.duty_group_data.map((dutyGroup, index) => ({
                         rowIndex: index === 0 ? rowIndexCounter++ : null,
+                        military_rank: soldier.military_rank,
                         first_name: soldier.first_name,
                         last_name: soldier.last_name,
                         national_code: soldier.national_code,
@@ -108,6 +111,7 @@ function DutyGroupReport() {
                         deployment_date: DateRenderer(soldier.deployment_date),
                         duty_group_submit_date: DateRenderer(dutyGroup.submit_date),
                         duty_group: DutyGroupRenderer(dutyGroup.is_in_combat_group),
+                        extra_info: soldier.extra_info,
                     }));
                 });
                 setData(transformedData);
@@ -145,15 +149,14 @@ function DutyGroupReport() {
         console.log(data);
         const worksheet = XLSX.utils.json_to_sheet(data.map((row, index) => ({
             'ردیف': index + 1,
+            'درجه': row["military_rank"],
             'نام': row["first_name"],
             'نشان': row["last_name"],
             'کد ملی': row["national_code"],
-            'نام پدر': row["father_name"],
             'تاریخ اعزام': row["deployment_date"],
-            'یگان': row["unit"],
-            'قسمت': row["section"],
-            'تاریخ ثبت': row["duty_group_submit_date"],
             'گروه خدمتی': row["duty_group"],
+            'تاریخ ثبت گروه خدمتی': row["duty_group_submit_date"],
+            'گروه جسمانی': row["extra_info"].includes("معاف از رزم")? "معاف از رزم" : "سالم",
         })));
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
@@ -316,12 +319,19 @@ function DutyGroupReport() {
                             })
                         },
                         {
+                            title: "گروه خدمتی",
+                            dataIndex: "duty_group",
+                        },
+                        {
                             title: dutyGroup ? "تاریخ اضافه" : "تاریخ کسر",
                             dataIndex: "duty_group_submit_date",
                         },
                         {
-                            title: "گروه خدمتی",
-                            dataIndex: "duty_group",
+                            title: "گروه جسمانی",
+                            dataIndex: "extra_info",
+                            render: (value)=> {
+                                return value.includes("معاف از رزم")? "معاف از رزم" : "سالم";
+                            }
                         },
                     ].map(v => {
                         v["align"] = "center";
