@@ -46,7 +46,7 @@ function ReleaseReport() {
                 "$gte": fromDate
             },
             "status": {
-                "$in": ["حاضر", "فرار"]
+                "$in": ["حاضر"]
             }
         }
 
@@ -59,13 +59,13 @@ function ReleaseReport() {
         axios.post(getApiUrl("soldier/list"), {
             "filter": filter,
             "projection": {
+                "military_rank": 1,
                 "first_name": 1,
                 "last_name": 1,
                 "national_code": 1,
                 "father_name": 1,
                 "unit": 1,
                 "section": 1,
-                "status": 1,
                 "is_native": 1,
                 "absence_discharge": 1,
                 "extra_annual_leave": 1,
@@ -84,13 +84,13 @@ function ReleaseReport() {
                 const transformedData = res.flatMap((soldier, index) => {
                     return ({
                         rowIndex: index + 1,
+                        military_rank: soldier.military_rank,
                         first_name: soldier.first_name,
                         last_name: soldier.last_name,
                         national_code: soldier.national_code,
                         father_name: soldier.father_name,
                         unit: soldier.unit,
                         section: soldier.section,
-                        status: soldier.status,
                         is_native: NativeRenderer(soldier.is_native),
                         absence_discharge: soldier.absence_discharge,
                         extra_annual_leave: soldier.extra_annual_leave,
@@ -127,15 +127,23 @@ function ReleaseReport() {
         console.log(data);
         const worksheet = XLSX.utils.json_to_sheet(data.map((row, index) => ({
             'ردیف': index + 1,
+            'درجه': row["military_rank"],
             'نام': row["first_name"],
             'نشان': row["last_name"],
             'کد ملی': row["national_code"],
-            'نام پدر': row["father_name"],
             'تاریخ اعزام': row["deployment_date"],
-            'یگان': row["unit"],
-            'قسمت': row["section"],
-            'تاریخ نهست': row["absence_start_date"],
-            'مدت نهست': row["absence_duration"],
+            'نام پدر': row["father_name"],
+            'بومی/غیربومی': row["is_native"],
+            'مدت نهست': row["absence_discharge"],
+            'اضافه سالیانه': row["extra_annual_leave"],
+            'اضافه استعلاجی': row["extra_medical_leave"],
+            'مدت فرار': row["run_discharge"],
+            'تنبیه ماده 60': row["run_punish"],
+            'بازداشت': row["arrest_punish"],
+            'سنواتی': row["additional_service_day"],
+            'ترخیص قانونی': row["legal_release_date"],
+            'ترخیص کل': row["overall_release_date"],
+            'ترخیص پیشنهادی': "",
         })));
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
@@ -199,7 +207,7 @@ function ReleaseReport() {
                         <Button block={true} type={"primary"} onClick={handlePrint}>پرینت</Button>
                     </Form.Item>
                     <Form.Item>
-                        <Button block={true} disabled={true} type={"primary"} loading={downloading} onClick={()=> {
+                        <Button block={true} type={"primary"} loading={downloading} onClick={()=> {
                             setDownloading(true);
                             download();
                             setDownloading(false);
@@ -246,6 +254,10 @@ function ReleaseReport() {
                             key: 'rowIndex',
                         },
                         {
+                            title: "درجه",
+                            dataIndex: "military_rank",
+                        },
+                        {
                             title: "نام",
                             dataIndex: "first_name",
                         },
@@ -258,19 +270,19 @@ function ReleaseReport() {
                             dataIndex: "national_code",
                         },
                         {
+                            title: "تاریخ اعزام",
+                            dataIndex: "deployment_date",
+                        },
+                        {
                             title: "نام پدر",
                             dataIndex: "father_name",
                         },
                         {
-                            title: "وضعیت",
-                            dataIndex: "status",
-                        },
-                        {
-                            title: "سکونت",
+                            title: "بومی/غیربومی",
                             dataIndex: "is_native",
                         },
                         {
-                            title: "انفصال نهست",
+                            title: "مدت نهست",
                             dataIndex: "absence_discharge",
                         },
                         {
@@ -282,11 +294,11 @@ function ReleaseReport() {
                             dataIndex: "extra_medical_leave",
                         },
                         {
-                            title: "انفصال فرار",
+                            title: "مدت فرار",
                             dataIndex: "run_discharge",
                         },
                         {
-                            title: "تنبیهی فرار",
+                            title: "تنبیه ماده 60",
                             dataIndex: "run_punish",
                         },
                         {
@@ -298,16 +310,16 @@ function ReleaseReport() {
                             dataIndex: "additional_service_day",
                         },
                         {
-                            title: "اعزام",
-                            dataIndex: "deployment_date",
-                        },
-                        {
                             title: "ترخیص قانونی",
                             dataIndex: "legal_release_date",
                         },
                         {
                             title: "ترخیص کل",
                             dataIndex: "overall_release_date",
+                        },
+                        {
+                            title: "ترخیص پیشنهادی",
+                            dataIndex: "",
                         },
                     ].map(v => {
                         v["align"] = "center";

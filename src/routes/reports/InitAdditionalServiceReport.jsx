@@ -6,11 +6,14 @@ import {DateRenderer} from "../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
+import * as XLSX from "xlsx"
+import {saveAs} from "file-saver";
 
 function InitAdditionalServiceReport() {
 
     const [unitSelectOptions, setUnitSelectOptions] = useState([]);
     const [soldiers, setSoldiers] = useState([]);
+    const [downloading, setDownloading] = useState(false);
 
     const [api, contextHolder] = notification.useNotification();
     const printComponent = useRef(null);
@@ -38,7 +41,7 @@ function InitAdditionalServiceReport() {
         console.log(value);
 
         let filter = {
-            "deployment_date": {
+            "entry_date": {
                 "$lte": toDate,
                 "$gte": fromDate
             },
@@ -57,20 +60,18 @@ function InitAdditionalServiceReport() {
         }
 
         axios.post(getApiUrl("soldier/list"), {
-            "query": {
-                "filter": filter,
-                "projection": {
-                    "first_name": 1,
-                    "last_name": 1,
-                    "national_code": 1,
-                    "father_name": 1,
-                    "deployment_date": 1,
-                    "unit": 1,
-                    "section": 1,
-                    "additional_service_day": 1,
-                }
+            "filter": filter,
+            "projection": {
+                "first_name": 1,
+                "last_name": 1,
+                "national_code": 1,
+                "father_name": 1,
+                "deployment_date": 1,
+                "unit": 1,
+                "section": 1,
+                "additional_service_day": 1,
             }
-        })
+        }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
                 console.log(res);
@@ -106,6 +107,24 @@ function InitAdditionalServiceReport() {
         removeAfterPrint: true
     });
 
+    function download() {
+        console.log(soldiers);
+        const worksheet = XLSX.utils.json_to_sheet(soldiers.map((row, index) => ({
+            'ردیف': index + 1,
+            'نام': row["first_name"],
+            'نشان': row["last_name"],
+            'کد ملی': row["national_code"],
+            'نام پدر': row["father_name"],
+            'تاریخ اعزام': row["deployment_date"],
+            'اضافه سنواتی': row["additional_service_day"],
+        })));
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+        const excelBuffer = XLSX.write(workbook, {bookType: 'xlsx', type: 'array'});
+        const blob = new Blob([excelBuffer], {type: 'application/octet-stream'});
+        saveAs(blob, `گزارش.xlsx`);
+    }
+
     return (
         <Flex vertical={true} style={{width: "100%"}}>
             {contextHolder}
@@ -120,7 +139,7 @@ function InitAdditionalServiceReport() {
                     layout={"inline"}
                     onFinish={onFinish}
                 >
-                    <Tooltip title={"از تاریخ اعزام"}>
+                    <Tooltip title={"از تاریخ ورود"}>
                     <Form.Item
                         label={"از تاریخ"}
                         name={"from_date"}
@@ -131,7 +150,7 @@ function InitAdditionalServiceReport() {
                         <Input/>
                     </Form.Item>
                     </Tooltip>
-                    <Tooltip title={"تا تاریخ اعزام"}>
+                    <Tooltip title={"تا تاریخ ورود"}>
                     <Form.Item
                         label={"تا تاریخ"}
                         name={"to_date"}
@@ -159,6 +178,13 @@ function InitAdditionalServiceReport() {
                     </Form.Item>
                     <Form.Item>
                         <Button block={true} type={"primary"} onClick={handlePrint}>پرینت</Button>
+                    </Form.Item>
+                    <Form.Item>
+                        <Button block={true} type={"primary"} loading={downloading} onClick={()=> {
+                            setDownloading(true);
+                            download();
+                            setDownloading(false);
+                        }}>دانلود</Button>
                     </Form.Item>
                 </Form>
             </Flex>

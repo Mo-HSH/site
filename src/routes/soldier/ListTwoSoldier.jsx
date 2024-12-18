@@ -30,8 +30,6 @@ function ListTwoSoldier() {
     const [filter, setFilter] = useState({});
     const [projection, setProjection] = useState({});
     const [columnsEditDrawer, setColumnsEditDrawer] = useState(false);
-    const [unit, setUnit] = useState([]);
-    const [state, setState] = useState([]);
     const [api, contextHolder] = notification.useNotification();
     const defaultColumn = [0, 1, 2, 3, 4, 10, 11];
     const navigate = useNavigate();
@@ -1092,7 +1090,7 @@ function ListTwoSoldier() {
                 <Checkbox.Group options={options} onChange={columnsChange} defaultValue={defaultColumn}/>
             </Drawer>
             <Table dataSource={data} columns={columns} bordered={true}
-                   pagination={{position: ["bottomCenter"]}}/>
+                   />
 
         </Flex>
     );

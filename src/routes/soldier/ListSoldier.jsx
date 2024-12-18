@@ -1,4 +1,4 @@
-import {Button, Divider, Flex, Form, notification, Popover, Select, Table, Typography} from "antd";
+import {Button, Checkbox, Divider, Drawer, Flex, Form, notification, Popover, Select, Table, Typography} from "antd";
 import {PlusOutlined} from "@ant-design/icons";
 import {useEffect, useState} from "react";
 import StringFilterCard from "../../components/filterCards/StringFilterCard.jsx";
@@ -7,44 +7,25 @@ import SelectFilterCard from "../../components/filterCards/SelectFilterCard.jsx"
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
 
-const FILTER_CARD_SIZE = 200;
-
 function ListSoldier() {
-    const [filters, setFilters] = useState([]);
-    const [queries, setQueries] = useState([]);
+    const [filter, setFilter] = useState({});
+    const [projection, setProjection] = useState({});
+    const [columns, setColumns] = useState([]);
+    const [openFilterDrawer, setOpenFilterDrawer] = useState(false);
+    const [openSettingDrawer, setOpenSettingDrawer] = useState(false);
     const [data, setData] = useState([]);
-    const [form] = Form.useForm();
+
+    const [filterForm, projectionForm] = Form.useForm();
     const [api, contextHolder] = notification.useNotification();
 
-    const addFilterOptions = [
-        {label: "نام", value: "first_name", type: "string"},
-        {label: "نشان", value: "last_name", type: "string"},
-        {label: "تاریخ ورود", value: "entry_date", type: "date"},
-        {label: "تاریخ اعزام", value: "deployment_date", type: "date"},
-        {label: "درجه", value: "military_rank", type: "select", configName: "rank"},
-        {label: "وضعیت", value: "status", type: "select", configName: "status"},
-        {label: "یگان و قسمت", value: "unit", childQuery: "section", type: "select", configName: "unit"},
-    ];
-
-    function addFilter(formValue) {
-        let filterOption = addFilterOptions.find(v=> v.value === formValue.filter);
-        setFilters(prev=> [...prev, filterOption]);
-        form.resetFields();
-    }
-
-    function removeFilter(index) {
-        setFilters((prev) => {
-            let temp = [...prev];
-            temp.splice(index, 1);
-            return temp;
-        });
-    }
 
     useEffect(() => {
-        axios.post(getApiUrl("soldier/list"), {"filter": queries.reduce((acc, obj) => ({ ...acc, ...obj }), {}), "projection": {}}, {withCredentials: true})
+        axios.post(getApiUrl("soldier/list"), {
+            "filter": filter,
+            "projection": projection
+        }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
-                console.log(res);
                 setData(res);
             })
             .catch((err) => {
@@ -52,92 +33,156 @@ function ListSoldier() {
                     message: "خطا", description: err.response.data
                 });
             });
-    }, [queries]);
+    }, [filter, projection]);
 
-    const columns = [
+    function columnsChange(checkedValues) {
+        setColumns(checkedValues);
+    }
+
+    const options = [
         {
-            title: "نام",
-            dataIndex: "first_name",
+          label: "ردیف",
+          value: {
+              title: "ردیف",
+              render: (text, record, index) => (
+                  index + 1
+              )
+          }
         },
         {
-            title: "نشان",
-            dataIndex: "last_name",
+            label: "نام",
+            value: {
+                title: "نام",
+                dataIndex: "first_name",
+            },
         },
         {
-            title: "کد ملی",
-            dataIndex: "national_code",
+            label: "نشان",
+            value: {
+                title: "نشان",
+                dataIndex: "last_name",
+            },
         },
         {
-            title: "وضعیت",
-            dataIndex: "status",
+            label: "کد ملی",
+            value: {
+                title: "کد ملی",
+                dataIndex: "national_code",
+            },
         },
-    ];
+        {
+            label: "تاریخ اعزام",
+            value: 3,
+        },
+        {
+            label: "درجه",
+            value: 4,
+        },
+        {
+            label: "مدرک تحصیلی",
+            value: 5,
+        },
+        {
+            label: "تاریخ تولد",
+            value: 6,
+        },
+        {
+            label: "نام پدر",
+            value: 7,
+        },
+        {
+            label: "استان",
+            value: 8,
+        },
+        {
+            label: "شهر",
+            value: 9,
+        },
+        {
+            label: "یگان",
+            value: 10,
+        },
+        {
+            label: "قسمت",
+            value: 11,
+        },
+        {
+            label: "محل تولد",
+            value: 12,
+        },
+        {
+            label: "رشته تحصیلی",
+            value: 13,
+        },
+        {
+            label: "تاریخ ترخیص قانونی",
+            value: 14,
+        },
+        {
+            label: "تاریخ ترخیص کل",
+            value: 15,
+        },
+        {
+            label: "بومی/غیر بومی",
+            value: 16,
+        },
+        {
+            label: "دین",
+            value: 17,
+        },
+        {
+            label: "کسری",
+            value: 18,
+        },
+        {
+            label: "تاریخ ورود",
+            value: 19,
+        },
+        {
+            label: "سلامت روان",
+            value: 20,
+        },
+        {
+            label: "گروه خونی",
+            value: 21,
+        },
+        {
+            label: "رنگ چشم",
+            value: 22,
+        },
+        {
+            label: "قد",
+            value: 23,
+        },
+    ]
 
     return (
         <Flex vertical={true} style={{width: "100%"}}>
             {contextHolder}
-            <Flex align={"center"} gap={"large"} justify={"space-between"}>
-                <Flex style={{overflowY: "auto"}} gap={"small"}>
-
-                    {
-                        filters.map((v, index) => {
-                            switch (v.type) {
-                                case "string":
-                                    return (<StringFilterCard label={v.label} query={v.value} setQuery={setQueries} removeFilter={removeFilter} index={index} width={FILTER_CARD_SIZE} height={FILTER_CARD_SIZE}/>)
-                                case "date":
-                                    return (<DateFilterCard label={v.label} query={v.value} setQuery={setQueries} removeFilter={removeFilter} index={index} width={FILTER_CARD_SIZE} height={FILTER_CARD_SIZE}/>)
-                                case "select":
-                                    return (<SelectFilterCard label={v.label} configName={v.configName} parentQuery={v.value} childQuery={v.childQuery} setQuery={setQueries} removeFilter={removeFilter} index={index} width={FILTER_CARD_SIZE} height={FILTER_CARD_SIZE}/>)
-                                default:
-                                    return (<>err</>);
-                            }
-                        })
-                    }
-
-                    <Popover trigger={"click"} content={
-                        <Flex vertical={true} gap={"small"}>
-                            <Form
-                                onFinish={addFilter}
-                                form={form}
-                            >
-                                <Form.Item
-                                    name={"filter"}
-                                    rules={[{
-                                        required: true, message: "لطفا یک فیلتر را انتخاب کنید."
-                                    }]}
-                                >
-                                    <Select
-                                        showSearch
-                                        optionFilterProp="label"
-                                        options={addFilterOptions}
-                                        style={{width: "200px"}}
-                                    />
-                                </Form.Item>
-                                <Form.Item>
-                                    <Button htmlType={"submit"} block={true} type={"primary"}>اضافه</Button>
-                                </Form.Item>
-                            </Form>
-
-                        </Flex>
-                    }>
-                        <Button icon={<PlusOutlined/>} style={{width: FILTER_CARD_SIZE, height: FILTER_CARD_SIZE}}/>
-                    </Popover>
-
-                </Flex>
-                <Flex align={"center"}>
-                    <Divider type={"vertical"} style={{height: "80px"}}/>
-                    <Flex vertical={true} gap={"small"}>
-                        <Typography.Title level={5}>
-                            تعداد: {data.length}
-                        </Typography.Title>
-                        <Button type={"primary"}>پرینت</Button>
-                        <Button type={"primary"}>دانلود</Button>
-                    </Flex>
+            <Flex align={"center"} justify={"flex-end"} style={{borderRadius: 5, padding: 10, background: "#d5d5d5", zIndex: 10, transform: "translateY(15%)", position: "absolute"}}>
+                <Flex gap={"small"} align={"center"}>
+                    <Button type={"primary"} onClick={()=>{setOpenFilterDrawer(true)}}>فیلتر</Button>
+                    <Button type={"primary"} onClick={()=>{setOpenSettingDrawer(true)}}>پیکربندی خروجی</Button>
+                    <Button type={"primary"}>دانلود</Button>
+                    <Button type={"default"}>نتیجه جستجو: {data.length} نفر</Button>
                 </Flex>
             </Flex>
-            <Divider/>
+
+            <Drawer title={"فیلتر"} placement={"right"} size={"large"} open={openFilterDrawer} onClose={() => setOpenFilterDrawer(false)}>
+            {/*    filter    */}
+
+            </Drawer>
+            <Drawer title={"تنظیمات"} placement={"left"} open={openSettingDrawer} onClose={() => setOpenSettingDrawer(false)}>
+                <Checkbox.Group options={options} onChange={columnsChange}>
+
+                </Checkbox.Group>
+            </Drawer>
+
             <Flex justify={"center"}>
                 <Table
+                    pagination={{
+                        position: ["topLeft"],
+                    }}
                     dataSource={data}
                     columns={columns}
                     style={{width: "100%"}}

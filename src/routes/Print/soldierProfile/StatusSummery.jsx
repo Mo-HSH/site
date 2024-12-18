@@ -1134,10 +1134,6 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                         `}
                     </style>
                     <Flex vertical={true} align={"center"}
-                          style={{
-                              border: "solid gray 2px",
-                              borderRadius: "10px",
-                          }}
                           className={"break-after A4-portrait"}
                     >
                         <Typography.Title level={5}>خلاصه وضعیت خدمتی کارکنان وظیفه فرماندهی پش مرکز
