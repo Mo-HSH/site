@@ -1,27 +1,86 @@
-import {Button, Checkbox, Divider, Drawer, Flex, Form, notification, Popover, Select, Table, Typography} from "antd";
-import {PlusOutlined} from "@ant-design/icons";
+import {
+    Button, Cascader,
+    Checkbox,
+    Col,
+    Drawer,
+    Flex,
+    Form,
+    Input,
+    notification,
+    Popover,
+    Row,
+    Select,
+    Table,
+    Typography
+} from "antd";
 import {useEffect, useState} from "react";
-import StringFilterCard from "../../components/filterCards/StringFilterCard.jsx";
-import DateFilterCard from "../../components/filterCards/DateFilterCard.jsx";
-import SelectFilterCard from "../../components/filterCards/SelectFilterCard.jsx";
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
+import {DateRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
+import * as XLSX from "xlsx"
+import {saveAs} from "file-saver";
+import {dateValidator} from "../../utils/Validates.js";
+import {GetQueryDate} from "../../utils/Calculative.js";
 
 function ListSoldier() {
     const [filter, setFilter] = useState({});
     const [projection, setProjection] = useState({});
-    const [columns, setColumns] = useState([]);
-    const [openFilterDrawer, setOpenFilterDrawer] = useState(false);
+    const [columns, setColumns] = useState([0, 1, 2, 3, 4, 5]);
+    const [openFilterDrawer, setOpenFilterDrawer] = useState(true);
     const [openSettingDrawer, setOpenSettingDrawer] = useState(false);
     const [data, setData] = useState([]);
+    const [unitSectionOptions, setUnitSectionOptions] = useState([]);
+    const [stateCityOptions, setStateCityOptions] = useState([]);
+
+    const [statusOptions, setStatusOptions] = useState([]);
+    const [mentalHealthOptions, setMentalHealthOptions] = useState([]);
+    const [rankOptions, setRankOptions] = useState([]);
 
     const [filterForm, projectionForm] = Form.useForm();
     const [api, contextHolder] = notification.useNotification();
 
+    useEffect(() => {
+        [
+            {configName: "unit", setOptions: setUnitSectionOptions},
+            {configName: "state", setOptions: setStateCityOptions},
+
+            {configName: "status", setOptions: setStatusOptions},
+            {configName: "mental-health", setOptions: setMentalHealthOptions},
+            {configName: "rank", setOptions: setRankOptions},
+        ].forEach(({configName, setOptions}) => {
+            axios.get(getApiUrl(`config/${configName}`), {withCredentials: true})
+                .then((response) => {
+                    let temp = [];
+                    response.data.config.forEach((value) => {
+                        if (typeof (value) === "string") {
+                            temp.push({
+                                value: value,
+                                label: value
+                            });
+                        } else {
+                            temp.push({
+                                value: value.name,
+                                label: value.name,
+                                children: [...value.config.map(i => {
+                                    return ({
+                                        value: i,
+                                        label: i
+                                    })
+                                })]
+                            })
+                        }
+                    });
+                    setOptions(temp);
+                })
+                .catch(() => {
+                });
+        })
+    }, []);
+
 
     useEffect(() => {
         axios.post(getApiUrl("soldier/list"), {
-            "filter": filter,
+            "filter": filter.length > 0 ? {"$and": filter} : {},
             "projection": projection
         }, {withCredentials: true})
             .then((response) => {
@@ -30,7 +89,7 @@ function ListSoldier() {
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطا", description: err.response.data
+                    message: "خطااااا", description: err.response.data
                 });
             });
     }, [filter, projection]);
@@ -41,13 +100,20 @@ function ListSoldier() {
 
     const options = [
         {
-          label: "ردیف",
-          value: {
-              title: "ردیف",
-              render: (text, record, index) => (
-                  index + 1
-              )
-          }
+            label: "ردیف",
+            value: {
+                title: "ردیف",
+                render: (text, record, index) => (
+                    index + 1
+                )
+            }
+        },
+        {
+            label: "درجه",
+            value: {
+                title: "درجه",
+                dataIndex: "military_rank",
+            },
         },
         {
             label: "نام",
@@ -72,110 +138,478 @@ function ListSoldier() {
         },
         {
             label: "تاریخ اعزام",
-            value: 3,
-        },
-        {
-            label: "درجه",
-            value: 4,
+            value: {
+                title: "تاریخ اعزام",
+                dataIndex: "deployment_date",
+                render: DateRenderer
+            },
         },
         {
             label: "مدرک تحصیلی",
-            value: 5,
+            value: {
+                title: "مدرک تحصیلی",
+                dataIndex: "education",
+            },
         },
         {
             label: "تاریخ تولد",
-            value: 6,
+            value: {
+                title: "تاریخ تولد",
+                dataIndex: "birthday",
+                render: DateRenderer
+            },
         },
         {
             label: "نام پدر",
-            value: 7,
+            value: {
+                title: "نام پدر",
+                dataIndex: "father_name",
+            },
         },
         {
             label: "استان",
-            value: 8,
+            value: {
+                title: "استان",
+                dataIndex: "state",
+            },
         },
         {
             label: "شهر",
-            value: 9,
+            value: {
+                title: "شهر",
+                dataIndex: "city",
+            },
         },
         {
             label: "یگان",
-            value: 10,
+            value: {
+                title: "یگان",
+                dataIndex: "unit",
+            },
         },
         {
             label: "قسمت",
-            value: 11,
+            value: {
+                title: "قسمت",
+                dataIndex: "section",
+            },
         },
         {
             label: "محل تولد",
-            value: 12,
+            value: {
+                title: "محل تولد",
+                dataIndex: "birthplace",
+            },
         },
         {
             label: "رشته تحصیلی",
-            value: 13,
+            value: {
+                title: "رشته تحصیلی",
+                dataIndex: "field_of_study",
+            },
         },
         {
             label: "تاریخ ترخیص قانونی",
-            value: 14,
+            value: {
+                title: "تاریخ ترخیص قانونی",
+                dataIndex: "legal_release_date",
+                render: DateRenderer
+            },
         },
         {
             label: "تاریخ ترخیص کل",
-            value: 15,
+            value: {
+                title: "تاریخ ترخیص کل",
+                dataIndex: "overall_release_date",
+                render: DateRenderer
+            },
         },
         {
             label: "بومی/غیر بومی",
-            value: 16,
+            value: {
+                title: "بومی/غیر بومی",
+                dataIndex: "is_native",
+                render: NativeRenderer
+            },
         },
         {
             label: "دین",
-            value: 17,
+            value: {
+                title: "دین",
+                dataIndex: "religion"
+            },
         },
         {
-            label: "کسری",
-            value: 18,
+            label: "وضعیت خدمتی",
+            value: {
+                title: "وضعیت خدمتی",
+                dataIndex: "status"
+            },
         },
         {
             label: "تاریخ ورود",
-            value: 19,
+            value: {
+                title: "تاریخ ورود",
+                dataIndex: "entry_date",
+                render: DateRenderer
+            },
+        },
+        {
+            label: "تاریخ ترخیص",
+            value: {
+                title: "تاریخ ترخیص",
+                dataIndex: "release",
+                render: (v => DateRenderer(v["release_date"]))
+            },
         },
         {
             label: "سلامت روان",
-            value: 20,
+            value: {
+                title: "سلامت روان",
+                dataIndex: "mental_health"
+            }
         },
         {
             label: "گروه خونی",
-            value: 21,
+            value: {
+                title: "گروه خونی",
+                dataIndex: "blood_type"
+            }
         },
         {
             label: "رنگ چشم",
-            value: 22,
+            value: {
+                title: "رنگ چشم",
+                dataIndex: "eye_color"
+            }
         },
         {
             label: "قد",
-            value: 23,
+            value: {
+                title: "قد",
+                dataIndex: "height"
+            }
+        },
+        {
+            label: "شماره پرونده",
+            value: {
+                title: "شماره پرونده",
+                dataIndex: "folder_number"
+            }
+        },
+        {
+            label: "یگان قبلی",
+            value: {
+                title: "یگان قبلی",
+                dataIndex: "previous_unit"
+            }
         },
     ]
+
+    function download() {
+        let res = data.map((dataItem, index) => {
+            let tempRes = columns.map((colIndex => {
+                let temp = {};
+                temp[options[colIndex].value.title] = dataItem[options[colIndex].value.dataIndex];
+                return temp;
+            }))
+            let t = {};
+            tempRes.forEach((v) => {
+                const key = Object.keys(v)[0];
+                if (v[key] === undefined) {
+                    t[key] = index + 1;
+                } else if (typeof v[key] === "object") {
+                    let renderer = options.find((v) => v.label === key).value.render;
+                    if (renderer) {
+                        t[key] = renderer(v[key]);
+                    } else {
+                        t[key] = DateRenderer(v[key]);
+                    }
+                } else {
+                    let renderer = options.find((v) => v.label === key).value.render;
+                    if (renderer) {
+                        t[key] = renderer(v[key]);
+                    } else {
+                        t[key] = v[key];
+                    }
+                }
+            })
+            return t;
+        })
+
+        const worksheet = XLSX.utils.json_to_sheet(res);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+        const excelBuffer = XLSX.write(workbook, {bookType: 'xlsx', type: 'array'});
+        const blob = new Blob([excelBuffer], {type: 'application/octet-stream'});
+        saveAs(blob, `گزارش.xlsx`);
+    }
+
+    const filters = [
+        {label: "نام", dataIndex: "first_name", type: "str"},
+        {label: "نشان", dataIndex: "last_name", type: "str"},
+        {label: "کد ملی", dataIndex: "national_code", type: "str"},
+        {label: "نام پدر", dataIndex: "father_name", type: "str"},
+
+        {label: "تاریخ تولد", dataIndex: "birthday", type: "date"},
+        {label: "تاریخ اعزام", dataIndex: "deployment_date", type: "date"},
+        {label: "تاریخ ورود", dataIndex: "entry_date", type: "date"},
+        {label: "تاریخ ترخیص", dataIndex: "release.release_date", type: "date"},
+        {label: "تاریخ ترخیص قانونی", dataIndex: "legal_release_date", type: "date"},
+        {label: "تاریخ ترخیص کل", dataIndex: "overall_release_date", type: "date"},
+
+        {
+            label: "یگان-قسمت",
+            dataIndex: "unit",
+            dataIndex_child: "section",
+            type: "treeSelect",
+            options: unitSectionOptions
+        },
+        {
+            label: "استان-شهر",
+            dataIndex: "state",
+            dataIndex_child: "city",
+            type: "treeSelect",
+            options: stateCityOptions
+        },
+
+        {label: "وضعیت خدمتی", dataIndex: "status", type: "select", options: statusOptions},
+        {label: "وضعیت سلامت روان", dataIndex: "mental_health", type: "select", options: mentalHealthOptions},
+        {
+            label: "وضعیت معاف از رزم",
+            dataIndex: "physical_health",
+            type: "select",
+            options: [{label: "سالم", value: "سالم"}, {label: "معاف از رزم", value: "معاف از رزم"}]
+        },
+        {label: "درجه", dataIndex: "military_rank", type: "select", options: rankOptions},
+        {
+            label: "تاهل",
+            dataIndex: "is_married",
+            type: "select",
+            options: [{label: "متاهل", value: "متاهل"}, {label: "مجرد", value: "مجرد"}]
+        },
+        {
+            label: "گروه خدمتی",
+            dataIndex: "duty_group",
+            type: "select",
+            options: [{label: "رزمی", value: "رزمی"}, {label: "غیررزمی", value: "غیررزمی"}]
+        },
+        {
+            label: "بومی/غیربومی",
+            dataIndex: "is_native",
+            type: "select",
+            options: [{label: "بومی", value: "بومی"}, {label: "غیربومی", value: "غیربومی"}]
+        },
+
+    ];
+
+    function onFinishFilter(value) {
+        let temp = [];
+
+        filters.forEach((v) => {
+            if (value[v.dataIndex] !== undefined && value[v.dataIndex].length > 0) {
+            }
+            switch (v.type) {
+                case "str":
+                    if (value[v.dataIndex] !== undefined && value[v.dataIndex].length > 0) {
+                        let t = {};
+                        t["$or"] = value[v.dataIndex].map(item => {
+                            let b = {};
+                            b[v.dataIndex] = {"$regex": `^${item}`};
+                            return b;
+                        });
+                        temp.push(t);
+                    }
+                    break;
+                case "date": {
+                    const from_date = `from_${v.dataIndex}`;
+                    const to_date = `to_${v.dataIndex}`;
+                    if (value[to_date] !== undefined && value[from_date] !== undefined && value[v.dataIndex] !== "") {
+                        let t = {};
+                        t[v.dataIndex] = {
+                            "$gte": GetQueryDate(value[from_date]),
+                            "$lte": GetQueryDate(value[to_date])
+                        };
+                        temp.push(t);
+                    }
+                }
+                    break;
+                case "select":
+                    if (value[v.dataIndex] !== undefined && value[v.dataIndex].length > 0) {
+                        let t = {};
+                        if (v.dataIndex === "physical_health") {
+                            if (value[v.dataIndex].length === 1) {
+                                if (value[v.dataIndex][0] === "معاف از رزم") {
+                                    t["extra_info"] = "معاف از رزم";
+                                } else {
+                                    t["extra_info"] = {
+                                        "$not": {
+                                            "$all": ["معاف از رزم"]
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (v.dataIndex === "is_married") {
+                            if (value[v.dataIndex].length === 1) {
+                                if (value[v.dataIndex][0] === "متاهل") {
+                                    t["family"] = {
+                                        "$elemMatch": {
+                                            "relative": "همسر"
+                                        }
+                                    }
+                                } else {
+                                    t["family"] = {
+                                        "$not": {
+                                            "$elemMatch": {
+                                                "relative": "همسر"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            t[v.dataIndex] = {
+                                "$in": value[v.dataIndex]
+                            };
+                        }
+                        temp.push(t);
+                    }
+                    break;
+                case "treeSelect":
+                    if (value[v.dataIndex] !== undefined && value[v.dataIndex].length > 0) {
+                        let t = {};
+                        t[v.dataIndex] = {
+                            "$in": value[v.dataIndex].map(v => v[0])
+                        };
+                        t[v.dataIndex_child] = {
+                            "$in": value[v.dataIndex].map(v => v[1])
+                        };
+                        temp.push(t);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        })
+
+        console.log(temp);
+        setFilter(temp);
+    }
 
     return (
         <Flex vertical={true} style={{width: "100%"}}>
             {contextHolder}
-            <Flex align={"center"} justify={"flex-end"} style={{borderRadius: 5, padding: 10, background: "#d5d5d5", zIndex: 10, transform: "translateY(15%)", position: "absolute"}}>
+            <Flex align={"center"} justify={"flex-end"} style={{
+                borderRadius: 5,
+                padding: 10,
+                background: "#d5d5d5",
+                zIndex: 10,
+                transform: "translateY(15%)",
+                position: "absolute"
+            }}>
                 <Flex gap={"small"} align={"center"}>
-                    <Button type={"primary"} onClick={()=>{setOpenFilterDrawer(true)}}>فیلتر</Button>
-                    <Button type={"primary"} onClick={()=>{setOpenSettingDrawer(true)}}>پیکربندی خروجی</Button>
-                    <Button type={"primary"}>دانلود</Button>
+                    <Button type={"primary"} onClick={() => {
+                        setOpenFilterDrawer(true)
+                    }}>فیلتر</Button>
+                    <Button type={"primary"} onClick={() => {
+                        setOpenSettingDrawer(true)
+                    }}>پیکربندی خروجی</Button>
+                    <Button type={"primary"} onClick={() => {
+                        download()
+                    }}>دانلود</Button>
                     <Button type={"default"}>نتیجه جستجو: {data.length} نفر</Button>
                 </Flex>
             </Flex>
 
-            <Drawer title={"فیلتر"} placement={"right"} size={"large"} open={openFilterDrawer} onClose={() => setOpenFilterDrawer(false)}>
-            {/*    filter    */}
+            <Drawer title={"فیلتر"} placement={"right"} size={"large"} open={openFilterDrawer}
+                    extra={<Button type={"primary"} onClick={() => {
+                        filterForm.submit();
+                    }}>اعمال فیلتر</Button>}
+                    onClose={() => setOpenFilterDrawer(false)}>
+                <Form
+                    form={filterForm}
+                    onFinish={onFinishFilter}
+                >
+                    {
+                        filters.map(({label, dataIndex, type, options}) => {
+                            switch (type) {
+                                case "str":
+                                    return (
+                                        <Form.Item
+                                            label={label}
+                                            name={dataIndex}
+                                        >
+                                            <Select mode={"tags"} dropdownStyle={{visibility: "hidden"}}/>
+                                        </Form.Item>
+                                    )
+                                case "date":
+                                    return (
+                                        <Row gutter={8}>
+                                            <Col span={12}>
+                                                <Form.Item
+                                                    label={["از", label].join(" ")}
+                                                    name={["from", dataIndex].join("_")}
+                                                    rules={[{
+                                                        validator: dateValidator
+                                                    }]}
+                                                >
+                                                    <Input placeholder={"1377/12/20"}/>
+                                                </Form.Item>
+                                            </Col>
+                                            <Col span={12}>
+                                                <Form.Item
+                                                    label={["تا", label].join(" ")}
+                                                    name={["to", dataIndex].join("_")}
+                                                    rules={[{
+                                                        validator: dateValidator
+                                                    }]}
+                                                >
+                                                    <Input placeholder={"1377/12/20"}/>
+                                                </Form.Item>
+                                            </Col>
+                                        </Row>
+                                    )
+                                case "treeSelect":
+                                    return (
+                                        <Form.Item
+                                            label={label}
+                                            name={dataIndex}
+                                        >
+                                            <Cascader
+                                                showSearch
+                                                multiple
+                                                options={options}
+                                                showCheckedStrategy={Cascader.SHOW_CHILD}
+                                            />
+                                        </Form.Item>
+                                    )
+                                case "select":
+                                    return (
+                                        <Form.Item
+                                            label={label}
+                                            name={dataIndex}
+                                        >
+                                            <Select
+                                                showSearch
+                                                mode={"tags"}
+                                                options={options}
+                                            />
+                                        </Form.Item>
+                                    )
+                                default:
+                                    break;
+                            }
+                        })
+                    }
+
+                </Form>
 
             </Drawer>
-            <Drawer title={"تنظیمات"} placement={"left"} open={openSettingDrawer} onClose={() => setOpenSettingDrawer(false)}>
-                <Checkbox.Group options={options} onChange={columnsChange}>
-
-                </Checkbox.Group>
+            <Drawer title={"تنظیمات"} placement={"left"} open={openSettingDrawer}
+                    onClose={() => setOpenSettingDrawer(false)}>
+                <Checkbox.Group options={options.map((v, index) => {
+                    return ({label: v.label, value: index})
+                })} onChange={columnsChange} value={columns}/>
             </Drawer>
 
             <Flex justify={"center"}>
@@ -184,7 +618,7 @@ function ListSoldier() {
                         position: ["topLeft"],
                     }}
                     dataSource={data}
-                    columns={columns}
+                    columns={columns.map((v) => options[v].value)}
                     style={{width: "100%"}}
                 />
             </Flex>

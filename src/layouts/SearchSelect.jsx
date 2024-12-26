@@ -136,6 +136,7 @@ function SearchSelect({
             "father_name": 1,
             "unit": 1,
             "section": 1,
+            "status": 1,
         } : searchProject;
 
         axios.post(getApiUrl("soldier/list"), {"filter": filter, "projection": {...project}}, {withCredentials: true}).then((response) => {
@@ -214,6 +215,12 @@ function SearchSelect({
             title: "قسمت",
             dataIndex: "section",
             key: "section",
+            align: "center",
+        },
+        {
+            title: "وضعیت",
+            dataIndex: "status",
+            key: "status",
             align: "center",
         },
     ] : [

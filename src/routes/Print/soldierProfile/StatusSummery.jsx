@@ -104,42 +104,6 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                 ,
                 "projection":
                     {
-                        "profile": 1,
-                        "first_name": 1,
-                        "last_name": 1,
-                        "military_rank": 1,
-                        "national_code": 1,
-                        "father_name": 1,
-                        "personnel_code": 1,
-                        "deployment_date": 1,
-                        "birthday": 1,
-                        "birthplace": 1,
-                        "religion": 1,
-                        "education": 1,
-                        "field_of_study": 1,
-                        "mental_health": 1,
-                        "extra_info": 1,
-                        "blood_type": 1,
-                        "height": 1,
-                        "state": 1,
-                        "city": 1,
-                        "address_street": 1,
-                        "address_house_number": 1,
-                        "address_home_unit": 1,
-                        "phone": 1,
-                        "family": 1,
-                        "leave": 1,
-                        "absence": 1,
-                        "arrest": 1,
-                        "deficit": 1,
-                        "run": 1,
-                        "mission": 1,
-                        "status": 1,
-                        "is_native": 1,
-                        "legal_release_date": 1,
-                        "overall_release_date": 1,
-                        "done_service_day": 1,
-                        "additional_service_day": 1,
                     }
             },
             {withCredentials: true}
@@ -501,6 +465,16 @@ function StatusSummery({setPrintTitle, soldierKey}) {
         {
             title: "اضافه خدمت سنواتی",
             dataIndex: "additional_service_day",
+            align: "center",
+        },
+        {
+            title: "اضافه استعلاجی",
+            dataIndex: "extra_medical_leave",
+            align: "center",
+        },
+        {
+            title: "اضافه سالیانه",
+            dataIndex: "extra_annual_leave",
             align: "center",
         },
         {
@@ -948,12 +922,14 @@ function StatusSummery({setPrintTitle, soldierKey}) {
             ref: dutyTable,
             dataSource: {
                 ...dutyData,
-                "additional_service": dutyData["additional_service_day"] + absence.reduce((sum, absence) => sum + absence.duration, 0) * 2 + soldier.run.reduce((sum, run) => sum + run["run_punish"], 0) + soldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
+                "additional_service": dutyData["additional_service_day"] + soldier["absence_punish"] + soldier["run_punish"] + soldier["arrest_punish"],
                 "discharge_service":
-                    (legalLeaveLimit - soldier.leave.reduce((sum, leave) => sum + leave.annual, 0) < 0 ? -1 * (legalLeaveLimit - soldier.leave.reduce((sum, leave) => sum + leave.annual, 0)) : 0)
-                    + (legalLeaveLimit - soldier.leave.reduce((sum, leave) => sum + leave.medical, 0) < 0 ? -1 * (legalLeaveLimit - soldier.leave.reduce((sum, leave) => sum + leave.medical, 0)) : 0)
-                    + soldier.run.reduce((sum, run) => sum + run["run_duration"], 0)
-                    + absence.reduce((sum, absence) => sum + absence.duration, 0)
+                    soldier["run_discharge"]
+                    + soldier["absence_discharge"]
+                    + soldier["extra_annual_leave"]
+                    + soldier["extra_medical_leave"],
+                "extra_annual_leave": soldier["extra_annual_leave"],
+                "extra_medical_leave": soldier["extra_medical_leave"],
             },
             columns: dutyColumns,
             extraColumns: extraDutyColumns,

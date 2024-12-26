@@ -2,25 +2,21 @@ import {Button, Divider, Flex, Form, Input, notification, Select, Table, Tooltip
 import {dateValidator} from "../../utils/Validates.js";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {GetQueryDate} from "../../utils/Calculative.js";
-import {DateRenderer, DutyGroupRenderer} from "../../utils/TableRenderer.jsx";
+import {DateRenderer} from "../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
-import {getApiUrl} from "../../utils/Config.js";
 import axios from "axios";
+import {getApiUrl} from "../../utils/Config.js";
 import * as XLSX from "xlsx"
 import {saveAs} from "file-saver";
 
-function DutyGroupReport() {
+function NewSoldierReport() {
 
     const [unitSelectOptions, setUnitSelectOptions] = useState([]);
     const [soldiers, setSoldiers] = useState([]);
-    const [data, setData] = useState([]);
     const [downloading, setDownloading] = useState(false);
 
     const [api, contextHolder] = notification.useNotification();
     const printComponent = useRef(null);
-    const [form] = Form.useForm();
-
-    const dutyGroup = Form.useWatch('duty_group', form);
 
     useEffect(() => {
         axios.get(getApiUrl("config/unit"), {withCredentials: true}).then((res) => {
@@ -42,23 +38,14 @@ function DutyGroupReport() {
         const fromDate = GetQueryDate(value["from_date"]);
         const toDate = GetQueryDate(value["to_date"]);
         const unit = value["unit"];
-        const dutyGroup = value["duty_group"];
+        console.log(value);
 
         let filter = {
-            "status": {"$in": ["حاضر", "فرار"]},
-            "duty_group": dutyGroup,
-            "duty_group_data": {
-                "$elemMatch": {
-                    "submit_date": {
-                        "$lte": toDate,
-                        "$gte": fromDate
-                    },
-                    "is_in_combat_group": dutyGroup
-                }
-            }
+            "entry_date": {
+                "$lte": toDate,
+                "$gte": fromDate
+            },
         }
-
-        console.log(filter);
 
         if (unit.length > 0) {
             filter["unit"] = {
@@ -66,70 +53,37 @@ function DutyGroupReport() {
             }
         }
 
-        let projection = {
-            "first_name": 1,
-            "last_name": 1,
-            "national_code": 1,
-            "father_name": 1,
-            "deployment_date": 1,
-            "unit": 1,
-            "section": 1,
-            "military_rank": 1,
-            "extra_info": 1,
-            "duty_group_data": {
-                "$filter": {
-                    "input": "$duty_group_data",
-                    "as": "dutyGroupItem",
-                    "cond": {
-                        "$and": [
-                            {"$lte": ["$$dutyGroupItem.submit_date", toDate]},
-                            {"$gte": ["$$dutyGroupItem.submit_date", fromDate]},
-                            {"$eq": ["$$dutyGroupItem.is_in_combat_group", dutyGroup]}
-                        ]
-                    }
-                }
-            }
-        };
-
         axios.post(getApiUrl("soldier/list"), {
             "filter": filter,
-            "projection": projection
+            "projection": {
+                "first_name": 1,
+                "last_name": 1,
+                "national_code": 1,
+                "father_name": 1,
+                "deployment_date": 1,
+                "unit": 1,
+                "section": 1,
+                "entry_date": 1
+            }
         }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
-                console.log("res:", res);
-                let rowIndexCounter = 1;
-
-                const transformedData = res.flatMap(soldier => {
-                    return soldier.duty_group_data.map((dutyGroup, index) => ({
-                        rowIndex: index === 0 ? rowIndexCounter++ : null,
-                        military_rank: soldier.military_rank,
+                console.log(res);
+                const transformedData = res.flatMap((soldier, index) => {
+                    return ({
+                        rowIndex: index+1,
                         first_name: soldier.first_name,
                         last_name: soldier.last_name,
                         national_code: soldier.national_code,
                         father_name: soldier.father_name,
                         unit: soldier.unit,
                         section: soldier.section,
+                        status: soldier.status,
                         deployment_date: DateRenderer(soldier.deployment_date),
-                        duty_group_submit_date: DateRenderer(dutyGroup.submit_date),
-                        duty_group: DutyGroupRenderer(dutyGroup.is_in_combat_group),
-                        extra_info: soldier.extra_info,
-                    }));
+                        entry_date: DateRenderer(soldier.entry_date),
+                    });
                 });
-                setData(transformedData);
-                console.log("transformedData:", transformedData);
-                const rowSpanData = transformedData.reduce((acc, item, index, array) => {
-                    const prevItem = index > 0 ? array[index - 1] : null;
-                    if (!prevItem || prevItem.national_code !== item.national_code) {
-                        const count = array.filter(el => el.national_code === item.national_code).length;
-                        acc.push({...item, rowSpan: count});
-                    } else {
-                        acc.push({...item, rowSpan: 0});
-                    }
-                    return acc;
-                }, []);
-                console.log(rowSpanData);
-                setSoldiers(rowSpanData);
+                setSoldiers(transformedData);
             })
             .catch((err) => {
                 api["error"]({
@@ -148,17 +102,15 @@ function DutyGroupReport() {
     });
 
     function download() {
-        console.log(data);
-        const worksheet = XLSX.utils.json_to_sheet(data.map((row, index) => ({
+        console.log(soldiers);
+        const worksheet = XLSX.utils.json_to_sheet(soldiers.map((row, index) => ({
             'ردیف': index + 1,
-            'درجه': row["military_rank"],
             'نام': row["first_name"],
             'نشان': row["last_name"],
             'کد ملی': row["national_code"],
+            'نام پدر': row["father_name"],
             'تاریخ اعزام': row["deployment_date"],
-            'گروه خدمتی': row["duty_group"],
-            'تاریخ ثبت گروه خدمتی': row["duty_group_submit_date"],
-            'گروه جسمانی': row["extra_info"].includes("معاف از رزم")? "معاف از رزم" : "سالم",
+            'تاریخ ورود': row["entry_date"],
         })));
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
@@ -172,7 +124,7 @@ function DutyGroupReport() {
             {contextHolder}
             <Flex justify={"center"}>
                 <Typography.Title level={3}>
-                    گزارش گروه خدمتی
+                    گزارش سربازان جدید الورود
                 </Typography.Title>
             </Flex>
             <Divider/>
@@ -180,29 +132,28 @@ function DutyGroupReport() {
                 <Form
                     layout={"inline"}
                     onFinish={onFinish}
-                    form={form}
                 >
-                    <Tooltip title={"از تاریخ کسر یا اضافه"}>
-                        <Form.Item
-                            label={"از تاریخ"}
-                            name={"from_date"}
-                            rules={[{
-                                validator: dateValidator, required: true,
-                            }]}
-                        >
-                            <Input/>
-                        </Form.Item>
+                    <Tooltip title={"از تاریخ ورود"}>
+                    <Form.Item
+                        label={"از تاریخ"}
+                        name={"from_date"}
+                        rules={[{
+                            validator: dateValidator, required: true,
+                        }]}
+                    >
+                        <Input/>
+                    </Form.Item>
                     </Tooltip>
-                    <Tooltip title={"تا تاریخ کسر یا اضافه"}>
-                        <Form.Item
-                            label={"تا تاریخ"}
-                            name={"to_date"}
-                            rules={[{
-                                validator: dateValidator, required: true,
-                            }]}
-                        >
-                            <Input/>
-                        </Form.Item>
+                    <Tooltip title={"تا تاریخ ورود"}>
+                    <Form.Item
+                        label={"تا تاریخ"}
+                        name={"to_date"}
+                        rules={[{
+                            validator: dateValidator, required: true,
+                        }]}
+                    >
+                        <Input/>
+                    </Form.Item>
                     </Tooltip>
                     <Form.Item
                         label={"یگان"}
@@ -214,19 +165,6 @@ function DutyGroupReport() {
                     >
                         <Select allowClear={true} mode={"multiple"} options={unitSelectOptions}
                                 style={{minWidth: "300px"}}/>
-                    </Form.Item>
-
-                    <Form.Item
-                        label={"گروه خدمتی"}
-                        name={"duty_group"}
-                        rules={[{
-                            required: true,
-                        }]}
-                        initialValue={true}
-                    >
-                        <Select
-                                options={[{label: "رزمی", value: true}, {label: "غیر رزمی", value: false}]}
-                                style={{minWidth: "100px"}}/>
                     </Form.Item>
 
                     <Form.Item>
@@ -321,19 +259,11 @@ function DutyGroupReport() {
                             })
                         },
                         {
-                            title: "گروه خدمتی",
-                            dataIndex: "duty_group",
-                        },
-                        {
-                            title: dutyGroup ? "تاریخ اضافه" : "تاریخ کسر",
-                            dataIndex: "duty_group_submit_date",
-                        },
-                        {
-                            title: "گروه جسمانی",
-                            dataIndex: "extra_info",
-                            render: (value)=> {
-                                return value.includes("معاف از رزم")? "معاف از رزم" : "سالم";
-                            }
+                            title: "تاریخ ورود",
+                            dataIndex: "entry_date",
+                            onCell: (record) => ({
+                                rowSpan: record.rowSpan,
+                            })
                         },
                     ].map(v => {
                         v["align"] = "center";
@@ -345,4 +275,4 @@ function DutyGroupReport() {
     );
 }
 
-export default DutyGroupReport;
+export default NewSoldierReport;

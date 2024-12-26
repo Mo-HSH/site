@@ -20,7 +20,12 @@ import {
     Tooltip,
     Typography,
 } from "antd";
-import {dateValidator, justStringValidator, nationalCodeValidator} from "../../utils/Validates.js";
+import {
+    dateValidator,
+    justNumericValidator,
+    justStringValidator,
+    nationalCodeValidator
+} from "../../utils/Validates.js";
 import {DateRenderer, DutyGroupRenderer} from "../../utils/TableRenderer.jsx";
 import EditableTable from "../../utils/EditableTable.jsx";
 import {numberTh} from "../../utils/Data.js";
@@ -58,6 +63,8 @@ function LeaveAbsenceEscapeDeficitRun() {
     const [printTarget, setPrintTarget] = useState(<div>printable</div>);
     const [printTitle, setPrintTitle] = useState("پرینت");
     const [isDutyStopped, setIsDutyStopped] = useState(false);
+
+    const [leaveForm, absenceForm, arrestForm] = Form.useForm();
 
     const [runEditIndex, setRunEditIndex] = useState(-1);
 
@@ -547,6 +554,9 @@ function LeaveAbsenceEscapeDeficitRun() {
 
     function onCreateLeave(value) {
         onCreate(value, "leave");
+        const date = value["date"];
+        leaveForm.resetFields();
+        leaveForm.setFieldValue("date", date);
     }
 
     function onCreateDutyGroup(value) {
@@ -555,10 +565,16 @@ function LeaveAbsenceEscapeDeficitRun() {
 
     function onCreateAbsence(value) {
         onCreate({...value, "ignored_date": null}, "absence");
+        const date = value["date"];
+        absenceForm.resetFields();
+        absenceForm.setFieldValue("date", date);
     }
 
     function onCreateArrest(value) {
         onCreate(value, "arrest");
+        const date = value["date"];
+        arrestForm.resetFields();
+        arrestForm.setFieldValue("date", date);
     }
 
     function onCreateMission(value) {
@@ -609,7 +625,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     }
 
     function onDelete(index, queryTarget) {
-        axios.delete(getApiUrl(`document/${queryTarget}/delete/${selectedSoldierOid}/${index}`), {withCredentials: true})
+        axios.post(getApiUrl(`document/${queryTarget}/delete/${selectedSoldierOid}/${index}`), {},{withCredentials: true})
         .then(() => {
             fetchData();
         }).catch((err) => {
@@ -817,7 +833,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                             name={"national_code"}
                             rules={[{
                                 required: false,
-                                validator: nationalCodeValidator
+                                validator: justNumericValidator
                             }]}
                         >
                             <Input/>
@@ -957,6 +973,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                                             <Flex>
                                                 <Form
                                                     layout={"inline"}
+                                                    form={leaveForm}
                                                     onFinish={onCreateLeave}
                                                 >
                                                     <Form.Item
@@ -1052,6 +1069,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                                             <Flex>
                                                 <Form
                                                     layout={"inline"}
+                                                    form={absenceForm}
                                                     onFinish={onCreateAbsence}
                                                 >
                                                     <Form.Item
@@ -1114,6 +1132,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                                             <Flex>
                                                 <Form
                                                     layout={"inline"}
+                                                    form={arrestForm}
                                                     onFinish={onCreateArrest}
                                                 >
                                                     <Form.Item
