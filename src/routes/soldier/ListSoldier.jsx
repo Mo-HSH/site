@@ -26,7 +26,7 @@ function ListSoldier() {
     const [filter, setFilter] = useState({});
     const [projection, setProjection] = useState({});
     const [columns, setColumns] = useState([0, 1, 2, 3, 4, 5]);
-    const [openFilterDrawer, setOpenFilterDrawer] = useState(true);
+    const [openFilterDrawer, setOpenFilterDrawer] = useState(false);
     const [openSettingDrawer, setOpenSettingDrawer] = useState(false);
     const [data, setData] = useState([]);
     const [unitSectionOptions, setUnitSectionOptions] = useState([]);
@@ -85,11 +85,12 @@ function ListSoldier() {
         }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
+                console.log([...new Set(res.map(v=>v.section))])
                 setData(res);
             })
             .catch((err) => {
                 api["error"]({
-                    message: "خطااااا", description: err.response.data
+                    message: "خطا", description: err.response.data
                 });
             });
     }, [filter, projection]);
@@ -259,7 +260,12 @@ function ListSoldier() {
             value: {
                 title: "تاریخ ترخیص",
                 dataIndex: "release",
-                render: (v => DateRenderer(v["release_date"]))
+                render: ((v) => {
+                    if (v) {
+                        return DateRenderer(v["release_date"]);
+                    }
+                        return "";
+                })
             },
         },
         {
@@ -479,7 +485,7 @@ function ListSoldier() {
                     if (value[v.dataIndex] !== undefined && value[v.dataIndex].length > 0) {
                         let t = {};
                         t[v.dataIndex] = {
-                            "$in": value[v.dataIndex].map(v => v[0])
+                            "$in": [...new Set(value[v.dataIndex].map(v => v[0]))]
                         };
                         t[v.dataIndex_child] = {
                             "$in": value[v.dataIndex].map(v => v[1])
