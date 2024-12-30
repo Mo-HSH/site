@@ -162,7 +162,10 @@ function AlefForm({setPrintTitle, alefFormNumber, refresher}) {
                     res.push(`انفصال ${data["additional_service_day"]} روز`)
                 }
                 if (data["additional_service_punish_day"] > 0) {
-                    res.push(`اضافه خدمت ${data["additional_service_punish_day"]} روز`)
+                    res.push(`اضافه خدمت سنواتی ${data["additional_service_punish_day"]} روز`)
+                }
+                if (data["additional_service_day"] > 0) {
+                    res.push(`اضافه خدمت ${data["additional_service_day"]} روز`)
                 }
                 if (data["release_reason"] !== "قانونی") {
                     res.push(data["release_reason"])
@@ -174,12 +177,13 @@ function AlefForm({setPrintTitle, alefFormNumber, refresher}) {
             title: "مدرک",
             dataIndex: "family",
             render: (data) => {
+                console.log(data);
                 if (data === undefined || data === null || data === "") {
                     return "";
                 }
                 let flag = false;
                 data.forEach(item => {
-                    if (item.relative in ["همسر", "فرزند"]) {
+                    if (["همسر", "فرزند"].includes(item.relative)) {
                         flag = true;
                     }
                 })
