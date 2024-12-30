@@ -277,7 +277,11 @@ function EditSoldier() {
         console.log(db_key, value);
         let temp = {}
         temp[db_key] = value;
-        axios.post(getApiUrl(`soldier/edit_soldier/${params.key}`), {"update": temp, "type": type, "need_calculate": needCalculate} , {withCredentials: true}).then(()=>{
+        axios.post(getApiUrl(`soldier/edit_soldier/${params.key}`), {
+            "update": temp,
+            "type": type,
+            "need_calculate": needCalculate
+        }, {withCredentials: true}).then(() => {
             fetchData();
         }).catch((err) => {
             api["error"]({
@@ -322,7 +326,8 @@ function EditSoldier() {
     return (
         <Flex vertical={true}>
             {contextHolder}
-            <Modal title="آپلود پروفایل" open={isModalOpen} onOk={handleOk} width={800} cancelButtonProps={{hidden: true}}
+            <Modal title="آپلود پروفایل" open={isModalOpen} onOk={handleOk} width={800}
+                   cancelButtonProps={{hidden: true}}
                    okButtonProps={{
                        disabled: disableOkModal,
                    }}>
@@ -332,7 +337,8 @@ function EditSoldier() {
                 <Flex align={"center"} justify={"center"} gap={"small"}>
                     <img src={getApiUrl("files/serve_file/" + soldier["profile"])} alt={"err"} width={300} height={400}
                          onClick={onImageClick}/>
-                    <img src={getApiUrl("files/serve_file/" + soldier["normalized_profile"])} alt={"err"} width={300} height={400}
+                    <img src={getApiUrl("files/serve_file/" + soldier["normalized_profile"])} alt={"err"} width={300}
+                         height={400}
                          hidden={normalizeHidden}/>
                 </Flex>
             </Modal>
@@ -340,13 +346,13 @@ function EditSoldier() {
             <Divider orientation={"left"}>ویرایش عکس<Upload
                 action={getApiUrl(`soldier/set_avatar/${params.key}`)}
                 name={"profile"} withCredentials={true} showUploadList={false} onChange={uploadChange}
-                beforeUpload={(file)=>{
+                beforeUpload={(file) => {
                     const isJPG = file.type === 'image/jpeg';
                     if (!isJPG) {
                         api.error({
                             message: "خطا",
                             description: "فقط فرمت jpg مورد قبول است!"
-                    });
+                        });
                     }
                     return isJPG || Upload.LIST_IGNORE;
                 }}
@@ -484,22 +490,12 @@ function EditSoldier() {
                                 <Row gutter={8}>
                                     <Col flex={1}>
                                         <Form.Item
-                                            name={'first_name'}
+                                            name={'full_name'}
                                             rules={[{
                                                 validator: justStringValidator, required: true,
                                             },]}
                                         >
-                                            <Input placeholder="نام"/>
-                                        </Form.Item>
-                                    </Col>
-                                    <Col flex={1}>
-                                        <Form.Item
-                                            name={'last_name'}
-                                            rules={[{
-                                                validator: justStringValidator, required: true,
-                                            },]}
-                                        >
-                                            <Input placeholder="نشان"/>
+                                            <Input placeholder="نام و نشان"/>
                                         </Form.Item>
                                     </Col>
                                     <Col flex={1}>
@@ -512,8 +508,6 @@ function EditSoldier() {
                                             <Input placeholder="نام پدر"/>
                                         </Form.Item>
                                     </Col>
-                                </Row>
-                                <Row gutter={8}>
                                     <Col flex={1}>
                                         <Form.Item
                                             name={'national_code'}
@@ -524,7 +518,9 @@ function EditSoldier() {
                                             <Input placeholder="کد ملی"/>
                                         </Form.Item>
                                     </Col>
-                                    <Col flex={1}>
+                                </Row>
+                                <Row gutter={8}>
+                                    <Col span={8}>
                                         <Form.Item
                                             name={'birth_certificate_issuing_place'}
                                             rules={[{
@@ -534,7 +530,7 @@ function EditSoldier() {
                                             <Input placeholder="محل صدور شناسنامه"/>
                                         </Form.Item>
                                     </Col>
-                                    <Col flex={1}>
+                                    <Col span={8}>
                                         <Form.Item
                                             name={'job'}
                                             rules={[{
@@ -544,33 +540,30 @@ function EditSoldier() {
                                             <Input placeholder="شغل"/>
                                         </Form.Item>
                                     </Col>
-                                </Row>
-                                <Row gutter={8}>
-                                    <Col span={24}>
-                                        <Flex align={"baseline"}>
-                                            <Col span={8}>
-                                                <Form.Item
-                                                    name={'relative'}
-                                                    rules={[{
-                                                        required: true,
-                                                        message: "فیلد نسبت اجباریست."
-                                                    },]}
-                                                >
-                                                    <Select
-                                                        showSearch
-                                                        filterOption={filterOption}
-                                                        placeholder={"نسبت"}
-                                                        options={relation}
-                                                        loading={relation.length === 0}
-                                                    />
-                                                </Form.Item>
-                                                <Form.Item>
-                                                    <Button type="primary" htmlType="submit">
-                                                        افزودن
-                                                    </Button>
-                                                </Form.Item>
-                                            </Col>
-                                        </Flex>
+                                    <Col span={6}>
+                                            <Form.Item
+                                                name={'relative'}
+                                                rules={[{
+                                                    required: true,
+                                                    message: "فیلد نسبت اجباریست."
+                                                },]}
+                                            >
+                                                <Select
+                                                    style={{width: "100%"}}
+                                                    showSearch
+                                                    filterOption={filterOption}
+                                                    placeholder={"نسبت"}
+                                                    options={relation}
+                                                    loading={relation.length === 0}
+                                                />
+                                            </Form.Item>
+                                    </Col>
+                                    <Col span={2}>
+                                        <Form.Item>
+                                            <Button type="primary" htmlType="submit" block={true}>
+                                                افزودن
+                                            </Button>
+                                        </Form.Item>
                                     </Col>
                                 </Row>
                             </Form>
