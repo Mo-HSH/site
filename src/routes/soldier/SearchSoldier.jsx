@@ -102,7 +102,7 @@ function SearchSoldier() {
             dataIndex: "is_in_combat_group",
             render: DutyGroupRenderer
         },
-    ].map(v=>({...v, align: "center"}));
+    ].map(v => ({...v, align: "center"}));
 
     const leaveColumns = [
         {
@@ -151,7 +151,7 @@ function SearchSoldier() {
             title: "تشویقی",
             dataIndex: "bonus",
         }
-    ].map(v=>({...v, align: "center"}));
+    ].map(v => ({...v, align: "center"}));
 
     const absenceColumns = [
         {
@@ -200,7 +200,7 @@ function SearchSoldier() {
             dataIndex: "duration",
             render: v => v * 2,
         }
-    ].map(v=>({...v, align: "center"}));
+    ].map(v => ({...v, align: "center"}));
 
     const arrestColumns = [
         {
@@ -237,7 +237,7 @@ function SearchSoldier() {
             title: "مدت",
             dataIndex: "duration",
         },
-    ].map(v=>({...v, align: "center"}));
+    ].map(v => ({...v, align: "center"}));
 
     const missionColumns = [
         {
@@ -274,7 +274,7 @@ function SearchSoldier() {
             title: "مدت",
             dataIndex: "duration",
         },
-    ].map(v=>({...v, align: "center"}));
+    ].map(v => ({...v, align: "center"}));
 
     const deficitColumns = [
         {
@@ -299,7 +299,7 @@ function SearchSoldier() {
             title: "مدت",
             dataIndex: "day",
         }
-    ].map(v=>({...v, align: "center"}));
+    ].map(v => ({...v, align: "center"}));
 
     const runColumns = [
         {
@@ -374,7 +374,7 @@ function SearchSoldier() {
             title: "مدت فرار",
             dataIndex: "run_duration",
         },
-    ].map(v=>({...v, align: "center"}));
+    ].map(v => ({...v, align: "center"}));
 
 
     const collapseItems = [
@@ -423,32 +423,33 @@ function SearchSoldier() {
                     <Flex vertical={true} flex={5} gap={"middle"} justify={"center"} align={"center"}>
                         {targetSoldier["family"].map((value) => {
                             return (
-                                <Table style={{width: "100%"}} bordered={true} pagination={false} dataSource={[value]} columns={[
-                                    {
-                                        title: "نام و نشان",
-                                        dataIndex: "full_name",
-                                    },
-                                    {
-                                        title: "نام پدر",
-                                        dataIndex: "father_name",
-                                    },
-                                    {
-                                        title: "کد ملی",
-                                        dataIndex: "national_code",
-                                    },
-                                    {
-                                        title: "محل صدور شناسنامه",
-                                        dataIndex: "birth_certificate_issuing_place",
-                                    },
-                                    {
-                                        title: "شغل",
-                                        dataIndex: "job",
-                                    },
-                                    {
-                                        title: "نسبت",
-                                        dataIndex: "relative",
-                                    },
-                                ]}/>
+                                <Table style={{width: "100%"}} bordered={true} pagination={false} dataSource={[value]}
+                                       columns={[
+                                           {
+                                               title: "نام و نشان",
+                                               dataIndex: "full_name",
+                                           },
+                                           {
+                                               title: "نام پدر",
+                                               dataIndex: "father_name",
+                                           },
+                                           {
+                                               title: "کد ملی",
+                                               dataIndex: "national_code",
+                                           },
+                                           {
+                                               title: "محل صدور شناسنامه",
+                                               dataIndex: "birth_certificate_issuing_place",
+                                           },
+                                           {
+                                               title: "شغل",
+                                               dataIndex: "job",
+                                           },
+                                           {
+                                               title: "نسبت",
+                                               dataIndex: "relative",
+                                           },
+                                       ]}/>
                             );
                         })}
                     </Flex>
@@ -609,7 +610,7 @@ function SearchSoldier() {
                                 on_road: targetSoldier.leave.reduce((sum, leave) => sum + leave.on_road, 0),
                                 bonus: targetSoldier.leave.reduce((sum, leave) => sum + leave.bonus, 0),
                                 text: "جمع کل"
-                            }]: []}
+                            }] : []}
                             />
                         },
                         {
@@ -617,10 +618,18 @@ function SearchSoldier() {
                             key: 1,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={absenceColumns} dataSource={targetSoldier.absence?[...targetSoldier.absence, {
-                                duration: targetSoldier.absence.reduce((sum, absence) => sum + absence.duration, 0),
-                                text: "جمع کل"
-                            }]: []}
+                                columns={absenceColumns}
+                                dataSource={
+                                    targetSoldier.absence
+                                        ?
+                                        [
+                                            ...targetSoldier.absence.filter(v=>!v.is_ignored),
+                                            {
+                                                duration: targetSoldier.absence.filter(v=>!v.is_ignored).reduce((sum, absence) => sum + absence.duration, 0),
+                                                text: "جمع کل"
+                                            }
+                                        ]
+                                        : []}
                             />
                         },
                         {
@@ -628,10 +637,10 @@ function SearchSoldier() {
                             key: 2,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={arrestColumns} dataSource={targetSoldier.arrest ?[...targetSoldier.arrest, {
+                                columns={arrestColumns} dataSource={targetSoldier.arrest ? [...targetSoldier.arrest, {
                                 duration: targetSoldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
                                 text: "جمع کل"
-                            }]: []}
+                            }] : []}
                             />
                         },
                         {
@@ -639,10 +648,11 @@ function SearchSoldier() {
                             key: 3,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={missionColumns} dataSource={targetSoldier.mission?[...targetSoldier.mission, {
-                                duration: targetSoldier.mission.reduce((sum, mission) => sum + mission.duration, 0),
-                                text: "جمع کل"
-                            }]: []}
+                                columns={missionColumns}
+                                dataSource={targetSoldier.mission ? [...targetSoldier.mission, {
+                                    duration: targetSoldier.mission.reduce((sum, mission) => sum + mission.duration, 0),
+                                    text: "جمع کل"
+                                }] : []}
                             />
                         },
                         {
@@ -650,10 +660,11 @@ function SearchSoldier() {
                             key: 4,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={deficitColumns} dataSource={targetSoldier.deficit?[...targetSoldier.deficit, {
-                                duration: targetSoldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
-                                text: "جمع کل"
-                            }]: []}
+                                columns={deficitColumns}
+                                dataSource={targetSoldier.deficit ? [...targetSoldier.deficit, {
+                                    duration: targetSoldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
+                                    text: "جمع کل"
+                                }] : []}
                             />
                         },
                         {
@@ -662,11 +673,11 @@ function SearchSoldier() {
                             children:
                                 <Table
                                     pagination={false} bordered={true} style={{width: "100%"}}
-                                    columns={runColumns} dataSource={targetSoldier.run?[...targetSoldier.run, {
+                                    columns={runColumns} dataSource={targetSoldier.run ? [...targetSoldier.run, {
                                     "run_duration": targetSoldier.run.reduce((sum, run) => sum + run["run_duration"], 0),
                                     "run_punish": targetSoldier.run.reduce((sum, run) => sum + run["run_punish"], 0),
                                     text: "جمع کل"
-                                }]: []}
+                                }] : []}
                                 />
                         },
                         {
@@ -674,7 +685,8 @@ function SearchSoldier() {
                             key: 6,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={dutyGroupColumns} dataSource={targetSoldier.duty_group_data? targetSoldier.duty_group_data : []}
+                                columns={dutyGroupColumns}
+                                dataSource={targetSoldier.duty_group_data ? targetSoldier.duty_group_data : []}
                             />
                         },
                     ]}
@@ -760,7 +772,8 @@ function SearchSoldier() {
                             <Card title={"اقدام"} style={{width: "100%"}}>
                                 <Flex style={{width: "100%"}} vertical={true} gap={"middle"}>
                                     <Flex vertical={false} style={{width: "100%"}} gap={"middle"}>
-                                        <Button type={"primary"} block={true} onClick={() => navigate(`/soldier-release/${key}`)}>تسویه حساب</Button>
+                                        <Button type={"primary"} block={true}
+                                                onClick={() => navigate(`/soldier-release/${key}`)}>تسویه حساب</Button>
                                         <Button type={"primary"} block={true}>ترفیع</Button>
                                     </Flex>
                                     <Flex vertical={false} style={{width: "100%"}} gap={"middle"}>
@@ -820,7 +833,8 @@ function SearchSoldier() {
                                                [
                                                    {
                                                        0: "نام و نشان:",
-                                                       1: <Popover trigger={"click"} content={[targetSoldier["military_rank"], "و", targetSoldier["first_name"], targetSoldier["last_name"], "ش ملی:", targetSoldier["national_code"], "اعزامی:", DateRenderer(targetSoldier["deployment_date"])].join(" ")}>{targetSoldier["first_name"] + " " + targetSoldier["last_name"]}</Popover>
+                                                       1: <Popover trigger={"click"}
+                                                                   content={[targetSoldier["military_rank"], "و", targetSoldier["first_name"], targetSoldier["last_name"], "ش ملی:", targetSoldier["national_code"], "اعزامی:", DateRenderer(targetSoldier["deployment_date"])].join(" ")}>{targetSoldier["first_name"] + " " + targetSoldier["last_name"]}</Popover>
                                                    },
                                                    {0: "درجه:", 1: targetSoldier["military_rank"]},
                                                    {0: "کد ملی:", 1: targetSoldier["national_code"]},
@@ -843,7 +857,10 @@ function SearchSoldier() {
                                                        1: <>{DateRenderer(targetSoldier["overall_release_date"])}
                                                            <ShouldWarnOnReleaseDate/> </>
                                                    },
-                                                   {0: "یگان - قسمت:", 1: targetSoldier["unit"] + " - " + targetSoldier["section"]},
+                                                   {
+                                                       0: "یگان - قسمت:",
+                                                       1: targetSoldier["unit"] + " - " + targetSoldier["section"]
+                                                   },
                                                    {0: "شماره پرونده:", 1: targetSoldier["folder_number"]},
                                                ]
                                            }
@@ -924,8 +941,7 @@ function SearchSoldier() {
                 </>
             }
             selectedSoldierProject={
-                {
-                }
+                {}
             }
             setSoldierOid={setKey}
             setSelectedSoldierState={setTargetSoldier}
