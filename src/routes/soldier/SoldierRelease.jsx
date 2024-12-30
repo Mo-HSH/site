@@ -211,7 +211,6 @@ function SoldierRelease({oid}) {
                         "release": {},
                         "release_progress": {},
                         ...res[0],
-                        "duty_duration": <Spin/>
                     });
                 }
             })
@@ -335,27 +334,17 @@ function SoldierRelease({oid}) {
         });
     }
 
-    useEffect(() => {
-        console.log(releaseDate);
+    function calculateDutyDuration() {
         GetDutyDuration(targetKey, releaseDate)
             .then((res) => {
                 let temp = "";
-                temp = `${res.month} ماه و ${res.day} روز`
-                setSoldier((lastValue) => {
-                    let newFilter = {...lastValue};
-                    newFilter["duty_duration"] = temp;
-                    newFilter["duty_duration"] = temp;
-                    return newFilter;
-                });
+                temp = `${res.month} ماه و ${res.day} روز`;
+                form.setFieldValue("duty_duration", temp);
             })
             .catch(() => {
-                setSoldier((lastValue) => {
-                    let newFilter = {...lastValue};
-                    newFilter["duty_duration"] = "err";
-                    return newFilter;
-                });
+                form.setFieldValue("duty_duration", "خطا");
             })
-    }, [releaseDate])
+    }
 
     return (
         <Flex vertical={true} align={"center"} gap={"middle"}>
@@ -479,7 +468,9 @@ function SoldierRelease({oid}) {
                                             required: true,
                                         }]}
                                     >
-                                        <Input/>
+                                        <Input addonAfter={<Button type={"text"} onClick={() => {
+                                            calculateDutyDuration()
+                                        }} icon={<ReloadOutlined/>}/>}/>
                                     </Form.Item>
                                     <Form.Item
                                         label={"رسته"}
@@ -497,7 +488,7 @@ function SoldierRelease({oid}) {
                                             required: true,
                                         }]}
                                     >
-                                        <InputNumber min={0} style={{width: "100%"}}/>
+                                        <InputNumber min={0} style={{width: "100%"}} disabled={true}/>
                                     </Form.Item>
                                     <Form.Item
                                         label={"فرار"}
@@ -506,7 +497,7 @@ function SoldierRelease({oid}) {
                                             required: true,
                                         }]}
                                     >
-                                        <InputNumber min={0} style={{width: "100%"}}/>
+                                        <InputNumber min={0} style={{width: "100%"}} disabled={true}/>
                                     </Form.Item>
                                     <Form.Item
                                         label={"اضافه سالیانه"}
@@ -515,7 +506,7 @@ function SoldierRelease({oid}) {
                                             required: true,
                                         }]}
                                     >
-                                        <InputNumber min={0} style={{width: "100%"}}/>
+                                        <InputNumber min={0} style={{width: "100%"}} disabled={true}/>
                                     </Form.Item>
                                 </Flex>
                             </Col>
@@ -628,7 +619,7 @@ function SoldierRelease({oid}) {
                                             required: true,
                                         }]}
                                     >
-                                        <InputNumber min={0} style={{width: "100%"}}/>
+                                        <InputNumber min={0} style={{width: "100%"}} disabled={true}/>
                                     </Form.Item>
                                     <Form.Item
                                         label={"اضافه استعلاجی"}
@@ -637,7 +628,7 @@ function SoldierRelease({oid}) {
                                             required: true,
                                         }]}
                                     >
-                                        <InputNumber min={0} style={{width: "100%"}}/>
+                                        <InputNumber min={0} style={{width: "100%"}} disabled={true}/>
                                     </Form.Item>
                                 </Flex>
                             </Col>
