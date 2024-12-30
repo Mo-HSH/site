@@ -189,7 +189,7 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                                 <Typography.Text strong={true}>
                                                     {" " + soldier["deployment_date"] + " "}
                                                 </Typography.Text>
-
+                                                در مورخه
                                                 <Typography.Text strong>
                                                     {" " + soldier["target_run"]["absence_date"] + " "}
                                                 </Typography.Text>
