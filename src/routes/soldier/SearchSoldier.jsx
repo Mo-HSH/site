@@ -40,6 +40,7 @@ import EmploymentCertificate from "../Print/soldierProfile/EmploymentCertificate
 import SoldierFolderLabel from "../Print/soldierProfile/SoldierFolderLabel.jsx";
 import {getApiUrl} from "../../utils/Config.js";
 import AccidentComission from "../Print/soldierProfile/AccidentComission.jsx";
+import axios from "axios";
 
 function SearchSoldier() {
 
@@ -715,6 +716,23 @@ function SearchSoldier() {
         }
     }
 
+    function deleteSoldier() {
+        axios.post(getApiUrl(`soldier/edit_soldier/${key}`), {
+            "update": {
+                "deleted": true
+            },
+            "type": "bool",
+            "need_calculate": false
+        }, {withCredentials: true}).then(() => {
+            // fetchData();
+        }).catch((err) => {
+            api["error"]({
+                message: "خطا",
+                description: err.data.message,
+            });
+        })
+    }
+
     return (
         <SearchSelect
             selectedSoldierView={
@@ -821,6 +839,9 @@ function SearchSoldier() {
                                 <Button type="link" icon={<EditOutlined/>}
                                         onClick={() => navigate(`/edit-soldier/${key}`)}>ویرایش اطلاعات</Button>
                                 <Button type="primary" onClick={() => setOpenDrawer(true)}>اقدامات</Button>
+                                <Popconfirm title={"آیا برای حذف سرباز مطمئن هستید؟"}>
+                                    <Button type="primary" danger={true} onClick={() => deleteSoldier()}>حذف سرباز</Button>
+                                </Popconfirm>
                             </Flex>
 
                             <Divider type={"vertical"} style={{height: "350px"}}/>
