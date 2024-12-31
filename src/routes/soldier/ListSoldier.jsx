@@ -406,6 +406,18 @@ function ListSoldier() {
             type: "select",
             options: [{label: "بومی", value: "بومی"}, {label: "غیربومی", value: "غیربومی"}]
         },
+        {
+            label: "عکس پرسنلی",
+            dataIndex: "profile",
+            type: "select",
+            options: [{label: "دارد", value: "دارد"}, {label: "ندارد", value: "ندارد"}]
+        },
+        {
+            label: "عکس پرسنلی نرمالایز شده",
+            dataIndex: "normalized_profile",
+            type: "select",
+            options: [{label: "دارد", value: "دارد"}, {label: "ندارد", value: "ندارد"}]
+        },
 
     ];
 
@@ -471,6 +483,16 @@ function ListSoldier() {
                                             }
                                         }
                                     }
+                                }
+                            }
+                        } else if (["profile", "normalized_profile"].includes(v.dataIndex)) {
+                            if (value[v.dataIndex].length === 1) {
+                                if (value[v.dataIndex][0] === "دارد") {
+                                    t[v.dataIndex] = {
+                                        "$ne": ""
+                                    }
+                                } else {
+                                    t[v.dataIndex] = ""
                                 }
                             }
                         } else {

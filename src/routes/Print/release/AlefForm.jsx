@@ -158,8 +158,13 @@ function AlefForm({setPrintTitle, alefFormNumber, refresher}) {
             dataIndex: "release",
             render: (data) => {
                 let res = [];
-                if (data["additional_service_day"] > 0) {
-                    res.push(`انفصال ${data["additional_service_day"]} روز`)
+                let discharge = data["absence_discharge"] +
+                    data["run_discharge"] +
+                    data["extra_annual_leave"] +
+                    data["extra_medical_leave"];
+
+                if (discharge > 0) {
+                    res.push(`انفصال ${discharge} روز`)
                 }
                 if (data["additional_service_punish_day"] > 0) {
                     res.push(`اضافه خدمت سنواتی ${data["additional_service_punish_day"]} روز`)
