@@ -17,16 +17,13 @@ import {
     Typography
 } from "antd";
 import {
-    dateValidator,
     justNumericValidator,
     justStringValidator,
 } from "../../utils/Validates.js";
 import {getStatusColor} from "../../utils/Color.js";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {DateRenderer, DutyGroupRenderer, ExtraInfoRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
 import {
-    CloseCircleTwoTone,
-    DeleteOutlined,
     EditOutlined,
     UserOutlined,
     WarningTwoTone
@@ -54,12 +51,22 @@ function SearchSoldier() {
         arrest: [],
         duty_group_data: []
     });
+    useEffect(() => {
+        if (targetSoldier["note"]) {
+            setNote(targetSoldier["note"]);
+        } else {
+            setNote("");
+        }
+    }, [targetSoldier]);
+
     const [key, setKey] = useState("");
+    const [note, setNote] = useState("");
     const [showMore, setShowMore] = useState(false);
     const [openDrawer, setOpenDrawer] = useState(false);
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [printTarget, setPrintTarget] = useState(<div>printable</div>);
     const [printTitle, setPrintTitle] = useState("تیتر پرینت");
 
@@ -624,9 +631,9 @@ function SearchSoldier() {
                                     targetSoldier.absence
                                         ?
                                         [
-                                            ...targetSoldier.absence.filter(v=>!v.is_ignored),
+                                            ...targetSoldier.absence.filter(v => !v.is_ignored),
                                             {
-                                                duration: targetSoldier.absence.filter(v=>!v.is_ignored).reduce((sum, absence) => sum + absence.duration, 0),
+                                                duration: targetSoldier.absence.filter(v => !v.is_ignored).reduce((sum, absence) => sum + absence.duration, 0),
                                                 text: "جمع کل"
                                             }
                                         ]
@@ -747,6 +754,41 @@ function SearchSoldier() {
                     >
                         {printTarget}
                     </Modal>
+                    <Modal
+                        open={isNoteModalOpen}
+                        onCancel={() => setIsNoteModalOpen(false)}
+                        footer={null}
+                        title={"یادآوری"}
+                        width={"80%"}
+                        centered={true}
+                    >
+                        <Flex vertical={true} gap={"small"}>
+                            <Input.TextArea value={note} onChange={(e) => {
+                                setNote(e.target.value)
+                            }}/>
+
+                            <Button type={"primary"} onClick={() => {
+                                console.log(note);
+                                axios.post(getApiUrl(`soldier/edit_soldier/${key}`), {
+                                    "update": {
+                                        "note": note
+                                    },
+                                    "type": "string",
+                                    "need_calculate": false
+                                }, {withCredentials: true}).then(() => {
+                                    api["success"]({
+                                        message: "عملیات موفق!",
+                                        description: "یادآوری با موفقیت ثبت شد.",
+                                    });
+                                }).catch((err) => {
+                                    api["error"]({
+                                        message: "خطا",
+                                        description: err.data.message,
+                                    });
+                                })
+                            }}>ذخیره</Button>
+                        </Flex>
+                    </Modal>
                     {contextHolder}
 
                     <Drawer placement={"bottom"} open={openDrawer} onClose={() => setOpenDrawer(false)}>
@@ -793,6 +835,9 @@ function SearchSoldier() {
                                         <Button type={"primary"} block={true}
                                                 onClick={() => navigate(`/soldier-release/${key}`)}>تسویه حساب</Button>
                                         <Button type={"primary"} block={true}>ترفیع</Button>
+                                        <Button type={"primary"} block={true} onClick={() => {
+                                            setIsNoteModalOpen(true)
+                                        }}>یادآوری</Button>
                                     </Flex>
                                     <Flex vertical={false} style={{width: "100%"}} gap={"middle"}>
                                         <Button type={"primary"} block={true}>درخواست بومی/غیر بومی</Button>
@@ -810,17 +855,42 @@ function SearchSoldier() {
 
                         <Flex vertical={false} align={"center"} gap={15}>
                             <Flex vertical={true} gap={20}>
-                                <Badge.Ribbon text={targetSoldier["status"]}
-                                              color={getStatusColor(targetSoldier["status"])} placement={"start"}>
-                                    {
-                                        targetSoldier["profile"] === "" || targetSoldier["profile"] === null || targetSoldier["profile"] === undefined
-                                            ?
-                                            <Avatar shape="square" size={200} icon={<UserOutlined/>}/>
-                                            :
-                                            <Image shape="square" width={180}
-                                                   src={getApiUrl("files/serve_file/" + targetSoldier["profile"])}/>
-                                    }
-                                </Badge.Ribbon>
+                                {
+                                    note === ""
+                                        ?
+
+                                        <Badge.Ribbon text={targetSoldier["status"]}
+                                                      color={getStatusColor(targetSoldier["status"])}
+                                                      placement={"start"}>
+                                            {
+                                                targetSoldier["profile"] === "" || targetSoldier["profile"] === null || targetSoldier["profile"] === undefined
+                                                    ?
+                                                    <Avatar shape="square" size={200} icon={<UserOutlined/>}/>
+                                                    :
+                                                    <Image shape="square" width={180}
+                                                           src={getApiUrl("files/serve_file/" + targetSoldier["profile"])}/>
+                                            }
+                                        </Badge.Ribbon>
+
+                                        :
+                                        <Badge.Ribbon text={<div onClick={() => {
+                                            setIsNoteModalOpen(true)
+                                        }} style={{cursor: "pointer"}}>یادآوری</div>} color={getStatusColor("یادآوری")}
+                                                      placement={"end"}>
+                                            <Badge.Ribbon text={targetSoldier["status"]}
+                                                          color={getStatusColor(targetSoldier["status"])}
+                                                          placement={"start"}>
+                                                {
+                                                    targetSoldier["profile"] === "" || targetSoldier["profile"] === null || targetSoldier["profile"] === undefined
+                                                        ?
+                                                        <Avatar shape="square" size={200} icon={<UserOutlined/>}/>
+                                                        :
+                                                        <Image shape="square" width={180}
+                                                               src={getApiUrl("files/serve_file/" + targetSoldier["profile"])}/>
+                                                }
+                                            </Badge.Ribbon>
+                                        </Badge.Ribbon>
+                                }
 
                                 {
                                     showMore
@@ -840,7 +910,8 @@ function SearchSoldier() {
                                         onClick={() => navigate(`/edit-soldier/${key}`)}>ویرایش اطلاعات</Button>
                                 <Button type="primary" onClick={() => setOpenDrawer(true)}>اقدامات</Button>
                                 <Popconfirm title={"آیا برای حذف سرباز مطمئن هستید؟"}>
-                                    <Button type="primary" danger={true} onClick={() => deleteSoldier()}>حذف سرباز</Button>
+                                    <Button type="primary" danger={true} onClick={() => deleteSoldier()}>حذف
+                                        سرباز</Button>
                                 </Popconfirm>
                             </Flex>
 

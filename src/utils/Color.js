@@ -6,6 +6,8 @@ function getStatusColor(status) {
             return "orange";
         case "فرار بالای 6 ماه":
             return "red";
+        case "یادآوری":
+            return "red";
         default:
             return "rgb(28,131,231)"
     }

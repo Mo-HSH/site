@@ -58,6 +58,10 @@ function Dashboard() {
             getItem('سربازان جدید الورود', '/new_soldier_report'),
             getItem('آمار پایه خدمتی', '/stats_report'),
         ]),
+        getItem('ابزار بایگانی', 'archiving tools', <FileTextOutlined />, [
+            getItem('لیبل پرونده', '/folder_label'),
+            // getItem('نهست', '/absence_report'),
+        ]),
         localStorage.getItem("user_access") === null ? null : localStorage.getItem("user_access") === undefined ? null : localStorage.getItem("user_access").length === 0 ? null :
             getItem('تنظیمات', 'setting', <SettingOutlined />, [
                 getItem('گزینه ها', '/edit-options'),

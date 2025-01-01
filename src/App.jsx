@@ -36,6 +36,7 @@ import User from "./routes/settings/User.jsx";
 import ListSoldier from "./routes/soldier/ListSoldier.jsx";
 import StatsReport from "./routes/reports/StatsReport.jsx";
 import NewSoldierReport from "./routes/reports/NewSoldierReport.jsx";
+import FolderLabel from "./routes/Print/archive/FolderLabel.jsx";
 
 function App() {
     const navigate = useNavigate();
@@ -113,6 +114,8 @@ function App() {
                     <Route path="/stats_report" element={<StatsReport />}/>
                     <Route path="/new_soldier_report" element={<NewSoldierReport />}/>
                     <Route path="/init_additional_service_report" element={<InitAdditionalServiceReport />}/>
+
+                    <Route path="/folder_label" element={<FolderLabel/>}/>
 
                     <Route path="/edit-options" element={<EditOptions/>}/>
                     <Route path="/edit-calculative" element={<EditCalculative/>}/>

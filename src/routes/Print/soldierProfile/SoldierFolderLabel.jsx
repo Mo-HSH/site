@@ -1,6 +1,6 @@
 
 import {useCallback, useEffect, useRef} from "react";
-import FolderLabel from "../shared/FolderLabel.jsx";
+import FolderLabelComponent from "../shared/FolderLabelComponent.jsx";
 import {Button, Flex} from "antd";
 import {useReactToPrint} from "react-to-print";
 
@@ -47,7 +47,7 @@ function SoldierFolderLabel({setPrintTitle, soldierKey}) {
                       // }}
                       className={"break-after A5-landscape"}
                 >
-                    <FolderLabel soldierKey={soldierKey}/>
+                    <FolderLabelComponent soldierKey={soldierKey}/>
                 </Flex>
 
             </Flex>

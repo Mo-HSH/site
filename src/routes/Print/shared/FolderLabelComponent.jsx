@@ -4,7 +4,7 @@ import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import axios from "axios";
 import {getApiUrl} from "../../../utils/Config.js";
 
-function FolderLabel({soldierKey}) {
+function FolderLabelComponent({soldierKey}) {
     const [api, contextHolder] = notification.useNotification();
     const [soldier, setSoldier] = useState({});
 
@@ -54,7 +54,7 @@ function FolderLabel({soldierKey}) {
 
 
     return(
-        <Flex style={{minWidth: "280px", height: "180px", border: "solid black 2px"}}>
+        <Flex style={{minWidth: "280px", height: "175px", border: "solid black 2px"}}>
             {contextHolder}
             <Row style={{width: "100%", height: "100%"}}>
                 <Col span={4} style={{border: "solid black 1px"}}>
@@ -119,4 +119,4 @@ function FolderLabel({soldierKey}) {
     );
 }
 
-export default FolderLabel;
+export default FolderLabelComponent;
