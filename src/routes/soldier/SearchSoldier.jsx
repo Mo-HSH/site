@@ -62,7 +62,7 @@ function SearchSoldier() {
     }, [targetSoldier]);
 
     useEffect(() => {
-        GetDutyDuration(key).then((duration)=>{
+        GetDutyDuration(key, DateRenderer(targetSoldier["legal_release_date"])).then((duration)=>{
             setAnnualLimit(Math.round((2.5/30)*(duration.month * 30 + duration.day)));
         })
         console.log(targetSoldier);
