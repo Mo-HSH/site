@@ -1583,7 +1583,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                                                             required: false,
                                                                                         }]}
                                                                                     >
-                                                                                        <InputNumber min={0}
+                                                                                        <InputNumber min={0} max={90}
                                                                                                      style={{width: "100%"}}/>
                                                                                     </Form.Item>
 
