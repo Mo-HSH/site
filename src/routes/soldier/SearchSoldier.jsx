@@ -38,6 +38,7 @@ import SoldierFolderLabel from "../Print/soldierProfile/SoldierFolderLabel.jsx";
 import {getApiUrl} from "../../utils/Config.js";
 import AccidentComission from "../Print/soldierProfile/AccidentComission.jsx";
 import axios from "axios";
+import {GetDutyDuration} from "../../utils/Calculative.js";
 
 function SearchSoldier() {
 
@@ -51,12 +52,20 @@ function SearchSoldier() {
         arrest: [],
         duty_group_data: []
     });
+    const [annualLimit, setAnnualLimit] = useState(50);
     useEffect(() => {
         if (targetSoldier["note"]) {
             setNote(targetSoldier["note"]);
         } else {
             setNote("");
         }
+    }, [targetSoldier]);
+
+    useEffect(() => {
+        GetDutyDuration(key).then((duration)=>{
+            setAnnualLimit(Math.round((2.5/30)*(duration.month * 30 + duration.day)));
+        })
+        console.log(targetSoldier);
     }, [targetSoldier]);
 
     const [key, setKey] = useState("");
@@ -618,6 +627,13 @@ function SearchSoldier() {
                                 on_road: targetSoldier.leave.reduce((sum, leave) => sum + leave.on_road, 0),
                                 bonus: targetSoldier.leave.reduce((sum, leave) => sum + leave.bonus, 0),
                                 text: "جمع کل"
+                            },{
+                                annual: annualLimit - targetSoldier.leave.reduce((sum, leave) => sum + leave.annual, 0),
+                                vacation: "-",
+                                medical: "-",
+                                on_road: "-",
+                                bonus: "-",
+                                text: "باقی مانده"
                             }] : []}
                             />
                         },
