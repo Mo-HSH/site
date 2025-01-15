@@ -59,26 +59,60 @@ function SearchSelect({
                         "is_duty_stopped": {stop: false, text: ""}
                     });
                     setShowSearchList(false);
-                    GetDutyDuration(key)
-                        .then((res) => {
-                            let temp = "";
-                            temp = `${res.month} ماه و ${res.day} روز`
+
+                    console.log("r", res.data[0]["release"]);
+                    if (res.data[0]["release"]) {
+                        if (res.data[0]["release"]["duty_duration"] !== "") {
                             setSelectedSoldierState((lastValue) => {
                                 let newFilter = {...lastValue};
-                                newFilter["duty_duration"] = temp;
+                                newFilter["duty_duration"] = res.data[0]["release"]["duty_duration"];
                                 return newFilter;
                             });
-                        })
-                        .catch((err) => {
-                            setSelectedSoldierState((lastValue) => {
-                                let newFilter = {...lastValue};
-                                newFilter["duty_duration"] = "err";
-                                return newFilter;
-                            });
-                            api["error"]({
-                                message: "خطا", description: err
-                            });
-                        })
+                        } else {
+                            GetDutyDuration(key, DateRenderer(res.data[0]["release"]["release_date"]))
+                                .then((res) => {
+                                    let temp = "";
+                                    temp = `${res.month} ماه و ${res.day} روز`
+                                    setSelectedSoldierState((lastValue) => {
+                                        let newFilter = {...lastValue};
+                                        newFilter["duty_duration"] = temp;
+                                        return newFilter;
+                                    });
+                                })
+                                .catch((err) => {
+                                    setSelectedSoldierState((lastValue) => {
+                                        let newFilter = {...lastValue};
+                                        newFilter["duty_duration"] = "err";
+                                        return newFilter;
+                                    });
+                                    api["error"]({
+                                        message: "خطا", description: err
+                                    });
+                                })
+                        }
+                    }
+                    else {
+                        GetDutyDuration(key)
+                            .then((res) => {
+                                let temp = "";
+                                temp = `${res.month} ماه و ${res.day} روز`
+                                setSelectedSoldierState((lastValue) => {
+                                    let newFilter = {...lastValue};
+                                    newFilter["duty_duration"] = temp;
+                                    return newFilter;
+                                });
+                            })
+                            .catch((err) => {
+                                setSelectedSoldierState((lastValue) => {
+                                    let newFilter = {...lastValue};
+                                    newFilter["duty_duration"] = "err";
+                                    return newFilter;
+                                });
+                                api["error"]({
+                                    message: "خطا", description: err
+                                });
+                            })
+                    }
                     IsDutyStopped(key)
                         .then((res) => {
                             console.log(res);
