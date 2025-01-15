@@ -403,7 +403,7 @@ function LeaveAbsenceEscapeDeficitRun() {
             validator: dateValidator
         },
         {
-            title: "تاریخ برخورداری",
+            title: "تاریخ بهره مندی",
             dataIndex: "impart_date",
             key: "impart_date",
             align: "center",
@@ -1854,7 +1854,7 @@ function LeaveAbsenceEscapeDeficitRun() {
 
                                                         <Col flex={1}>
                                                             <Form.Item
-                                                                label={"تاریخ برخورداری"}
+                                                                label={"تاریخ بهره مندی"}
                                                                 name={"impart_date"}
                                                                 rules={[{
                                                                     validator: dateValidator, required: true,
