@@ -52,6 +52,11 @@ function SearchSoldier() {
         arrest: [],
         duty_group_data: []
     });
+
+    useEffect(() => {
+        console.log(targetSoldier.leave)
+    }, [targetSoldier]);
+
     const [annualLimit, setAnnualLimit] = useState(50);
     useEffect(() => {
         if (targetSoldier["note"]) {
@@ -106,6 +111,17 @@ function SearchSoldier() {
         {
             title: "تاریخ ثبت",
             dataIndex: "submit_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            },
+        },
+        {
+            title: "تاریخ بهره مندی",
+            dataIndex: "impart_date",
             render: (v) => {
                 if (v === undefined || v === null || v === "") {
                     return "-";
@@ -620,7 +636,7 @@ function SearchSoldier() {
                             key: 0,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={leaveColumns} dataSource={targetSoldier.leave ? [...targetSoldier.leave, {
+                                columns={leaveColumns} dataSource={targetSoldier.leave ? [...targetSoldier.leave.sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong), {
                                 annual: targetSoldier.leave.reduce((sum, leave) => sum + leave.annual, 0),
                                 vacation: targetSoldier.leave.reduce((sum, leave) => sum + leave.vacation, 0),
                                 medical: targetSoldier.leave.reduce((sum, leave) => sum + leave.medical, 0),
@@ -647,7 +663,7 @@ function SearchSoldier() {
                                     targetSoldier.absence
                                         ?
                                         [
-                                            ...targetSoldier.absence.filter(v => !v.is_ignored),
+                                            ...targetSoldier.absence.filter(v => !v.is_ignored).sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong),
                                             {
                                                 duration: targetSoldier.absence.filter(v => !v.is_ignored).reduce((sum, absence) => sum + absence.duration, 0),
                                                 text: "جمع کل"
@@ -661,7 +677,7 @@ function SearchSoldier() {
                             key: 2,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={arrestColumns} dataSource={targetSoldier.arrest ? [...targetSoldier.arrest, {
+                                columns={arrestColumns} dataSource={targetSoldier.arrest ? [...targetSoldier.arrest.sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong), {
                                 duration: targetSoldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
                                 text: "جمع کل"
                             }] : []}
@@ -673,7 +689,7 @@ function SearchSoldier() {
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
                                 columns={missionColumns}
-                                dataSource={targetSoldier.mission ? [...targetSoldier.mission, {
+                                dataSource={targetSoldier.mission ? [...targetSoldier.mission.sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong), {
                                     duration: targetSoldier.mission.reduce((sum, mission) => sum + mission.duration, 0),
                                     text: "جمع کل"
                                 }] : []}
@@ -685,7 +701,7 @@ function SearchSoldier() {
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
                                 columns={deficitColumns}
-                                dataSource={targetSoldier.deficit ? [...targetSoldier.deficit, {
+                                dataSource={targetSoldier.deficit ? [...targetSoldier.deficit.sort((a, b)=> a.create_date.$date.$numberLong - b.create_date.$date.$numberLong), {
                                     duration: targetSoldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
                                     text: "جمع کل"
                                 }] : []}
@@ -697,7 +713,7 @@ function SearchSoldier() {
                             children:
                                 <Table
                                     pagination={false} bordered={true} style={{width: "100%"}}
-                                    columns={runColumns} dataSource={targetSoldier.run ? [...targetSoldier.run, {
+                                    columns={runColumns} dataSource={targetSoldier.run ? [...targetSoldier.run.sort((a, b)=> a.absence_date.$date.$numberLong - b.absence_date.$date.$numberLong), {
                                     "run_duration": targetSoldier.run.reduce((sum, run) => sum + run["run_duration"], 0),
                                     "run_punish": targetSoldier.run.reduce((sum, run) => sum + run["run_punish"], 0),
                                     text: "جمع کل"
@@ -710,7 +726,7 @@ function SearchSoldier() {
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
                                 columns={dutyGroupColumns}
-                                dataSource={targetSoldier.duty_group_data ? targetSoldier.duty_group_data : []}
+                                dataSource={targetSoldier.duty_group_data ? targetSoldier.duty_group_data.sort((a, b)=> a.submit_date.$date.$numberLong - b.submit_date.$date.$numberLong) : []}
                             />
                         },
                     ]}

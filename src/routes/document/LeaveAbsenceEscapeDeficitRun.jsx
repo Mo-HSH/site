@@ -171,6 +171,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                 temp.push({
                     ...value,
                     "submit_date": DateRenderer(value["submit_date"]),
+                    "impart_date": DateRenderer(value["impart_date"]),
                     key: index
                 })
             });
@@ -397,6 +398,14 @@ function LeaveAbsenceEscapeDeficitRun() {
             title: "تاریخ ثبت",
             dataIndex: "submit_date",
             key: "submit_date",
+            align: "center",
+            inputType: "text",
+            validator: dateValidator
+        },
+        {
+            title: "تاریخ برخورداری",
+            dataIndex: "impart_date",
+            key: "impart_date",
             align: "center",
             inputType: "text",
             validator: dateValidator
@@ -1834,6 +1843,19 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                             <Form.Item
                                                                 label={"تاریخ ثبت"}
                                                                 name={"submit_date"}
+                                                                rules={[{
+                                                                    validator: dateValidator, required: true,
+                                                                }]}
+                                                                initialValue={today}
+                                                            >
+                                                                <Input/>
+                                                            </Form.Item>
+                                                        </Col>
+
+                                                        <Col flex={1}>
+                                                            <Form.Item
+                                                                label={"تاریخ برخورداری"}
+                                                                name={"impart_date"}
                                                                 rules={[{
                                                                     validator: dateValidator, required: true,
                                                                 }]}

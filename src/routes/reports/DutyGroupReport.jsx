@@ -112,6 +112,7 @@ function DutyGroupReport() {
                         section: soldier.section,
                         deployment_date: DateRenderer(soldier.deployment_date),
                         duty_group_submit_date: DateRenderer(dutyGroup.submit_date),
+                        duty_group_impart_date: DateRenderer(dutyGroup.impart_date),
                         duty_group: DutyGroupRenderer(dutyGroup.is_in_combat_group),
                         extra_info: soldier.extra_info,
                     }));
@@ -158,6 +159,7 @@ function DutyGroupReport() {
             'تاریخ اعزام': row["deployment_date"],
             'گروه خدمتی': row["duty_group"],
             'تاریخ ثبت گروه خدمتی': row["duty_group_submit_date"],
+            'تاریخ بهره مندی گروه خدمتی': row["duty_group_impart_date"],
             'گروه جسمانی': row["extra_info"].includes("معاف از رزم")? "معاف از رزم" : "سالم",
         })));
         const workbook = XLSX.utils.book_new();
@@ -327,6 +329,10 @@ function DutyGroupReport() {
                         {
                             title: dutyGroup ? "تاریخ اضافه" : "تاریخ کسر",
                             dataIndex: "duty_group_submit_date",
+                        },
+                        {
+                            title: "تاریخ بهره مندی",
+                            dataIndex: "duty_group_impart_date",
                         },
                         {
                             title: "گروه جسمانی",
