@@ -713,7 +713,7 @@ function SearchSoldier() {
                             children:
                                 <Table
                                     pagination={false} bordered={true} style={{width: "100%"}}
-                                    columns={runColumns} dataSource={targetSoldier.run ? [...targetSoldier.run.sort((a, b)=> a.absence_date.$date.$numberLong - b.absence_date.$date.$numberLong), {
+                                        columns={runColumns} dataSource={targetSoldier.run ? [...targetSoldier.run.sort((a, b)=> a.absence_date.$date.$numberLong - b.absence_date.$date.$numberLong), {
                                     "run_duration": targetSoldier.run.reduce((sum, run) => sum + run["run_duration"], 0),
                                     "run_punish": targetSoldier.run.reduce((sum, run) => sum + run["run_punish"], 0),
                                     text: "جمع کل"
@@ -971,6 +971,7 @@ function SearchSoldier() {
                                                        1: DutyGroupRenderer(targetSoldier["duty_group"])
                                                    },
                                                    {0: "مدت خدمت:", 1: targetSoldier["duty_duration"]},
+                                                   {0: "بومی/غیربومی:", 1: NativeRenderer(targetSoldier["is_native"])},
                                                    {
                                                        0: "تاریخ ترخیص قانونی:",
                                                        1: <>{DateRenderer(targetSoldier["legal_release_date"])}
