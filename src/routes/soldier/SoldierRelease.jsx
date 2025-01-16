@@ -867,6 +867,13 @@ function SoldierRelease({oid}) {
                                                         data: soldier["release"]["create_date"]
                                                     },
                                                     {
+                                                        label: "تاریخ تایید تسویه حساب حقوقی",
+                                                        is_date: true,
+                                                        editable: true,
+                                                        data: soldier["release_progress"]["confirm_legal_date"],
+                                                        key: "confirm_legal_date"
+                                                    },
+                                                    {
                                                         label: "تاریخ تحویل نامه معافیت/ایست خدمت",
                                                         is_date: true,
                                                         editable: true,
