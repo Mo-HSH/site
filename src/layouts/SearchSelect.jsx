@@ -60,12 +60,12 @@ function SearchSelect({
                     });
                     setShowSearchList(false);
 
-                    console.log("r", res.data[0]["release"]);
                     if (res.data[0]["release"]) {
                         if (res.data[0]["release"]["duty_duration"] !== "") {
                             setSelectedSoldierState((lastValue) => {
                                 let newFilter = {...lastValue};
                                 newFilter["duty_duration"] = res.data[0]["release"]["duty_duration"];
+                                newFilter["duty_percent"] = 100;
                                 return newFilter;
                             });
                         } else {
@@ -76,6 +76,7 @@ function SearchSelect({
                                     setSelectedSoldierState((lastValue) => {
                                         let newFilter = {...lastValue};
                                         newFilter["duty_duration"] = temp;
+                                        newFilter["duty_percent"] = 100;
                                         return newFilter;
                                     });
                                 })
@@ -92,26 +93,32 @@ function SearchSelect({
                         }
                     }
                     else {
-                        GetDutyDuration(key)
-                            .then((res) => {
-                                let temp = "";
-                                temp = `${res.month} ماه و ${res.day} روز`
-                                setSelectedSoldierState((lastValue) => {
-                                    let newFilter = {...lastValue};
-                                    newFilter["duty_duration"] = temp;
-                                    return newFilter;
-                                });
-                            })
-                            .catch((err) => {
-                                setSelectedSoldierState((lastValue) => {
-                                    let newFilter = {...lastValue};
-                                    newFilter["duty_duration"] = "err";
-                                    return newFilter;
-                                });
-                                api["error"]({
-                                    message: "خطا", description: err
-                                });
-                            })
+                        axios.post(getApiUrl(`soldier/get_final_duty_duration/${key}`), {}, {withCredentials: true}).then((final_duty)=>{
+                            GetDutyDuration(key)
+                                .then((res) => {
+                                    let temp = "";
+                                    temp = `${res.month} ماه و ${res.day} روز`;
+                                    setSelectedSoldierState((lastValue) => {
+                                        let newFilter = {...lastValue};
+                                        newFilter["duty_duration"] = temp;
+                                        newFilter["duty_percent"] = (res.month*30 + res.day) / final_duty.data.day * 100;
+                                        return newFilter;
+                                    });
+                                })
+                                .catch((err) => {
+                                    setSelectedSoldierState((lastValue) => {
+                                        let newFilter = {...lastValue};
+                                        newFilter["duty_duration"] = "err";
+                                        return newFilter;
+                                    });
+                                    api["error"]({
+                                        message: "خطا", description: err
+                                    });
+                                })
+                        }).catch((err)=>{
+                            console.error(err);
+                        })
+
                     }
                     IsDutyStopped(key)
                         .then((res) => {

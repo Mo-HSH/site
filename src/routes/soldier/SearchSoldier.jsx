@@ -11,7 +11,7 @@ import {
     Image,
     Input,
     Modal,
-    notification, Popconfirm, Popover,
+    notification, Popconfirm, Popover, Progress,
     Table, Tabs,
     Tooltip,
     Typography
@@ -955,6 +955,14 @@ function SearchSoldier() {
                                        dataSource=
                                            {
                                                [
+                                                   {0: <Progress percent={targetSoldier["duty_percent"]}
+                                                                 percentPosition={{
+                                                                     align: 'center',
+                                                                     type: 'outer',
+                                                                 }}
+                                                                 size={["100%",10]}
+                                                                 format={() => targetSoldier["duty_duration"]}
+                                                                 strokeColor={getStatusColor(targetSoldier["status"])}/>},
                                                    {
                                                        0: "نام و نشان:",
                                                        1: <Popover trigger={"click"}
@@ -992,8 +1000,8 @@ function SearchSoldier() {
                                        columns=
                                            {
                                                [
-                                                   {key: 0, dataIndex: 0, align: "start"},
-                                                   {key: 1, dataIndex: 1, align: "end"}
+                                                   {key: 0, dataIndex: 0, align: "start", onCell: (_, index)=> { return index === 0 ? {colSpan: 2}: {}}},
+                                                   {key: 1, dataIndex: 1, align: "end", onCell: (_, index)=> { return index === 0 ? {colSpan: 0}: {}}}
                                                ]
                                            }
                                 />
