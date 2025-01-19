@@ -56,11 +56,16 @@ function EditOrganizationJob() {
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
     function onDelete(index) {
-
-    }
-
-    function onEdit(index, form) {
-
+        axios.post(getApiUrl(`config/organizational_job/delete/${index}`), {}, {withCredentials: true})
+            .then(()=>{
+                fetchData();
+            }).catch((err)=>{
+            fetchData();
+            api["error"]({
+                message: "خطا",
+                description: err.message
+            });
+        })
     }
 
     function onCreate(value) {
@@ -168,7 +173,7 @@ function EditOrganizationJob() {
                     allow_ranks: '',
                     limit: '',
                 }}
-                onDelete={onDelete} onEdit={onEdit}
+                onDelete={onDelete}
                 pagination={false} bordered={true} style={{width: "100%"}}
                 columns={columns} dataSource={data}
                 createForm={() =>
