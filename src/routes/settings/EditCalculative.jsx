@@ -1,4 +1,4 @@
-import {Divider, Flex, Form, Button, InputNumber, notification, Spin, Progress} from "antd";
+import {Divider, Flex, Form, Button, InputNumber, notification, Spin, Progress, Input} from "antd";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
@@ -89,6 +89,14 @@ function EditCalculative() {
         // })
     }
 
+    function calculateSoldier(data) {
+        axios.post(getApiUrl(`config/calculative/calculate/${data.key}`), {}, {withCredentials: true}).then((res)=>{
+            console.log(res);
+        }).catch((err)=>{
+            console.error(err);
+        })
+    }
+
     return (
         <Flex vertical={true} gap={"small"}>
             {contextHolder}
@@ -147,7 +155,7 @@ function EditCalculative() {
                         </Form.Item>
                     </Form>
 
-                    <Divider>محاسبه مجدد خدمت</Divider>
+                    <Divider>محاسبه مجدد خدمت برای کل سربازان</Divider>
                     <Button type={onCalculate ? "default" : "primary"} onClick={() => calculateAllSoldier()}>
                         {
                             onCalculate
@@ -157,6 +165,21 @@ function EditCalculative() {
                                 "محاسبه مجدد برای کل سربازان"
                         }
                     </Button>
+
+                    <Divider>محاسبه مجدد خدمت برای سرباز</Divider>
+                    <Form
+                        onFinish={calculateSoldier}
+                    >
+                        <Form.Item
+                            name={"key"}
+                            label={"کلید"}
+                        >
+                            <Input/>
+                        </Form.Item>
+                        <Form.Item>
+                            <Button htmlType={"submit"}>محاسبه</Button>
+                        </Form.Item>
+                    </Form>
                 </>
             }
         </Flex>
