@@ -269,6 +269,19 @@ function ListSoldier() {
             },
         },
         {
+            label: "نوع ترخیص",
+            value: {
+                title: "نوع ترخیص",
+                dataIndex: "release",
+                render: ((v) => {
+                    if (v) {
+                        return v["release_type"];
+                    }
+                    return "";
+                })
+            },
+        },
+        {
             label: "سلامت روان",
             value: {
                 title: "سلامت روان",
@@ -380,6 +393,13 @@ function ListSoldier() {
         },
 
         {label: "وضعیت خدمتی", dataIndex: "status", type: "select", options: statusOptions},
+        {label: "نوع ترخیص", dataIndex: "release.release_type", type: "select", options: [
+                {label: "پایان خدمت", value: "پایان خدمت"},
+                {label: "ایست خدمت", value: "ایست خدمت"},
+                {label: "فوت", value: "فوت"},
+                {label: "معافیت", value: "معافیت"},
+                {label: "انتقالی", value: "انتقالی"},
+            ]},
         {label: "وضعیت سلامت روان", dataIndex: "mental_health", type: "select", options: mentalHealthOptions},
         {
             label: "وضعیت معاف از رزم",
