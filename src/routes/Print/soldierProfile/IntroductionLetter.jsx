@@ -141,7 +141,7 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                                                 <Space/>
                                                 <Typography.Text>
                                                     {
-                                                        soldier["unit"] === "فرماندهی پشتیبانی مرکز نپاجا - گ.خ"
+                                                        soldier["unit"] === "فرماندهی پشتیبانی مرکز نپاجا - گ.خ" || soldier["unit"] === "مهمان"
                                                             ?
                                                             "به: فرماندهی محترم گروه خدمات پاسداری پشتیبانی مرکز نپاجا"
                                                             :
