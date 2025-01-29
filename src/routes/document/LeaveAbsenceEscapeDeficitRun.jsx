@@ -12,7 +12,7 @@ import {
     InputNumber,
     Modal,
     notification,
-    Popconfirm,
+    Popconfirm, Popover,
     Row,
     Select,
     Table,
@@ -52,9 +52,11 @@ function LeaveAbsenceEscapeDeficitRun() {
     const [arrestData, setArrestData] = useState([]);
     const [missionData, setMissionData] = useState([]);
     const [deficitData, setDeficitData] = useState([]);
+    const [organizationalJob, setOrganizationalJob] = useState([]);
     const [dutyGroupData, setDutyGroupData] = useState([]);
     const [runData, setRunData] = useState([]);
     const [deficitNames, setDeficitNames] = useState([]);
+    const [organizationJobOptions, setOrganizationJobOptions] = useState([]);
     const [selectedSoldierOid, setSelectedSoldierOid] = useState(null);
     const [api, contextHolder] = notification.useNotification();
     const [today, setToday] = useState("");
@@ -127,6 +129,24 @@ function LeaveAbsenceEscapeDeficitRun() {
                 })
             });
             setArrestData(temp);
+        } catch (err) {
+            console.error(err);
+        }
+    }, [selectedSoldier]);
+
+    useEffect(() => {
+        console.log(selectedSoldier["organizational_job"])
+        let temp = [];
+        try {
+            selectedSoldier["organizational_job"].forEach((value, index) => {
+                temp.push({
+                    ...value,
+                    "start_date": DateRenderer(value["start_date"]),
+                    key: index
+                })
+            });
+            setOrganizationalJob(temp);
+            console.log(temp);
         } catch (err) {
             console.error(err);
         }
@@ -232,6 +252,41 @@ function LeaveAbsenceEscapeDeficitRun() {
             });
         });
     }, []);
+
+    async function soldierCounter(filter) {
+        let res = await axios.post(getApiUrl("soldier/list"), {"filter": filter, "projection": {first_name: 1}}, {withCredentials: true});
+        return res.data.length;
+    }
+    useEffect(() => {
+        (async () => {
+
+            let res = await axios.get(getApiUrl("config/organization-job"), {withCredentials: true});
+
+            let temp = res.data.config.map((v)=>{
+                v["capacity"] = v.limit;
+                return v;
+            });
+
+            for (let i = 0; i < temp.length; i++) {
+                let counter = await soldierCounter({
+                    "organizational_job": {
+                        "$elemMatch": {
+                            "article": temp[i].article,
+                            "line": temp[i].line,
+                            "md": temp[i].md,
+                            "table_number": temp[i].table_number,
+                        }
+                    }
+                });
+                temp[i]["capacity"] -= counter;
+            }
+            setOrganizationJobOptions(temp);
+        })();
+
+        return () => {
+            // this now gets called when the component unmounts
+        };
+    }, [selectedSoldier]);
 
     const leaveColumns = [
         {
@@ -461,6 +516,51 @@ function LeaveAbsenceEscapeDeficitRun() {
         }
     ];
 
+    const organizationalColumns = [
+        {
+            title: "تاریخ شروع",
+            dataIndex: "start_date",
+            key: "start_date",
+            align: "center",
+        },
+        {
+            title: "عنوان یگان",
+            dataIndex: "unit_title",
+            key: "unit_title",
+            align: "center",
+        },
+        {
+            title: "شماره جدول",
+            dataIndex: "table_number",
+            key: "table_number",
+            align: "center",
+        },
+        {
+            title: "سطر",
+            dataIndex: "article",
+            key: "article",
+            align: "center",
+        },
+        {
+            title: "بند",
+            dataIndex: "line",
+            key: "line",
+            align: "center",
+        },
+        {
+            title: "ماده 42",
+            dataIndex: "md",
+            key: "md",
+            align: "center",
+        },
+        {
+            title: "عنوان شغل",
+            dataIndex: "job_title",
+            key: "job_title",
+            align: "center",
+        },
+    ];
+
     function fetchData() {
         axios.post(getApiUrl("soldier/list"), {
             "filter":
@@ -473,6 +573,7 @@ function LeaveAbsenceEscapeDeficitRun() {
             ,
             "projection":
                 {
+                    "organizational_job": 1,
                     "leave": 1,
                     "absence": 1,
                     "arrest": 1,
@@ -498,6 +599,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                     newValue["arrest"] = res[0]["arrest"];
                     newValue["mission"] = res[0]["mission"];
                     newValue["deficit"] = res[0]["deficit"];
+                    newValue["organizational_job"] = res[0]["organizational_job"];
                     newValue["duty_group_data"] = res[0]["duty_group_data"];
                     newValue["duty_group"] = res[0]["duty_group"];
                     newValue["run"] = res[0]["run"];
@@ -598,6 +700,10 @@ function LeaveAbsenceEscapeDeficitRun() {
         onCreate(value, "run");
     }
 
+    function onCreateJob(value) {
+        onCreate(value, "organization_job");
+    }
+
     function DateConflictErrorHandler(err) {
         api["error"]({
             message: "مغایرت در تاریخ", description: <Flex justify={"start"} align={"start"}>
@@ -671,6 +777,10 @@ function LeaveAbsenceEscapeDeficitRun() {
 
     function onDeleteDutyGroup(index) {
         onDelete(index, "duty_group");
+    }
+
+    function onDeleteOrganizationalJob(index) {
+        onDelete(index, "organization_job");
     }
 
     function onEdit(index, form, queryTarget) {
@@ -782,6 +892,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                 setSelectedSoldierState={setSelectedSoldier}
                 setSoldierOid={setSelectedSoldierOid}
                 selectedSoldierProject={{
+                    "organizational_job": 1,
                     "leave": 1,
                     "duty_group_data": 1,
                     "duty_group": 1,
@@ -1894,6 +2005,80 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                     </Row>
 
                                                 </Form>
+                                            </Flex>
+                                        }
+                                    />
+                                },
+                                {
+                                    label: "شغل سازمانی",
+                                    key: 7,
+                                    children: <EditableTable
+                                        formField={{
+                                            order: '',
+                                            start_date: '',
+                                            duration: '',
+                                            location: '',
+                                        }}
+                                        onDelete={onDeleteOrganizationalJob}
+                                        pagination={false} bordered={true} style={{width: "100%"}}
+                                        columns={organizationalColumns} dataSource={organizationalJob}
+                                        createForm={() =>
+                                            <Flex>
+                                                <Table
+                                                    pagination={false}
+                                                    columns={[
+                                                        {
+                                                            title: "عنوان یگان",
+                                                            dataIndex: "unit_title"
+                                                        },
+                                                        {
+                                                            title: "عنوان شغل",
+                                                            dataIndex: "job_title"
+                                                        },
+                                                        {
+                                                            title: "جایگاه سازمانی",
+                                                            dataIndex: "allow_ranks"
+                                                        },
+                                                        {
+                                                            title: "ظرفیت",
+                                                            dataIndex: "capacity",
+                                                            render: (value, record, index)=>{
+                                                                return (
+                                                                    <Typography.Text strong={true} style={{color: value > 0 ? "green" : "red"}}>
+                                                                        {value}
+                                                                    </Typography.Text>
+                                                                );
+                                                            }
+                                                        },
+                                                        {
+                                                            title: "اقدامات",
+                                                            render: (value, record, index)=>{
+                                                                return(
+                                                                    <Popover trigger={"click"} content={
+                                                                        <Form
+                                                                            onFinish={(v)=>{
+                                                                                onCreateJob({...v, ...record});
+                                                                            }}
+                                                                        >
+                                                                            <Form.Item
+                                                                                label={"تاریخ شروع"}
+                                                                                name={"start_date"}
+                                                                                rules={[{validator: dateValidator, required: true}]}
+                                                                            >
+                                                                                <Input />
+                                                                            </Form.Item>
+
+                                                                            <Button type={"primary"} htmlType={"submit"}>ثبت</Button>
+                                                                        </Form>
+                                                                    }>
+                                                                        <Button type={"primary"}>اضافه کردن</Button>
+                                                                    </Popover>
+                                                                );
+                                                            }
+                                                        }
+                                                    ]}
+                                                    dataSource={organizationJobOptions}
+                                                />
                                             </Flex>
                                         }
                                     />
