@@ -323,6 +323,34 @@ function ListSoldier() {
                 dataIndex: "previous_unit"
             }
         },
+        {
+            label: "شغل سازمانی - عنوان یگان",
+            value: {
+                title: "شغل سازمانی - عنوان یگان",
+                dataIndex: "organizational_job",
+                render: ((v)=>{
+                    if (v) {
+                        return v[v.length-1].unit_title;
+                    } else {
+                        return "";
+                    }
+                })
+            }
+        },
+        {
+            label: "شغل سازمانی - عنوان شغل",
+            value: {
+                title: "شغل سازمانی - عنوان شغل",
+                dataIndex: "organizational_job",
+                render: ((v)=>{
+                    if (v) {
+                        return v[v.length-1].job_title;
+                    } else {
+                        return "";
+                    }
+                })
+            }
+        },
     ]
 
     function download() {
