@@ -559,6 +559,13 @@ function LeaveAbsenceEscapeDeficitRun() {
             key: "job_title",
             align: "center",
         },
+        {
+            title: "جایگاه سازمانی",
+            dataIndex: "allow_ranks",
+            key: "allow_ranks",
+            align: "center",
+            render: ((v)=>v[0])
+        },
     ];
 
     function fetchData() {
