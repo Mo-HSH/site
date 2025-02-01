@@ -345,9 +345,10 @@ function ListSoldier() {
                 title: "شغل سازمانی - عنوان یگان",
                 dataIndex: "organizational_job",
                 render: ((v)=>{
-                    if (v) {
+                    try {
                         return v[v.length-1].unit_title;
-                    } else {
+                    }
+                    catch {
                         return "";
                     }
                 })
@@ -359,9 +360,10 @@ function ListSoldier() {
                 title: "شغل سازمانی - عنوان شغل",
                 dataIndex: "organizational_job",
                 render: ((v)=>{
-                    if (v) {
+                    try {
                         return v[v.length-1].job_title;
-                    } else {
+                    }
+                    catch {
                         return "";
                     }
                 })
