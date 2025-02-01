@@ -150,6 +150,14 @@ function ListSoldier() {
             value: {
                 title: "مدرک تحصیلی",
                 dataIndex: "education",
+                render: ((v)=>{
+                    try {
+                        return v[0];
+                    }
+                    catch {
+                        return " ";
+                    }
+                })
             },
         },
         {
@@ -207,6 +215,14 @@ function ListSoldier() {
             value: {
                 title: "رشته تحصیلی",
                 dataIndex: "field_of_study",
+                render: ((v)=>{
+                    try {
+                        return v[0];
+                    }
+                    catch {
+                        return " ";
+                    }
+                })
             },
         },
         {
