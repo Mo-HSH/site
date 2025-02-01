@@ -304,6 +304,14 @@ function ListSoldier() {
             }
         },
         {
+            label: "وضعیت تاهل",
+            value: {
+                title: "وضعیت تاهل",
+                dataIndex: "family",
+                render: ((v)=> v.findIndex(i=>i.relative === "همسر") > -1 ? "متاهل" : "مجرد")
+            }
+        },
+        {
             label: "رنگ چشم",
             value: {
                 title: "رنگ چشم",
