@@ -289,6 +289,14 @@ function ListSoldier() {
             }
         },
         {
+            label: "سلامت جسمانی",
+            value: {
+                title: "سلامت جسمانی",
+                dataIndex: "extra_info",
+                render: ((v)=> v.includes("معاف از رزم") ? "معاف از رزم" : "سالم")
+            }
+        },
+        {
             label: "گروه خونی",
             value: {
                 title: "گروه خونی",
