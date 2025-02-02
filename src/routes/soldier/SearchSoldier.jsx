@@ -50,7 +50,8 @@ function SearchSoldier() {
         deficit: [],
         mission: [],
         arrest: [],
-        duty_group_data: []
+        duty_group_data: [],
+        organizational_job_data: []
     });
 
     useEffect(() => {
@@ -409,6 +410,65 @@ function SearchSoldier() {
         },
     ].map(v => ({...v, align: "center"}));
 
+    const OrganizationalJobColumns = [
+        {
+            title: "ردیف",
+            align: "center",
+            render: rowCounterMerge,
+        },
+        {
+            title: "تاریخ ثبت",
+            dataIndex: "created_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            },
+        },
+        {
+            title: "تاریخ شروع شغل",
+            dataIndex: "start_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            },
+        },
+        {
+            title: "عنوان یگان",
+            dataIndex: "unit_title",
+        },
+        {
+            title: "شماره جدول",
+            dataIndex: "table_number",
+        },
+        {
+            title: "سطر",
+            dataIndex: "article",
+        },
+        {
+            title: "بند",
+            dataIndex: "line",
+        },
+        {
+            title: "ماده 42",
+            dataIndex: "md",
+        },
+        {
+            title: "عنوان شغل",
+            dataIndex: "job_title",
+        },
+        {
+            title: "جایگاه",
+            dataIndex: "allow_ranks",
+        },
+    ].map(v => ({...v, align: "center"}));
+
+
 
     const collapseItems = [
         {
@@ -727,6 +787,15 @@ function SearchSoldier() {
                                 pagination={false} bordered={true} style={{width: "100%"}}
                                 columns={dutyGroupColumns}
                                 dataSource={targetSoldier.duty_group_data ? targetSoldier.duty_group_data.sort((a, b)=> a.submit_date.$date.$numberLong - b.submit_date.$date.$numberLong) : []}
+                            />
+                        },
+                        {
+                            label: "شغل سازمانی",
+                            key: 7,
+                            children: <Table
+                                pagination={false} bordered={true} style={{width: "100%"}}
+                                columns={OrganizationalJobColumns}
+                                dataSource={targetSoldier.organizational_job ? targetSoldier.organizational_job.sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong) : []}
                             />
                         },
                     ]}
