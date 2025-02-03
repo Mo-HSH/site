@@ -5,7 +5,8 @@ import {Button, Flex, Form, Input, notification, Table, Typography} from "antd";
 import {useReactToPrint} from "react-to-print";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import Sign from "../../../components/printElement/Sign.jsx";
-import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
+import * as XLSX from "xlsx"
+import {saveAs} from "file-saver";
 
 function AlefForm({setPrintTitle, alefFormNumber, refresher}) {
     const [soldier, setSoldier] = useState([]);
@@ -77,6 +78,64 @@ function AlefForm({setPrintTitle, alefFormNumber, refresher}) {
         content: reactToPrintContent,
         removeAfterPrint: true
     });
+
+    function handleDownload() {
+        console.log(soldier);
+        function Description(data) {
+            let res = [];
+            let discharge = data["absence_discharge"] +
+                data["run_discharge"] +
+                data["extra_annual_leave"] +
+                data["extra_medical_leave"];
+
+            if (discharge > 0) {
+                res.push(`انفصال ${discharge} روز`)
+            }
+            if (data["additional_service_punish_day"] > 0) {
+                res.push(`اضافه خدمت سنواتی ${data["additional_service_punish_day"]} روز`)
+            }
+            if (data["additional_service_day"] > 0) {
+                res.push(`اضافه خدمت ${data["additional_service_day"]} روز`)
+            }
+            if (data["release_reason"] !== "قانونی") {
+                res.push(data["release_reason"])
+            }
+            return res.join(" - ");
+        }
+
+        function Madrak(data) {
+            if (data === undefined || data === null || data === "") {
+                return "";
+            }
+            let flag = false;
+            data.forEach(item => {
+                if (["همسر", "فرزند"].includes(item.relative)) {
+                    flag = true;
+                }
+            })
+            return flag ? "+" : "";
+        }
+        const worksheet = XLSX.utils.json_to_sheet(soldier.map((row, index) => ({
+            'ردیف': index + 1,
+            'نام': row["first_name"],
+            'نام خانوادگی': row["last_name"],
+            'نام پدر': row["father_name"],
+            'کد ملی': row["national_code"],
+            'حوزه اعزام': row["deployment_location"],
+            'شروع خدمت': DateRenderer(row["deployment_date"]),
+            'پایان خدمت': DateRenderer(row["release"]["release_date"]),
+            'خدمت انجام شده': row["release"]["duty_duration"],
+            'کد پرسنلی': row["personnel_code"],
+            'کد تفضیلی': parseInt(row["folder_number"].split("-").join("")),
+            'توضیحات': Description(row["release"]),
+            'مدرک': Madrak(row["family"]),
+        })));
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+        const excelBuffer = XLSX.write(workbook, {bookType: 'xlsx', type: 'array'});
+        const blob = new Blob([excelBuffer], {type: 'application/octet-stream'});
+        saveAs(blob, `گزارش.xlsx`);
+    }
 
     const columns = [
         {
@@ -207,6 +266,7 @@ function AlefForm({setPrintTitle, alefFormNumber, refresher}) {
                   style={{width: "100%", zIndex: 2, marginBottom: "20px"}}>
 
                 <Button disabled={!readyForPrint} type={"primary"} onClick={handlePrint}>پرینت</Button>
+                <Button disabled={!readyForPrint} type={"primary"} onClick={handleDownload}>دانلود</Button>
 
                 <Form
                     layout={"inline"}
