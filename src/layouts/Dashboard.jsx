@@ -8,6 +8,8 @@ import {
     UserOutlined,
 } from "@ant-design/icons";
 import padafandLogo from "../assets/img/Padafand_Logo.svg";
+import axios from "axios";
+import {getApiUrl} from "../utils/Config.js";
 
 
 function Dashboard() {
@@ -72,6 +74,12 @@ function Dashboard() {
             ]),
     ];
 
+    function Logout() {
+        axios.post(getApiUrl("user/logout"), {}, {withCredentials: true}).then(() => {
+            location.reload();
+        }).catch()
+    }
+
     return (
         <Layout>
             <Layout.Sider trigger={null} collapsible collapsed={collapsed}>
@@ -99,10 +107,11 @@ function Dashboard() {
                 <Layout.Header style={{
                     height: "93px"
                 }}>
-                    <Flex align={"center"} justify={"left"} style={{
+                    <Flex align={"center"} justify={"left"} gap={"middle"} style={{
                         height: "100%",
                     }}>
                         <Typography.Text>{localStorage.getItem("user_rank")} {localStorage.getItem("user_first_name")} {localStorage.getItem("user_last_name")}</Typography.Text>
+                        <Button danger={true} type={"primary"} onClick={()=>Logout()}>خروج</Button>
                     </Flex>
                 </Layout.Header>
 
