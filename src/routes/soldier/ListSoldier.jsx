@@ -190,6 +190,13 @@ function ListSoldier() {
             },
         },
         {
+            label: "آدرس",
+            value: {
+                title: "آدرس",
+                dataIndex: "address_street",
+            },
+        },
+        {
             label: "یگان",
             value: {
                 title: "یگان",

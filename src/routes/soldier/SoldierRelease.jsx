@@ -119,7 +119,7 @@ function SoldierRelease({oid}) {
                 "release_date": releaseDate
             }
             , {withCredentials: true}).then((res) => {
-            form.setFieldValue("additional_service_day", res.data);
+            form.setFieldValue("additional_service_day", res.data + soldier["run_punish"]);
         }).catch((err) => {
             api["error"]({
                 message: "خطا", description: err.data.message

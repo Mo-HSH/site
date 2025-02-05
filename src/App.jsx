@@ -37,6 +37,7 @@ import ListSoldier from "./routes/soldier/ListSoldier.jsx";
 import StatsReport from "./routes/reports/StatsReport.jsx";
 import NewSoldierReport from "./routes/reports/NewSoldierReport.jsx";
 import FolderLabel from "./routes/Print/archive/FolderLabel.jsx";
+import EditNotification from "./routes/settings/EditNotification.jsx";
 
 function App() {
     const navigate = useNavigate();
@@ -120,6 +121,7 @@ function App() {
                     <Route path="/edit-options" element={<EditOptions/>}/>
                     <Route path="/edit-calculative" element={<EditCalculative/>}/>
                     <Route path="/edit-organization-job" element={<EditOrganizationJob/>}/>
+                    <Route path="/edit-notification" element={<EditNotification/>}/>
                     <Route path="/user" element={<User/>}/>
                 </Route>
             </Routes>
