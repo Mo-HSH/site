@@ -44,6 +44,7 @@ import DeployToCourt from "../Print/run/DeployToCourt.jsx";
 import ReturnMD from "../Print/run/ReturnMD.jsx";
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
+import MarriageMD from "../Print/deficit/MarriageMD.jsx";
 
 function LeaveAbsenceEscapeDeficitRun() {
     const [selectedSoldier, setSelectedSoldier] = useState({"leave": [], "absence": []});
@@ -1390,7 +1391,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                                         pagination={false} bordered={true} style={{width: "100%"}}
                                         columns={deficitColumns} dataSource={deficitData}
                                         createForm={() =>
-                                            <Flex>
+                                            <Flex vertical={true}>
                                                 <Form
                                                     onFinish={onCreateDeficit}
                                                 >
@@ -1473,6 +1474,18 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                     </Row>
 
                                                 </Form>
+
+                                                <Flex style={{width: "100%"}}>
+                                                    <Card title={"اقدامات"} style={{width: "100%"}}>
+                                                        <Button type={"primary"}
+                                                                onClick={() => openPrintModal(<MarriageMD setPrintTitle={setPrintTitle}
+                                                                                                         soldierKey={selectedSoldierOid}
+                                                                                                         forceRefresh={Date.now()}/>)}
+                                                        >
+                                                            ماده دستور ازدواج و فرزند
+                                                        </Button>
+                                                    </Card>
+                                                </Flex>
                                             </Flex>
                                         }
                                     />

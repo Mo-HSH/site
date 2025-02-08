@@ -107,11 +107,19 @@ function Dashboard() {
                 <Layout.Header style={{
                     height: "93px"
                 }}>
-                    <Flex align={"center"} justify={"left"} gap={"middle"} style={{
-                        height: "100%",
+
+                    <Flex align={"center"} justify={"space-between"} gap={"middle"} style={{
+                        height: "100%", width: "100%"
                     }}>
+                        <Typography.Text style={{
+                            textAlign: "right"
+                        }}>
+                            مدیریت نیروی انسانی: سامانه اطلاعات کارگزینی کارکنان وظیفه
+                        </Typography.Text>
+                        <Flex align={"center"} gap={"middle"}>
                         <Typography.Text>{localStorage.getItem("user_rank")} {localStorage.getItem("user_first_name")} {localStorage.getItem("user_last_name")}</Typography.Text>
                         <Button danger={true} type={"primary"} onClick={()=>Logout()}>خروج</Button>
+                        </Flex>
                     </Flex>
                 </Layout.Header>
 
