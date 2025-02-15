@@ -14,7 +14,7 @@ import {
     notification, Popconfirm, Popover, Progress,
     Table, Tabs,
     Tooltip,
-    Typography
+    Typography, Upload
 } from "antd";
 import {
     justNumericValidator,
@@ -24,7 +24,7 @@ import {getStatusColor} from "../../utils/Color.js";
 import {useEffect, useState} from "react";
 import {DateRenderer, DutyGroupRenderer, ExtraInfoRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
 import {
-    EditOutlined,
+    EditOutlined, UploadOutlined,
     UserOutlined,
     WarningTwoTone
 } from "@ant-design/icons";

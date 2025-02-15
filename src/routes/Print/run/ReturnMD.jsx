@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import {Button, ConfigProvider, Flex, notification, Typography} from "antd";
+import {Button, ConfigProvider, Flex, Input, notification, Typography} from "antd";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
@@ -23,6 +23,7 @@ function ReturnMD({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
     const [api, contextHolder] = notification.useNotification();
     const [readyForPrint, setReadyForPrint] = useState(false);
     const printComponent = useRef(null);
+    const [text, setText] = useState("");
 
     useEffect(() => {
         setPrintTitle("ماده دستور مراجعت");
@@ -103,6 +104,7 @@ function ReturnMD({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
             >
                 <Flex vertical={false} gap={"middle"} align={"center"} justify={"center"}
                       style={{width: "100%", zIndex: 2, marginBottom: "20px"}}>
+                    <Input placeholder={"متن"} value={text} onChange={v=>setText(v.target.value)}/>
                     <Button disabled={!readyForPrint} type={"primary"} onClick={handlePrint}>پرینت</Button>
                 </Flex>
                 <Flex justify={"center"} align={"center"} vertical={true} ref={printComponent}
@@ -178,6 +180,7 @@ function ReturnMD({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                             </Typography.Text>
                                             از فرار مراجعت نموده و به همین منظور کلیه حقوق و مزایای نامبردی
                                             برقرار گردید.
+                                            { " " + text}
                                         </Typography.Text>
 
                                         <Typography.Text>
@@ -187,6 +190,10 @@ function ReturnMD({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                                 &rlm;
                                                 {soldier["target_run"]["return_letter_number"]}
                                             </Typography.Text>
+                                            <Typography.Text strong>
+                                                &rlm;
+                                                {" - " + DateRenderer(soldier["target_run"]["return_letter_date"])}
+                                            </Typography.Text>
                                         </Typography.Text>
                                         <Typography.Text>
                                             صادره از:
@@ -194,10 +201,7 @@ function ReturnMD({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                             <Typography.Text strong>
                                                 {soldier["target_run"]["return_letter_sender"]}
                                             </Typography.Text>
-                                            <Typography.Text strong>
-                                                &rlm;
-                                                {" - " + DateRenderer(soldier["target_run"]["return_letter_date"])}
-                                            </Typography.Text>
+
                                         </Typography.Text>
                                         <Typography.Text>
                                             مرحله فرار:

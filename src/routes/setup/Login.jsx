@@ -63,7 +63,6 @@ function Login() {
             {contextHolder}
             <Flex align={"center"} justify={"center"} style={{height: "100%"}} vertical={true}>
                 <Card style={{
-                    background: `url(${padafandLogoOpacityLow}) center center / contain no-repeat, white`
                 }}>
                     <Flex vertical={true} style={{
                         // paddingBottom: 40

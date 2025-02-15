@@ -250,7 +250,7 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                                 </Typography.Text>
                                                 <Flex align={"flex-end"} style={{height: "100%"}}>
                                                     <Typography.Text strong style={{fontSize: "12px"}}>
-                                                        حفاظت اطلاعات پشتیبانی مرکز نپاجا:
+                                                        دایره بازجویی و قضائی پشتیبانی مرکز نپاجا:
                                                     </Typography.Text>
                                                 </Flex>
                                             </Flex>

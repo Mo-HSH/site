@@ -12,7 +12,7 @@ function LetterReceiver({defaultValue}) {
     const [value, setValue] = useState("");
     const [title, setTitle] = useState("");
 
-    useEffect(()=>{
+    useEffect(() => {
         axios.get(getApiUrl("config/send-letter-title"), {withCredentials: true}).then((res) => {
             setReceivers(res.data.config.map(({key, value}) => {
                 return {
@@ -20,14 +20,15 @@ function LetterReceiver({defaultValue}) {
                     letterTitle: value
                 };
             }));
+            console.log(defaultValue);
             setValue(defaultValue);
         }).catch(() => {
         });
     }, [defaultValue]);
 
-    useEffect(()=>{
-        if (receivers.find(v=> v.unit === value) !== undefined) {
-            setTitle(receivers.find(v=> v.unit === value).letterTitle)
+    useEffect(() => {
+        if (receivers.find(v => v.unit === value) !== undefined) {
+            setTitle(receivers.find(v => v.unit === value).letterTitle)
         }
     }, [value]);
 
@@ -57,10 +58,16 @@ function LetterReceiver({defaultValue}) {
     }
 
 
-    return(
-        <Popover content={()=> popoverContent()}>
+    return (
+        <Popover content={() => popoverContent()}>
             <Typography.Text>
-                {title}
+                {
+                    title
+                        ?
+                        title
+                        :
+                        "Error"
+                }
             </Typography.Text>
         </Popover>
     );

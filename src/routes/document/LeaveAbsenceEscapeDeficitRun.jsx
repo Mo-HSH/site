@@ -4,21 +4,21 @@ import {
     Button,
     Card,
     Checkbox,
-    Col,
+    Col, Divider,
     Drawer,
     Flex,
-    Form,
+    Form, Image,
     Input,
     InputNumber,
     Modal,
     notification,
     Popconfirm, Popover,
     Row,
-    Select,
+    Select, Space,
     Table,
     Tabs,
     Tooltip,
-    Typography,
+    Typography, Upload,
 } from "antd";
 import {
     dateValidator,
@@ -31,10 +31,10 @@ import EditableTable from "../../utils/EditableTable.jsx";
 import {numberTh} from "../../utils/Data.js";
 import {
     CloseCircleTwoTone,
-    DeleteOutlined,
+    DeleteOutlined, DownloadOutlined,
     EditOutlined,
-    FileOutlined,
-    WarningTwoTone
+    FileOutlined, UploadOutlined,
+    WarningTwoTone, ZoomInOutlined, ZoomOutOutlined
 } from "@ant-design/icons";
 import RunMD from "../Print/run/RunMD.jsx";
 import RunLetter from "../Print/run/RunLetter.jsx";
@@ -54,6 +54,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     const [missionData, setMissionData] = useState([]);
     const [deficitData, setDeficitData] = useState([]);
     const [organizationalJob, setOrganizationalJob] = useState([]);
+    const [files, setFiles] = useState([]);
     const [dutyGroupData, setDutyGroupData] = useState([]);
     const [runData, setRunData] = useState([]);
     const [deficitNames, setDeficitNames] = useState([]);
@@ -66,6 +67,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     const [printTarget, setPrintTarget] = useState(<div>printable</div>);
     const [printTitle, setPrintTitle] = useState("پرینت");
     const [isDutyStopped, setIsDutyStopped] = useState(false);
+    const [uploadFileName, setUploadFileName] = useState("");
 
     const [leaveForm, absenceForm, arrestForm] = Form.useForm();
 
@@ -97,6 +99,22 @@ function LeaveAbsenceEscapeDeficitRun() {
                 })
             });
             setLeaveData(temp);
+        } catch (err) {
+            console.error(err);
+        }
+    }, [selectedSoldier]);
+
+    useEffect(() => {
+        let temp = [];
+        try {
+            selectedSoldier["document"].forEach((value, index) => {
+                temp.push({
+                    ...value,
+                    "created_date": DateRenderer(value["created_date"]),
+                    key: index
+                })
+            });
+            setFiles(temp);
         } catch (err) {
             console.error(err);
         }
@@ -569,6 +587,30 @@ function LeaveAbsenceEscapeDeficitRun() {
         },
     ];
 
+    const uploadedDocs = [
+        {
+            title: "تاریخ ثبت",
+            dataIndex: "created_date"
+        },
+        {
+            title: "عنوان",
+            dataIndex: "name"
+        },
+        {
+            title: "فایل",
+            dataIndex: "file",
+            render: (v)=>{
+                return(
+                    <Image
+                        width={100}
+                        shape="square"
+                        src={getApiUrl("files/serve_file/" + v)}
+                    />
+                );
+            }
+        }
+    ];
+
     function fetchData() {
         axios.post(getApiUrl("soldier/list"), {
             "filter":
@@ -585,6 +627,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                     "leave": 1,
                     "absence": 1,
                     "arrest": 1,
+                    "document": 1,
                     "deficit": 1,
                     "duty_group_data": 1,
                     "duty_group": 1,
@@ -602,6 +645,7 @@ function LeaveAbsenceEscapeDeficitRun() {
             } else {
                 setSelectedSoldier((oldValue) => {
                     let newValue = {...oldValue};
+                    newValue["document"] = res[0]["document"];
                     newValue["leave"] = res[0]["leave"];
                     newValue["absence"] = res[0]["absence"];
                     newValue["arrest"] = res[0]["arrest"];
@@ -791,6 +835,18 @@ function LeaveAbsenceEscapeDeficitRun() {
         onDelete(index, "organization_job");
     }
 
+    function onDeleteDocument(index) {
+        axios.post(getApiUrl(`soldier/delete_document/${selectedSoldierOid}/${index}`), {},{withCredentials: true})
+            .then(() => {
+                fetchData();
+            }).catch((err) => {
+            fetchData();
+            api["error"]({
+                message: "خطا", description: err.data.message
+            });
+        })
+    }
+
     function onEdit(index, form, queryTarget) {
         return new Promise((resolve, _) => {
             form.validateFields().then((res) => {
@@ -920,6 +976,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                     "deployment_date": 1,
                     "legal_release_date": 1,
                     "overall_release_date": 1,
+                    "document": 1,
                 }}
                 searchFormFields={
                     <>
@@ -2099,6 +2156,58 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                     ]}
                                                     dataSource={organizationJobOptions}
                                                 />
+                                            </Flex>
+                                        }
+                                    />
+                                },
+                                {
+                                    label: "اسکن مدارک",
+                                    key: 8,
+                                    children: <EditableTable
+                                        formField={{
+                                            name: '',
+                                        }}
+                                        onDelete={onDeleteDocument}
+                                        pagination={false} bordered={true} style={{width: "100%"}}
+                                        columns={uploadedDocs} dataSource={files}
+                                        createForm={() =>
+                                            <Flex>
+                                                <Row gutter={12}>
+                                                    <Col>
+                                                        <Input placeholder={"نام فایل"} value={uploadFileName} onChange={v=>setUploadFileName(v.target.value)}/>
+                                                    </Col>
+                                                    <Col>
+                                                        <Upload
+                                                            action={getApiUrl(`soldier/set_document/${selectedSoldierOid}/${uploadFileName}`)}
+                                                            name={"document"} withCredentials={true} showUploadList={false}
+                                                            onChange={(info)=>{
+                                                                if (info.file.status === "done") {
+                                                                    api["success"]({
+                                                                        message: "آپلود موفق!", description: "سند با موفقیت آپلود شد."
+                                                                    });
+                                                                    fetchData();
+                                                                }
+                                                                else if (info.file.status === "error") {
+                                                                    api["error"]({
+                                                                        message: "خطا", description: "آپلود با خطا مواجه شد."
+                                                                    });
+                                                                }
+                                                            }}
+                                                            beforeUpload={(file) => {
+                                                                const isJPG = file.type === 'image/jpeg';
+                                                                if (!isJPG) {
+                                                                    api.error({
+                                                                        message: "خطا",
+                                                                        description: "فقط فرمت jpg مورد قبول است!"
+                                                                    });
+                                                                }
+                                                                return isJPG || Upload.LIST_IGNORE;
+                                                            }}
+                                                        >
+                                                            <Button disabled={uploadFileName.length < 1} type={"primary"} icon={<UploadOutlined/>}>انتخاب و آپلود</Button>
+                                                        </Upload>
+                                                    </Col>
+                                                </Row>
                                             </Flex>
                                         }
                                     />

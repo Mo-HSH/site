@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import {Button, Col, ConfigProvider, Flex, Form, Input, notification, Row, Typography} from "antd";
+import {Button, Col, ConfigProvider, Flex, Form, Input, notification, Row, Select, Typography} from "antd";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
@@ -50,6 +50,7 @@ function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                     "father_name": 1,
                     "deployment_date": 1,
                     "run": 1,
+                    "unit": 1
                 }
         }, {withCredentials: true})
             .then((response) => {
@@ -132,6 +133,15 @@ function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                         >
                             <Input/>
                         </Form.Item>
+                        <Form.Item
+                            label={"به"}
+                            name={"to"}
+                        >
+                            <Select style={{width:150}} options={[
+                                {value: "حفاظت اطلاعات", label: "حفاظت اطلاعات"},
+                                {value: "صدور کارت", label: "صدور کارت"}
+                            ]}/>
+                        </Form.Item>
                     </Form>
                     <Button disabled={!readyForPrint} type={"primary"} onClick={handlePrint}>پرینت</Button>
                 </Flex>
@@ -203,7 +213,13 @@ function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                 از: فرماندهی پشتیبانی مرکز نیروی پدافند هوایی آجا (مدن ا-وظیفه ها)
                             </Typography.Text>
                             <Typography.Text>
-                                به: فرماندهی محترم حفاظت اطلاعات فرماندهی پشتیبانی مرکز نیروی پدافند هوایی آجا
+                                {
+                                    input.to === "حفاظت اطلاعات"
+                                        ?
+                                        "به: فرماندهی محترم حفاظت اطلاعات فرماندهی پشتیبانی مرکز نیروی پدافند هوایی آجا"
+                                        :
+                                        "به: امیر معاونت محترم نیروی انسانی نیروی پدافند هوایی آجا (مد وظیفه و احتیاط - صدور کارت)"
+                                }
                             </Typography.Text>
                             <Row style={{width: "100%"}} gutter={[24, 0]}>
                                 <Col>
@@ -279,6 +295,15 @@ function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                 <Typography.Text strong>
                                     گیرنده:
                                 </Typography.Text>
+                                {
+                                    input.to === "صدور کارت"
+                                        ?
+                                        <Typography.Text strong>
+                                            -  فرماندهی محترم حفاظت اطلاعات فرماندهی پشتیبانی مرکز نیروی پدافند هوایی آجا - جهت آگاهی و هرگونه اقدام بایسته.
+                                        </Typography.Text>
+                                        :
+                                        null
+                                }
                                 <Typography.Text strong>
                                     - ریاست محترم حقوقی و قضایی فرماندهی پشتیبانی نیروی پدافند هوایی آجا (وظیفه ها) -
                                     بازگشت به نامه شماره
