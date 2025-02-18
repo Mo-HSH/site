@@ -14,7 +14,7 @@ import {
     notification, Popconfirm, Popover, Progress,
     Table, Tabs,
     Tooltip,
-    Typography, Upload
+    Typography,
 } from "antd";
 import {
     justNumericValidator,
@@ -24,7 +24,7 @@ import {getStatusColor} from "../../utils/Color.js";
 import {useEffect, useState} from "react";
 import {DateRenderer, DutyGroupRenderer, ExtraInfoRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
 import {
-    EditOutlined, UploadOutlined,
+    EditOutlined,
     UserOutlined,
     WarningTwoTone
 } from "@ant-design/icons";
@@ -39,6 +39,9 @@ import {getApiUrl} from "../../utils/Config.js";
 import AccidentComission from "../Print/soldierProfile/AccidentComission.jsx";
 import axios from "axios";
 import {GetDutyDuration} from "../../utils/Calculative.js";
+import {CheckCard} from "@ant-design/pro-components";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 function SearchSoldier() {
 
@@ -50,9 +53,12 @@ function SearchSoldier() {
         deficit: [],
         mission: [],
         arrest: [],
+        document: [],
         duty_group_data: [],
         organizational_job_data: []
     });
+
+    const [fileArr, setFileArr] = useState([]);
 
     useEffect(() => {
         console.log(targetSoldier.leave)
@@ -78,12 +84,37 @@ function SearchSoldier() {
     const [note, setNote] = useState("");
     const [showMore, setShowMore] = useState(false);
     const [openDrawer, setOpenDrawer] = useState(false);
+    const [openDocumentModal, setOpenDocumentModal] = useState(false);
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [printTarget, setPrintTarget] = useState(<div>printable</div>);
     const [printTitle, setPrintTitle] = useState("تیتر پرینت");
+    const [documentsOptions, setDocumentsOptions] = useState([]);
+
+    useEffect(() => {
+        console.log(targetSoldier);
+        if (targetSoldier["document"] === undefined) {
+            setDocumentsOptions([]);
+            return;
+        }
+        setDocumentsOptions(
+            targetSoldier["document"].map((v, index)=>({
+                value: index,
+                data: {
+                    name: `${v.name}_${index}.${v.file.split(".").at(-1)}`,
+                    url: getApiUrl("files/serve_file/" + v.file)
+                },
+                title: <Avatar
+                    size={256}
+                    shape="square"
+                    src={getApiUrl("files/serve_file/" + v.file)}
+                />,
+                description: v.name
+            }))
+        );
+    }, [targetSoldier]);
 
     const lastCellMerge = (record) => {
         if (record.text) {
@@ -841,6 +872,32 @@ function SearchSoldier() {
         })
     }
 
+    const zip = new JSZip();
+
+    const download = (item) => {
+        //download single file as blob and add it to zip archive
+        console.log("s", item);
+        return axios.get(item.url, { responseType: "blob" }).then((resp) => {
+            zip.file(item.name, resp.data);
+        });
+    };
+
+//call this function to download all files as ZIP archive
+    const downloadAll = () => {
+        // const arrOfFiles = fileArr.map((item) => download(item));
+        const arrOfFiles = documentsOptions.filter(v=>fileArr.includes(v.value)).map((item) => download(item.data));
+        Promise.all(arrOfFiles)
+            .then(() => {
+                //when all promises resolved - save zip file
+                zip.generateAsync({ type: "blob" }).then(function (blob) {
+                    saveAs(blob, "hello.zip");
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
     return (
         <SearchSelect
             selectedSoldierView={
@@ -891,6 +948,24 @@ function SearchSoldier() {
                         </Flex>
                     </Modal>
                     {contextHolder}
+
+                    <Modal
+                        open={openDocumentModal}
+                        onCancel={() => setOpenDocumentModal(false)}
+                        footer={null}
+                        title={"مدارک اسکن شده"}
+                        width={"80%"}
+                        centered={true}
+                    >
+                        <Flex vertical={true} style={{width: "100%"}} gap={"large"}>
+                            <Button type={"primary"} onClick={downloadAll}>دانلود انتخاب شده</Button>
+
+                            <CheckCard.Group multiple={true} onChange={(v)=>{
+                                setFileArr(v);
+                            }} options={documentsOptions}/>
+                        </Flex>
+
+                    </Modal>
 
                     <Drawer placement={"bottom"} open={openDrawer} onClose={() => setOpenDrawer(false)}>
                         <Flex vertical={false} gap={"large"} justify={"center"} style={{width: "100%"}}>
@@ -1014,6 +1089,9 @@ function SearchSoldier() {
                                     <Button type="primary" danger={true} onClick={() => deleteSoldier()}>حذف
                                         سرباز</Button>
                                 </Popconfirm>
+                                <Button onClick={() => {
+                                    setOpenDocumentModal(true);
+                                }}>مدارک اسکن شده</Button>
                             </Flex>
 
                             <Divider type={"vertical"} style={{height: "350px"}}/>

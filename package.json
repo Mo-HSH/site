@@ -31,6 +31,7 @@
     "file-saver": "^2.0.5",
     "jalaali-react-date-picker": "^1.0.18",
     "jalali-moment": "^3.3.11",
+    "jszip": "^3.10.1",
     "lexical": "^0.16.0",
     "rc-field-form": ">=1.22.0 <2.0.0",
     "rc-virtual-list": "^3.14.2",
