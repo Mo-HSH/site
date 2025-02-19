@@ -11,7 +11,7 @@ import {
     Image,
     Input,
     Modal,
-    notification, Popconfirm, Popover, Progress,
+    notification, Popconfirm, Popover, Progress, Select,
     Table, Tabs,
     Tooltip,
     Typography,
@@ -106,7 +106,7 @@ function SearchSoldier() {
                     name: `${v.name}_${index}.${v.file.split(".").at(-1)}`,
                     url: getApiUrl("files/serve_file/" + v.file)
                 },
-                title: <Avatar
+                title: <Image
                     size={256}
                     shape="square"
                     src={getApiUrl("files/serve_file/" + v.file)}
@@ -875,22 +875,18 @@ function SearchSoldier() {
     const zip = new JSZip();
 
     const download = (item) => {
-        //download single file as blob and add it to zip archive
-        console.log("s", item);
         return axios.get(item.url, { responseType: "blob" }).then((resp) => {
             zip.file(item.name, resp.data);
         });
     };
 
-//call this function to download all files as ZIP archive
     const downloadAll = () => {
-        // const arrOfFiles = fileArr.map((item) => download(item));
         const arrOfFiles = documentsOptions.filter(v=>fileArr.includes(v.value)).map((item) => download(item.data));
         Promise.all(arrOfFiles)
             .then(() => {
                 //when all promises resolved - save zip file
                 zip.generateAsync({ type: "blob" }).then(function (blob) {
-                    saveAs(blob, "hello.zip");
+                    saveAs(blob, `${targetSoldier["military_rank"]} ${targetSoldier["first_name"]} ${targetSoldier["last_name"]} ${targetSoldier["national_code"]}.zip`);
                 });
             })
             .catch((err) => {
@@ -958,7 +954,12 @@ function SearchSoldier() {
                         centered={true}
                     >
                         <Flex vertical={true} style={{width: "100%"}} gap={"large"}>
-                            <Button type={"primary"} onClick={downloadAll}>دانلود انتخاب شده</Button>
+                            <Flex gap={"small"}>
+                                <Select mode={"tags"} style={{minWidth: 300, maxWidth: 850}} dropdownStyle={{visibility: "hidden"}} onChange={(v)=>{
+                                    console.log(v);
+                                }}/>
+                                <Button type={"primary"} onClick={downloadAll}>دانلود انتخاب شده</Button>
+                            </Flex>
 
                             <CheckCard.Group multiple={true} onChange={(v)=>{
                                 setFileArr(v);

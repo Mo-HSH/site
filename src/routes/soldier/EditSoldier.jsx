@@ -343,7 +343,7 @@ function EditSoldier() {
                 </Flex>
             </Modal>
 
-            <Divider orientation={"left"}>ویرایش عکس<Upload
+            <Divider orientation={"left"}><Upload.Dragger
                 action={getApiUrl(`soldier/set_avatar/${params.key}`)}
                 name={"profile"} withCredentials={true} showUploadList={false} onChange={uploadChange}
                 beforeUpload={(file) => {
@@ -356,7 +356,7 @@ function EditSoldier() {
                     }
                     return isJPG || Upload.LIST_IGNORE;
                 }}
-            ><Button type={"text"} icon={<UploadOutlined/>}/></Upload></Divider>
+            >برای آپلود عکس کلیک یا عکس را دراینجا رها کنید</Upload.Dragger></Divider>
             <Flex vertical={false} justify={"center"} align={"center"} gap={"small"}>
                 {
                     soldier["profile"] === null || soldier["profile"] === undefined || soldier["profile"] === ""

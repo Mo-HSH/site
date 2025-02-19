@@ -2177,7 +2177,8 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                         <Input placeholder={"نام فایل"} value={uploadFileName} onChange={v=>setUploadFileName(v.target.value)}/>
                                                     </Col>
                                                     <Col>
-                                                        <Upload
+                                                        <Upload.Dragger
+                                                            disabled={uploadFileName.length < 1} multiple={true}
                                                             action={getApiUrl(`soldier/set_document/${selectedSoldierOid}/${uploadFileName}`)}
                                                             name={"document"} withCredentials={true} showUploadList={false}
                                                             onChange={(info)=>{
@@ -2204,8 +2205,9 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                                 return isJPG || Upload.LIST_IGNORE;
                                                             }}
                                                         >
-                                                            <Button disabled={uploadFileName.length < 1} type={"primary"} icon={<UploadOutlined/>}>انتخاب و آپلود</Button>
-                                                        </Upload>
+                                                            برای آپلود کلیک یا عکس را در اینجا رها کنید
+                                                            {/*<Button disabled={uploadFileName.length < 1} type={"primary"} icon={<UploadOutlined/>}>انتخاب و آپلود</Button>*/}
+                                                        </Upload.Dragger>
                                                     </Col>
                                                 </Row>
                                             </Flex>
