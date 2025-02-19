@@ -41,7 +41,7 @@ import axios from "axios";
 import {GetDutyDuration} from "../../utils/Calculative.js";
 import {CheckCard} from "@ant-design/pro-components";
 import JSZip from "jszip";
-import { saveAs } from "file-saver";
+import {saveAs} from "file-saver";
 
 function SearchSoldier() {
 
@@ -57,6 +57,7 @@ function SearchSoldier() {
         duty_group_data: [],
         organizational_job_data: []
     });
+    const [filter, setFilter] = useState([]);
 
     const [fileArr, setFileArr] = useState([]);
 
@@ -74,8 +75,8 @@ function SearchSoldier() {
     }, [targetSoldier]);
 
     useEffect(() => {
-        GetDutyDuration(key, DateRenderer(targetSoldier["legal_release_date"])).then((duration)=>{
-            setAnnualLimit(Math.round((2.5/30)*(duration.month * 30 + duration.day)));
+        GetDutyDuration(key, DateRenderer(targetSoldier["legal_release_date"])).then((duration) => {
+            setAnnualLimit(Math.round((2.5 / 30) * (duration.month * 30 + duration.day)));
         })
         console.log(targetSoldier);
     }, [targetSoldier]);
@@ -100,7 +101,7 @@ function SearchSoldier() {
             return;
         }
         setDocumentsOptions(
-            targetSoldier["document"].map((v, index)=>({
+            targetSoldier["document"].map((v, index) => ({
                 value: index,
                 data: {
                     name: `${v.name}_${index}.${v.file.split(".").at(-1)}`,
@@ -500,7 +501,6 @@ function SearchSoldier() {
     ].map(v => ({...v, align: "center"}));
 
 
-
     const collapseItems = [
         {
             key: '1',
@@ -727,21 +727,22 @@ function SearchSoldier() {
                             key: 0,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={leaveColumns} dataSource={targetSoldier.leave ? [...targetSoldier.leave.sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong), {
-                                annual: targetSoldier.leave.reduce((sum, leave) => sum + leave.annual, 0),
-                                vacation: targetSoldier.leave.reduce((sum, leave) => sum + leave.vacation, 0),
-                                medical: targetSoldier.leave.reduce((sum, leave) => sum + leave.medical, 0),
-                                on_road: targetSoldier.leave.reduce((sum, leave) => sum + leave.on_road, 0),
-                                bonus: targetSoldier.leave.reduce((sum, leave) => sum + leave.bonus, 0),
-                                text: "جمع کل"
-                            },{
-                                annual: annualLimit - targetSoldier.leave.reduce((sum, leave) => sum + leave.annual, 0),
-                                vacation: "-",
-                                medical: "-",
-                                on_road: "-",
-                                bonus: "-",
-                                text: "باقی مانده"
-                            }] : []}
+                                columns={leaveColumns}
+                                dataSource={targetSoldier.leave ? [...targetSoldier.leave.sort((a, b) => a.start_date.$date.$numberLong - b.start_date.$date.$numberLong), {
+                                    annual: targetSoldier.leave.reduce((sum, leave) => sum + leave.annual, 0),
+                                    vacation: targetSoldier.leave.reduce((sum, leave) => sum + leave.vacation, 0),
+                                    medical: targetSoldier.leave.reduce((sum, leave) => sum + leave.medical, 0),
+                                    on_road: targetSoldier.leave.reduce((sum, leave) => sum + leave.on_road, 0),
+                                    bonus: targetSoldier.leave.reduce((sum, leave) => sum + leave.bonus, 0),
+                                    text: "جمع کل"
+                                }, {
+                                    annual: annualLimit - targetSoldier.leave.reduce((sum, leave) => sum + leave.annual, 0),
+                                    vacation: "-",
+                                    medical: "-",
+                                    on_road: "-",
+                                    bonus: "-",
+                                    text: "باقی مانده"
+                                }] : []}
                             />
                         },
                         {
@@ -754,7 +755,7 @@ function SearchSoldier() {
                                     targetSoldier.absence
                                         ?
                                         [
-                                            ...targetSoldier.absence.filter(v => !v.is_ignored).sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong),
+                                            ...targetSoldier.absence.filter(v => !v.is_ignored).sort((a, b) => a.start_date.$date.$numberLong - b.start_date.$date.$numberLong),
                                             {
                                                 duration: targetSoldier.absence.filter(v => !v.is_ignored).reduce((sum, absence) => sum + absence.duration, 0),
                                                 text: "جمع کل"
@@ -768,10 +769,11 @@ function SearchSoldier() {
                             key: 2,
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
-                                columns={arrestColumns} dataSource={targetSoldier.arrest ? [...targetSoldier.arrest.sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong), {
-                                duration: targetSoldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
-                                text: "جمع کل"
-                            }] : []}
+                                columns={arrestColumns}
+                                dataSource={targetSoldier.arrest ? [...targetSoldier.arrest.sort((a, b) => a.start_date.$date.$numberLong - b.start_date.$date.$numberLong), {
+                                    duration: targetSoldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
+                                    text: "جمع کل"
+                                }] : []}
                             />
                         },
                         {
@@ -780,7 +782,7 @@ function SearchSoldier() {
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
                                 columns={missionColumns}
-                                dataSource={targetSoldier.mission ? [...targetSoldier.mission.sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong), {
+                                dataSource={targetSoldier.mission ? [...targetSoldier.mission.sort((a, b) => a.start_date.$date.$numberLong - b.start_date.$date.$numberLong), {
                                     duration: targetSoldier.mission.reduce((sum, mission) => sum + mission.duration, 0),
                                     text: "جمع کل"
                                 }] : []}
@@ -792,7 +794,7 @@ function SearchSoldier() {
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
                                 columns={deficitColumns}
-                                dataSource={targetSoldier.deficit ? [...targetSoldier.deficit.sort((a, b)=> a.create_date.$date.$numberLong - b.create_date.$date.$numberLong), {
+                                dataSource={targetSoldier.deficit ? [...targetSoldier.deficit.sort((a, b) => a.create_date.$date.$numberLong - b.create_date.$date.$numberLong), {
                                     duration: targetSoldier.arrest.reduce((sum, arrest) => sum + arrest.duration, 0),
                                     text: "جمع کل"
                                 }] : []}
@@ -804,11 +806,12 @@ function SearchSoldier() {
                             children:
                                 <Table
                                     pagination={false} bordered={true} style={{width: "100%"}}
-                                        columns={runColumns} dataSource={targetSoldier.run ? [...targetSoldier.run.sort((a, b)=> a.absence_date.$date.$numberLong - b.absence_date.$date.$numberLong), {
-                                    "run_duration": targetSoldier.run.reduce((sum, run) => sum + run["run_duration"], 0),
-                                    "run_punish": targetSoldier.run.reduce((sum, run) => sum + run["run_punish"], 0),
-                                    text: "جمع کل"
-                                }] : []}
+                                    columns={runColumns}
+                                    dataSource={targetSoldier.run ? [...targetSoldier.run.sort((a, b) => a.absence_date.$date.$numberLong - b.absence_date.$date.$numberLong), {
+                                        "run_duration": targetSoldier.run.reduce((sum, run) => sum + run["run_duration"], 0),
+                                        "run_punish": targetSoldier.run.reduce((sum, run) => sum + run["run_punish"], 0),
+                                        text: "جمع کل"
+                                    }] : []}
                                 />
                         },
                         {
@@ -817,7 +820,7 @@ function SearchSoldier() {
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
                                 columns={dutyGroupColumns}
-                                dataSource={targetSoldier.duty_group_data ? targetSoldier.duty_group_data.sort((a, b)=> a.submit_date.$date.$numberLong - b.submit_date.$date.$numberLong) : []}
+                                dataSource={targetSoldier.duty_group_data ? targetSoldier.duty_group_data.sort((a, b) => a.submit_date.$date.$numberLong - b.submit_date.$date.$numberLong) : []}
                             />
                         },
                         {
@@ -826,7 +829,7 @@ function SearchSoldier() {
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
                                 columns={OrganizationalJobColumns}
-                                dataSource={targetSoldier.organizational_job ? targetSoldier.organizational_job.sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong) : []}
+                                dataSource={targetSoldier.organizational_job ? targetSoldier.organizational_job.sort((a, b) => a.start_date.$date.$numberLong - b.start_date.$date.$numberLong) : []}
                             />
                         },
                     ]}
@@ -875,17 +878,17 @@ function SearchSoldier() {
     const zip = new JSZip();
 
     const download = (item) => {
-        return axios.get(item.url, { responseType: "blob" }).then((resp) => {
+        return axios.get(item.url, {responseType: "blob"}).then((resp) => {
             zip.file(item.name, resp.data);
         });
     };
 
     const downloadAll = () => {
-        const arrOfFiles = documentsOptions.filter(v=>fileArr.includes(v.value)).map((item) => download(item.data));
+        const arrOfFiles = documentsOptions.filter(v => fileArr.includes(v.value)).map((item) => download(item.data));
         Promise.all(arrOfFiles)
             .then(() => {
                 //when all promises resolved - save zip file
-                zip.generateAsync({ type: "blob" }).then(function (blob) {
+                zip.generateAsync({type: "blob"}).then(function (blob) {
                     saveAs(blob, `${targetSoldier["military_rank"]} ${targetSoldier["first_name"]} ${targetSoldier["last_name"]} ${targetSoldier["national_code"]}.zip`);
                 });
             })
@@ -955,15 +958,22 @@ function SearchSoldier() {
                     >
                         <Flex vertical={true} style={{width: "100%"}} gap={"large"}>
                             <Flex gap={"small"}>
-                                <Select mode={"tags"} style={{minWidth: 300, maxWidth: 850}} dropdownStyle={{visibility: "hidden"}} onChange={(v)=>{
-                                    console.log(v);
-                                }}/>
+                                <Select mode={"tags"} placeholder={"فیلتر"} value={filter}
+                                        style={{minWidth: 300, maxWidth: 850}} dropdownStyle={{visibility: "hidden"}}
+                                        onChange={(v) => {
+                                            setFilter(v);
+                                        }}/>
                                 <Button type={"primary"} onClick={downloadAll}>دانلود انتخاب شده</Button>
                             </Flex>
 
-                            <CheckCard.Group multiple={true} onChange={(v)=>{
-                                setFileArr(v);
-                            }} options={documentsOptions}/>
+                            <CheckCard.Group
+                                multiple={true}
+                                onChange={(v) => {
+                                    setFileArr(v);
+                                }}
+                                options={filter === undefined || filter.length === 0 ? documentsOptions : documentsOptions.filter(value => fileArr.includes(value.value) || filter.includes(value.description))}
+
+                            />
                         </Flex>
 
                     </Modal>
@@ -1103,14 +1113,16 @@ function SearchSoldier() {
                                        dataSource=
                                            {
                                                [
-                                                   {0: <Progress percent={targetSoldier["duty_percent"]}
-                                                                 percentPosition={{
-                                                                     align: 'center',
-                                                                     type: 'outer',
-                                                                 }}
-                                                                 size={["100%",10]}
-                                                                 format={() => targetSoldier["duty_duration"]}
-                                                                 strokeColor={getStatusColor(targetSoldier["status"])}/>},
+                                                   {
+                                                       0: <Progress percent={targetSoldier["duty_percent"]}
+                                                                    percentPosition={{
+                                                                        align: 'center',
+                                                                        type: 'outer',
+                                                                    }}
+                                                                    size={["100%", 10]}
+                                                                    format={() => targetSoldier["duty_duration"]}
+                                                                    strokeColor={getStatusColor(targetSoldier["status"])}/>
+                                                   },
                                                    {
                                                        0: "نام و نشان:",
                                                        1: <Popover trigger={"click"}
@@ -1148,8 +1160,16 @@ function SearchSoldier() {
                                        columns=
                                            {
                                                [
-                                                   {key: 0, dataIndex: 0, align: "start", onCell: (_, index)=> { return index === 0 ? {colSpan: 2}: {}}},
-                                                   {key: 1, dataIndex: 1, align: "end", onCell: (_, index)=> { return index === 0 ? {colSpan: 0}: {}}}
+                                                   {
+                                                       key: 0, dataIndex: 0, align: "start", onCell: (_, index) => {
+                                                           return index === 0 ? {colSpan: 2} : {}
+                                                       }
+                                                   },
+                                                   {
+                                                       key: 1, dataIndex: 1, align: "end", onCell: (_, index) => {
+                                                           return index === 0 ? {colSpan: 0} : {}
+                                                       }
+                                                   }
                                                ]
                                            }
                                 />
