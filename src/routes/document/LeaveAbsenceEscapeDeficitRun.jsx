@@ -50,6 +50,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     const [selectedSoldier, setSelectedSoldier] = useState({"leave": [], "absence": []});
     const [leaveData, setLeaveData] = useState([]);
     const [absenceData, setAbsenceData] = useState([]);
+    const [stopDutyData, setStopDutyData] = useState([]);
     const [arrestData, setArrestData] = useState([]);
     const [missionData, setMissionData] = useState([]);
     const [deficitData, setDeficitData] = useState([]);
@@ -66,10 +67,9 @@ function LeaveAbsenceEscapeDeficitRun() {
     const [isPrintModalOpen, setOpenPrintModal] = useState(false);
     const [printTarget, setPrintTarget] = useState(<div>printable</div>);
     const [printTitle, setPrintTitle] = useState("پرینت");
-    const [isDutyStopped, setIsDutyStopped] = useState(false);
     const [uploadFileName, setUploadFileName] = useState("");
 
-    const [leaveForm, absenceForm, arrestForm] = Form.useForm();
+    const [leaveForm, absenceForm, arrestForm, dutyStopForm] = Form.useForm();
 
     const [runEditIndex, setRunEditIndex] = useState(-1);
 
@@ -132,6 +132,23 @@ function LeaveAbsenceEscapeDeficitRun() {
                 })
             });
             setAbsenceData(temp);
+        } catch (err) {
+            console.error(err);
+        }
+    }, [selectedSoldier]);
+
+    useEffect(() => {
+        let temp = [];
+        try {
+            selectedSoldier["stop_duty"].forEach((value, index) => {
+                temp.push({
+                    ...value,
+                    "start_date": DateRenderer(value["start_date"]),
+                    "end_date": DateRenderer(value["end_date"]),
+                    key: index
+                })
+            });
+            setStopDutyData(temp);
         } catch (err) {
             console.error(err);
         }
@@ -399,6 +416,25 @@ function LeaveAbsenceEscapeDeficitRun() {
         }
     ];
 
+    const stopDutyColumns = [
+        {
+            title: "تاریخ شروع",
+            dataIndex: "start_date",
+            key: "start_date",
+            align: "center",
+            inputType: "text",
+            validator: dateValidator
+        },
+        {
+            title: "تاریخ پایان",
+            dataIndex: "end_date",
+            key: "end_date",
+            align: "center",
+            inputType: "text",
+            validator: dateValidator
+        },
+    ];
+
     const arrestColumns = [
         {
             title: "تاریخ شروع",
@@ -625,6 +661,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                 {
                     "organizational_job": 1,
                     "leave": 1,
+                    "stop_duty": 1,
                     "absence": 1,
                     "arrest": 1,
                     "document": 1,
@@ -647,6 +684,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                     let newValue = {...oldValue};
                     newValue["document"] = res[0]["document"];
                     newValue["leave"] = res[0]["leave"];
+                    newValue["stop_duty"] = res[0]["stop_duty"];
                     newValue["absence"] = res[0]["absence"];
                     newValue["arrest"] = res[0]["arrest"];
                     newValue["mission"] = res[0]["mission"];
@@ -733,6 +771,11 @@ function LeaveAbsenceEscapeDeficitRun() {
         absenceForm.setFieldValue("date", date);
     }
 
+    function onCreateDutyStop(value) {
+        onCreate({...value}, "stop_duty");
+        dutyStopForm.resetFields();
+    }
+
     function onCreateArrest(value) {
         onCreate(value, "arrest");
         const date = value["date"];
@@ -811,6 +854,10 @@ function LeaveAbsenceEscapeDeficitRun() {
         onDelete(index, "absence");
     }
 
+    function onDeleteStopDuty(index) {
+        onDelete(index, "stop_duty");
+    }
+
     function onDeleteArrest(index) {
         onDelete(index, "arrest");
     }
@@ -882,6 +929,12 @@ function LeaveAbsenceEscapeDeficitRun() {
     function onEditAbsence(index, form) {
         return new Promise((resolve, _) => {
             resolve(onEdit(index, form, "absence"))
+        });
+    }
+
+    function onEditStopDuty(index, form) {
+        return new Promise((resolve, _) => {
+            resolve(onEdit(index, form, "stop_duty"))
         });
     }
 
@@ -958,6 +1011,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                 selectedSoldierProject={{
                     "organizational_job": 1,
                     "leave": 1,
+                    "stop_duty": 1,
                     "duty_group_data": 1,
                     "duty_group": 1,
                     "absence": 1,
@@ -2214,6 +2268,55 @@ function LeaveAbsenceEscapeDeficitRun() {
                                         }
                                     />
                                 },
+                                {
+                                    label: "معاف موقت",
+                                    key: 9,
+                                    children: <EditableTable
+                                        formField={{
+                                            start_date: '',
+                                            end_date: '',
+                                        }}
+                                        onDelete={onDeleteStopDuty} onEdit={onEditStopDuty}
+                                        pagination={false} bordered={true} style={{width: "100%"}}
+                                        columns={stopDutyColumns} dataSource={stopDutyData}
+                                        createForm={() =>
+                                            <Flex>
+                                                <Form
+                                                    layout={"inline"}
+                                                    form={dutyStopForm}
+                                                    onFinish={onCreateDutyStop}
+                                                >
+                                                    <Form.Item
+                                                        label={"تاریخ شروع"}
+                                                        name={"start_date"}
+                                                        rules={[{
+                                                            validator: dateValidator, required: true,
+                                                        }]}
+                                                    >
+                                                        <Input/>
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label={"تاریخ پایان"}
+                                                        name={"end_date"}
+                                                        rules={[{
+                                                            validator: dateValidator, required: true,
+                                                        }]}
+                                                    >
+                                                        <Input/>
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                    >
+                                                        <Button type="primary" htmlType="submit">
+                                                            ثبت
+                                                        </Button>
+                                                    </Form.Item>
+                                                </Form>
+                                            </Flex>
+                                        }
+                                    />
+                                }
                             ]}
                         />
                     </Flex>
