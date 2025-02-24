@@ -20,7 +20,7 @@ import {useReactToPrint} from "react-to-print";
 import {GetDutyDuration} from "../../../utils/Calculative.js";
 import padafandLogo from "../../../assets/img/Padafand_Logo.svg";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
-import {DateRenderer} from "../../../utils/TableRenderer.jsx";
+import {DateRenderer, DutyGroupRenderer} from "../../../utils/TableRenderer.jsx";
 import Sign from "../../../components/printElement/Sign.jsx";
 import axios from "axios";
 import {getApiUrl} from "../../../utils/Config.js";
@@ -372,6 +372,13 @@ function StatusSummery({setPrintTitle, soldierKey}) {
             "value": soldier["mental_health"]
         },
         {
+            "category": <div>
+                گروه
+                خدمتی
+            </div>,
+            "value": DutyGroupRenderer(soldier["duty_group"])
+        },
+        {
             "category": "گروه خون",
             "value": soldier["blood_type"]
         },
@@ -430,6 +437,11 @@ function StatusSummery({setPrintTitle, soldierKey}) {
             title: "نسبت",
             align: "center",
             dataIndex: "relative",
+        },
+        {
+            title: "تاریخ تولد",
+            align: "center",
+            dataIndex: "birthday",
         }
     ];
 

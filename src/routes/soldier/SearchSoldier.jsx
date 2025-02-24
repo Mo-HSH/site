@@ -570,6 +570,10 @@ function SearchSoldier() {
                                                dataIndex: "job",
                                            },
                                            {
+                                               title: "تاریخ تولد",
+                                               dataIndex: "birthday",
+                                           },
+                                           {
                                                title: "نسبت",
                                                dataIndex: "relative",
                                            },

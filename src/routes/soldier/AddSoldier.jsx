@@ -18,7 +18,7 @@ import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {
     dateValidator,
     justNumericValidator,
-    justStringValidator,
+    justStringValidator, passAnywayValidator,
     registerNationalCodeValidator
 } from "../../utils/Validates.js";
 import {useEffect, useState} from "react";
@@ -388,6 +388,17 @@ function AddSoldier() {
                                                     },]}
                                                 >
                                                     <Input placeholder="کد ملی"/>
+                                                </Form.Item>
+                                            </Col>
+                                            <Col flex={1}>
+                                                <Form.Item
+                                                    {...restField}
+                                                    name={[name, 'birthday']}
+                                                    rules={[{
+                                                        validator: passAnywayValidator
+                                                    },]}
+                                                >
+                                                    <Input placeholder="تاریخ تولد"/>
                                                 </Form.Item>
                                             </Col>
                                         </Row>

@@ -444,10 +444,13 @@ function EditSoldier() {
                                                             onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.father_name`, v, "str", false)}/>,
                                             <InputFieldForm label={"کد ملی"} validator={registerNationalCodeValidator}
                                                             initValue={elem["national_code"]}
-                                                            onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.national_code`, v, "str", false)}/>
+                                                            onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.national_code`, v, "str", false)}/>,
+                                            <InputFieldForm label={"تاریخ تولد"} validator={passAnywayValidator}
+                                                            initValue={elem["birthday"]}
+                                                            onConfirmEdit={(v) => onConfirmEditSingleForm(`family.${index}.birthday`, v, "str", false)}/>
                                         ].map((elem, index, array) => {
                                             return (
-                                                <Col gutter={10} style={{width: "400px"}}>
+                                                <Col gutter={10} style={{width: "297px"}}>
                                                     {elem}
                                                 </Col>
                                             );
@@ -516,6 +519,16 @@ function EditSoldier() {
                                             },]}
                                         >
                                             <Input placeholder="کد ملی"/>
+                                        </Form.Item>
+                                    </Col>
+                                    <Col flex={1}>
+                                        <Form.Item
+                                            name={'birthday'}
+                                            rules={[{
+                                                validator: passAnywayValidator
+                                            },]}
+                                        >
+                                            <Input placeholder="تاریخ تولد"/>
                                         </Form.Item>
                                     </Col>
                                 </Row>
