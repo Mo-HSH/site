@@ -43,6 +43,7 @@ import {GetDutyDuration} from "../../utils/Calculative.js";
 import {CheckCard} from "@ant-design/pro-components";
 import JSZip from "jszip";
 import {saveAs} from "file-saver";
+import TransformCommitment from "../Print/soldierProfile/TransformCommitment.jsx";
 
 function SearchSoldier() {
 
@@ -1022,6 +1023,7 @@ function SearchSoldier() {
                                                 onClick={() => openPrintModal(<SoldierCart setPrintTitle={setPrintTitle}
                                                                                            soldierKey={key}/>)}>کارت
                                             سرباز</Button>
+
                                     </Flex>
                                 </Flex>
                             </Card>
@@ -1043,6 +1045,13 @@ function SearchSoldier() {
                                         >صورت جلسه سانحه</Button>
                                     </Flex>
                                 </Flex>
+                            </Card>
+                            <Card title="تعهدنامه" style={{width: "100%"}}>
+                                <Flex vertical={false} style={{width: "100%"}} gap={"middle"}>
+                                    <Button type="primary">تعهد نامه عدم انتقال کارمندان</Button>
+                                    <Button type="primary" onClick={() => openPrintModal(<TransformCommitment setPrintTitle={setPrintTitle} soldierKey={key} />)}>تغییر نشانی</Button>
+                                </Flex>
+
                             </Card>
                         </Flex>
                     </Drawer>
