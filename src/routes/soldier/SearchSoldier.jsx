@@ -34,6 +34,7 @@ import StatusSummery from "../Print/soldierProfile/StatusSummery.jsx";
 import Admission from "../Print/soldierProfile/Admission.jsx";
 import IntroductionLetter from "../Print/soldierProfile/IntroductionLetter.jsx";
 import EmploymentCertificate from "../Print/soldierProfile/EmploymentCertificate.jsx";
+import SoldierCart from "../Print/soldierProfile/SoldierCart.jsx"
 import SoldierFolderLabel from "../Print/soldierProfile/SoldierFolderLabel.jsx";
 import {getApiUrl} from "../../utils/Config.js";
 import AccidentComission from "../Print/soldierProfile/AccidentComission.jsx";
@@ -1017,6 +1018,10 @@ function SearchSoldier() {
                                             گواهی اشتغال
                                         </Button>
                                         <Button type={"primary"} block={true}>گردشکار سنواتی</Button>
+                                        <Button type="primary" block={true}
+                                                onClick={() => openPrintModal(<SoldierCart setPrintTitle={setPrintTitle}
+                                                                                           soldierKey={key}/>)}>کارت
+                                            سرباز</Button>
                                     </Flex>
                                 </Flex>
                             </Card>
@@ -1208,7 +1213,7 @@ function SearchSoldier() {
                             validator: justStringValidator
                         }]}
                     >
-                        <Input/>
+                        <Input style={{width: "150px"}}/>
                     </Form.Item>
 
                     <Form.Item
@@ -1219,7 +1224,7 @@ function SearchSoldier() {
                             validator: justStringValidator
                         }]}
                     >
-                        <Input/>
+                        <Input style={{width: "150px"}}/>
                     </Form.Item>
 
                     <Form.Item
@@ -1230,7 +1235,7 @@ function SearchSoldier() {
                             validator: justStringValidator
                         }]}
                     >
-                        <Input/>
+                        <Input style={{width: "150px"}}/>
                     </Form.Item>
 
                     <Form.Item
@@ -1241,7 +1246,7 @@ function SearchSoldier() {
                             validator: justNumericValidator
                         }]}
                     >
-                        <Input/>
+                        <Input style={{width: "150px"}}/>
                     </Form.Item>
                 </>
             }

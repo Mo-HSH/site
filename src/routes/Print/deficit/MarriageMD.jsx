@@ -258,6 +258,11 @@ function MarriageMD({setPrintTitle, soldierKey, forceRefresh}) {
                                         align: "center",
                                     },
                                     {
+                                        title: "تاریخ تولد",
+                                        dataIndex: "birthday",
+                                        align: "center",
+                                    },
+                                    {
                                         title: "نسبت",
                                         dataIndex: "relative",
                                         align: "center",

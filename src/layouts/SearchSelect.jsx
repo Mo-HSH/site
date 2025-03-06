@@ -290,12 +290,13 @@ function SearchSelect({
             <Form
                 layout={"inline"}
                 onFinish={onFinish}
+                style={{justifyContent: "space-between"}}
             >
                 {searchFormFields}
 
                 <Form.Item
                 >
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" style={{width: "100px"}}>
                         یافتن
                     </Button>
                 </Form.Item>
