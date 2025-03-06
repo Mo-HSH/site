@@ -756,7 +756,7 @@ function ListSoldier() {
             </Drawer>
             <Drawer title={"تنظیمات"} placement={"left"} open={openSettingDrawer}
                     onClose={() => setOpenSettingDrawer(false)}>
-                <Checkbox.Group options={options.map((v, index) => {
+                <Checkbox.Group style={{gap: "10px"}} options={options.map((v, index) => {
                     return ({label: v.label, value: index})
                 })} onChange={columnsChange} value={columns}/>
             </Drawer>
