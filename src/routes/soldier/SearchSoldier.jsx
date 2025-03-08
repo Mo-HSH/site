@@ -44,6 +44,7 @@ import {CheckCard} from "@ant-design/pro-components";
 import JSZip from "jszip";
 import {saveAs} from "file-saver";
 import TransformCommitment from "../Print/soldierProfile/TransformCommitment.jsx";
+import MarriageCommitment from "../Print/soldierProfile/MarriageCommitment.jsx";
 
 function SearchSoldier() {
 
@@ -1048,7 +1049,7 @@ function SearchSoldier() {
                             </Card>
                             <Card title="تعهدنامه" style={{width: "100%"}}>
                                 <Flex vertical={false} style={{width: "100%"}} gap={"middle"}>
-                                    <Button type="primary">تعهد نامه عدم انتقال کارمندان</Button>
+                                    <Button type="primary" onClick={() => openPrintModal(<MarriageCommitment setPrintTitle={setPrintTitle} soldierKey={key}/>)}>تعهد نامه عدم انتقال کارمندان</Button>
                                     <Button type="primary" onClick={() => openPrintModal(<TransformCommitment setPrintTitle={setPrintTitle} soldierKey={key} />)}>تغییر نشانی</Button>
                                 </Flex>
 
