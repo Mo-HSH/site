@@ -38,6 +38,7 @@ import StatsReport from "./routes/reports/StatsReport.jsx";
 import NewSoldierReport from "./routes/reports/NewSoldierReport.jsx";
 import FolderLabel from "./routes/Print/archive/FolderLabel.jsx";
 import EditNotification from "./routes/settings/EditNotification.jsx";
+import QuantityReport from "./routes/reports/QuantityReport.jsx";
 
 function App() {
     const navigate = useNavigate();
@@ -113,6 +114,7 @@ function App() {
                     <Route path="/return_report" element={<ReturnReport />}/>
                     <Route path="/release_report" element={<ReleaseReport />}/>
                     <Route path="/stats_report" element={<StatsReport />}/>
+                    <Route path="/quantity_report" element={<QuantityReport />} />
                     <Route path="/new_soldier_report" element={<NewSoldierReport />}/>
                     <Route path="/init_additional_service_report" element={<InitAdditionalServiceReport />}/>
 

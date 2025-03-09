@@ -59,6 +59,7 @@ function Dashboard() {
             getItem('اضافه سنواتی', '/init_additional_service_report'),
             getItem('سربازان جدید الورود', '/new_soldier_report'),
             getItem('آمار پایه خدمتی', '/stats_report'),
+            getItem("موجودی / سازمانی","/quantity_report")
         ]),
         getItem('ابزار بایگانی', 'archiving tools', <FileTextOutlined />, [
             getItem('لیبل پرونده', '/folder_label'),

@@ -184,3 +184,36 @@ aside {
     height: 100vh;
   }
 }
+
+
+.qr-title {
+  position: relative;
+}
+
+.qr-title::before {
+  content: "";
+  position: absolute;
+  top: 40px;
+  right: -7px;
+  height: 1px;
+  width: 109%;
+  background-color: #000;
+  transform: rotate(-25deg);
+}
+
+.qr-title span:first-child {
+  position: absolute;
+  right: 30px;
+  top: 44px;
+}
+
+.qr-title span:last-child {
+  position: absolute;
+  left: 30px;
+  top: 16px;
+}
+
+.qr-table td {
+  padding: 3px;
+  font-size: 18px;
+}
