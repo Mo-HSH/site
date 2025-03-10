@@ -92,7 +92,7 @@ function App() {
                 <Route path="/login" element={<Login/>}/>
                 {/*<Route path="/register" element={<Register/>}/>*/}
 
-                <Route element={<Dashboard/>}>
+                    <Route element={<Dashboard/>}>
                     <Route path="/" element={<Home/>}/>
                     {/*<Route path="/test" element={<Test/>}/>*/}
 

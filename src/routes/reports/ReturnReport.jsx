@@ -68,6 +68,7 @@ function ReturnReport() {
                 "deployment_date": 1,
                 "unit": 1,
                 "section": 1,
+                "phone": 1,
                 "run": {
                     "$filter": {
                         "input": "$run",
@@ -84,6 +85,7 @@ function ReturnReport() {
         }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
+                setData(res);
                 let rowIndexCounter = 1;
 
                 const transformedData = res.flatMap(soldier => {
@@ -95,6 +97,7 @@ function ReturnReport() {
                         father_name: soldier.father_name,
                         unit: soldier.unit,
                         section: soldier.section,
+                        phone: soldier.phone,
                         deployment_date: DateRenderer(soldier.deployment_date),
                         run_absence_date: DateRenderer(run.absence_date),
                         run_date: DateRenderer(run.run_date),
@@ -116,6 +119,8 @@ function ReturnReport() {
                 }, []);
                 console.log(rowSpanData);
                 setSoldiers(rowSpanData);
+                setData(rowSpanData);
+                console.log(rowSpanData);
             })
             .catch((err) => {
                 api["error"]({
@@ -150,6 +155,7 @@ function ReturnReport() {
             'حکم قضایی': row["run_court_order"],
             'اضافه تنبیهی': row["run_day_punish"],
             'مدت فرار': row["run_duration"],
+            "شماره تماس": row["phone"]
         })));
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
@@ -213,7 +219,7 @@ function ReturnReport() {
                         <Button block={true} type={"primary"} onClick={handlePrint}>پرینت</Button>
                     </Form.Item>
                     <Form.Item>
-                        <Button block={true} type={"primary"} loading={downloading} onClick={()=> {
+                        <Button block={true} type={"primary"} loading={downloading} onClick={() => {
                             setDownloading(true);
                             download();
                             setDownloading(false);
@@ -229,7 +235,7 @@ function ReturnReport() {
                     {`
                             @media print {
                               @page {
-                                size: portrait;
+                                size: landscape;
                               }
                             }
                             thead {
@@ -321,6 +327,10 @@ function ReturnReport() {
                             title: "مدت فرار",
                             dataIndex: "run_duration",
                         },
+                        {
+                            title: "شماره تماس",
+                            dataIndex: "phone"
+                        }
                     ].map(v => {
                         v["align"] = "center";
                         return v;
