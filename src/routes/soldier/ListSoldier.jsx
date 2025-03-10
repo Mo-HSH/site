@@ -279,22 +279,6 @@ function ListSoldier() {
             },
         },
         {
-            label: "تاریخ فرار",
-            value: {
-                title: "تاریخ فرار",
-                dataIndex: "run",
-                render: ((run)=>{
-                    try {
-                        let dates = run.sort((a, b)=> a.run_date.$date.$numberLong - b.run_date.$date.$numberLong);
-                        return DateRenderer(dates[dates.length - 1].run_date);
-                    }
-                    catch {
-                        return " ";
-                    }
-                })
-            },
-        },
-        {
             label: "تاریخ نهست فرار",
             value: {
                 title: "تاریخ نهست فرار",
@@ -303,6 +287,22 @@ function ListSoldier() {
                     try {
                         let dates = run.sort((a, b)=> a.absence_date.$date.$numberLong - b.absence_date.$date.$numberLong);
                         return DateRenderer(dates[dates.length - 1].absence_date);
+                    }
+                    catch {
+                        return " ";
+                    }
+                })
+            },
+        },
+        {
+            label: "تاریخ فرار",
+            value: {
+                title: "تاریخ فرار",
+                dataIndex: "run",
+                render: ((run)=>{
+                    try {
+                        let dates = run.sort((a, b)=> a.run_date.$date.$numberLong - b.run_date.$date.$numberLong);
+                        return DateRenderer(dates[dates.length - 1].run_date);
                     }
                     catch {
                         return " ";
@@ -424,6 +424,13 @@ function ListSoldier() {
                 })
             }
         },
+        {
+            label: "شماره تماس",
+            value: {
+                title: "شماره تماس",
+                dataIndex: "phone"
+            }
+        }
     ]
 
     function download() {
