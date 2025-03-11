@@ -59,28 +59,28 @@ function RunReport() {
         }
 
         axios.post(getApiUrl("soldier/list"), {
-                "filter": filter,
-                "projection": {
-                    "first_name": 1,
-                    "last_name": 1,
-                    "national_code": 1,
-                    "father_name": 1,
-                    "deployment_date": 1,
-                    "unit": 1,
-                    "section": 1,
-                    "run": {
-                        "$filter": {
-                            "input": "$run",
-                            "as": "runItem",
-                            "cond": {
-                                "$and": [
-                                    {"$lte": ["$$runItem.run_date", toDate]},
-                                    {"$gte": ["$$runItem.run_date", fromDate]}
-                                ]
-                            }
+            "filter": filter,
+            "projection": {
+                "first_name": 1,
+                "last_name": 1,
+                "national_code": 1,
+                "father_name": 1,
+                "deployment_date": 1,
+                "unit": 1,
+                "section": 1,
+                "run": {
+                    "$filter": {
+                        "input": "$run",
+                        "as": "runItem",
+                        "cond": {
+                            "$and": [
+                                {"$lte": ["$$runItem.run_date", toDate]},
+                                {"$gte": ["$$runItem.run_date", fromDate]}
+                            ]
                         }
                     }
                 }
+            }
         }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
@@ -214,7 +214,7 @@ function RunReport() {
                         <Button block={true} type={"primary"} onClick={handlePrint}>پرینت</Button>
                     </Form.Item>
                     <Form.Item>
-                        <Button block={true} type={"primary"} loading={downloading} onClick={()=> {
+                        <Button block={true} type={"primary"} loading={downloading} onClick={() => {
                             setDownloading(true);
                             download();
                             setDownloading(false);
