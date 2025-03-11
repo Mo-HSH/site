@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import {Button, Card, Col, ConfigProvider, Flex, Image, notification, Row, Typography} from "antd";
+import {Button, Card, Col, ConfigProvider, Flex, Form, Image, Input, notification, Row, Typography} from "antd";
 import {DateRenderer} from "../../../utils/TableRenderer.jsx";
 import {useReactToPrint} from "react-to-print";
 import padafandLogoOpacityLow from "../../../assets/img/Padafand_Logo_1.svg";
@@ -7,6 +7,7 @@ import {GetNumberLabel} from "../../../utils/Data.js";
 import Sign from "../../../components/printElement/Sign.jsx";
 import {getApiUrl} from "../../../utils/Config.js";
 import axios from "axios";
+import {dateValidator} from "../../../utils/Validates.js";
 
 
 function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
@@ -24,6 +25,9 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
     const [api, contextHolder] = notification.useNotification();
     const [readyForPrint, setReadyForPrint] = useState(false);
     const printComponent = useRef(null);
+    const [input, setInput] = useState({
+        return_date: ""
+    });
 
     useEffect(() => {
         setPrintTitle("فرم اعزام به قضایی");
@@ -91,7 +95,7 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
     });
 
 
-    return(
+    return (
         <div>
             {contextHolder}
             <ConfigProvider
@@ -105,8 +109,27 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                 }}
             >
                 <Flex vertical={false} gap={"middle"} align={"center"} justify={"center"}
-                      style={{width: "100%", zIndex: 2, marginBottom: "20px"}}>
-                    <Button disabled={!readyForPrint} type={"primary"} onClick={handlePrint}>پرینت</Button>
+                      style={{width: "100%", zIndex: 2, alignItems: "center"}}>
+                    <Flex vertical={false} gap={"middle"} align={"center"} justify={"center"}
+                          style={{width: "100%", zIndex: 2, marginBottom: "20px"}}>
+                        <Form
+                            layout={"inline"}
+                            onValuesChange={(changedValues, allValues) => {
+                                setInput(allValues);
+                            }}
+                        >
+                            <Form.Item
+                                label={"تاریخ مراجعت"}
+                                name={"return_date"}
+                                rules={[{
+                                    validator: dateValidator, required: true,
+                                }]}
+                            >
+                                <Input/>
+                            </Form.Item>
+                        </Form>
+                        <Button disabled={!readyForPrint} type={"primary"} onClick={handlePrint}>پرینت</Button>
+                    </Flex>
                 </Flex>
 
                 <Flex justify={"center"} align={"center"} vertical={true} ref={printComponent}
@@ -132,7 +155,7 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                       className={"break-after A5-landscape"}
                                       gap={"large"}
                                 >
-                                    <Row style={{width:"90%", marginTop: "20px"}}>
+                                    <Row style={{width: "90%", marginTop: "20px"}}>
                                         <Col flex={1}>
                                             <Flex>
                                                 <Typography.Title level={5}>
@@ -203,9 +226,11 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                                 </Typography.Text>
                                                 غیبت متوالی از خدمت فراری و در تاریخ
                                                 <Typography.Text strong>
-                                                    {" " + soldier["target_run"]["return_date"] + " "}
+                                                    {" " + input["return_date"] + " "}
                                                 </Typography.Text>
-                                                از فرار مراجعت نموده است. با توجه به اینکه نامه فرار و مراجعت وی جهت امضای مسئولین ارسال گردیده است، لذا مشارالیه جهت سیر مراحل حفاظتی و قضایی پیرامون فرار خود معرفی میگردد. ضمنا نامبرده برای
+                                                از فرار مراجعت نموده است. با توجه به اینکه نامه فرار و مراجعت وی جهت
+                                                امضای مسئولین ارسال گردیده است، لذا مشارالیه جهت سیر مراحل حفاظتی و
+                                                قضایی پیرامون فرار خود معرفی میگردد. ضمنا نامبرده برای
                                                 <Typography.Text strong>
                                                     {" " + GetNumberLabel(soldier["target_run"]["run_count"]) + "ین بار "}
                                                 </Typography.Text>
@@ -226,11 +251,13 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                         <Card
                                             style={{width: "100%"}}
                                             size={"small"}
-                                            title={<Flex style={{width: "100%"}} justify={"center"}><Typography.Text style={{fontSize: "14px"}}>نظریه حفاظت اطلاعات</Typography.Text></Flex>}
+                                            title={<Flex style={{width: "100%"}} justify={"center"}><Typography.Text
+                                                style={{fontSize: "14px"}}>نظریه حفاظت اطلاعات</Typography.Text></Flex>}
                                         >
                                             <Flex style={{height: "90px"}} vertical>
                                                 <Typography.Text style={{fontSize: "12px"}}>
-                                                    به کارگیری نامبرده از نظر امنیتی از تاریخ ................ بلامانع می باشد.
+                                                    به کارگیری نامبرده از نظر امنیتی از تاریخ ................ بلامانع
+                                                    می باشد.
                                                 </Typography.Text>
                                                 <Flex align={"flex-end"} style={{height: "100%"}}>
                                                     <Typography.Text strong style={{fontSize: "12px"}}>
@@ -242,11 +269,13 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                         <Card
                                             style={{width: "100%"}}
                                             size={"small"}
-                                            title={<Flex style={{width: "100%"}} justify={"center"}><Typography.Text style={{fontSize: "14px"}}>نظریه قضایی</Typography.Text></Flex>}
+                                            title={<Flex style={{width: "100%"}} justify={"center"}><Typography.Text
+                                                style={{fontSize: "14px"}}>نظریه قضایی</Typography.Text></Flex>}
                                         >
                                             <Flex style={{height: "90px"}} vertical>
                                                 <Typography.Text style={{fontSize: "12px"}}>
-                                                     نامبرده در تاریخ ............. مورد بازجویی قرار گرفت و جهت سیر مراحل فرار به مراجع قضایی احاله می گردد.
+                                                    نامبرده در تاریخ ............. مورد بازجویی قرار گرفت و جهت سیر
+                                                    مراحل فرار به مراجع قضایی احاله می گردد.
                                                 </Typography.Text>
                                                 <Flex align={"flex-end"} style={{height: "100%"}}>
                                                     <Typography.Text strong style={{fontSize: "12px"}}>
