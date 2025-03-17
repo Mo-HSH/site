@@ -45,6 +45,7 @@ import JSZip from "jszip";
 import {saveAs} from "file-saver";
 import TransformCommitment from "../Print/soldierProfile/TransformCommitment.jsx";
 import MarriageCommitment from "../Print/soldierProfile/MarriageCommitment.jsx";
+import MD60 from "../Print/soldierProfile/MD60.jsx"
 
 function SearchSoldier() {
 
@@ -1019,7 +1020,7 @@ function SearchSoldier() {
                                         >
                                             گواهی اشتغال
                                         </Button>
-                                        <Button type={"primary"} block={true}>گردشکار سنواتی</Button>
+                                        <Button type={"primary"} block={true} onClick={() => openPrintModal(<MD60 setPrintTitle={setPrintTitle} soldierKey={key} />)}>صورت جلسه ماده 60</Button>
                                         <Button type="primary" block={true}
                                                 onClick={() => openPrintModal(<SoldierCart setPrintTitle={setPrintTitle}
                                                                                            soldierKey={key}/>)}>کارت
@@ -1049,8 +1050,11 @@ function SearchSoldier() {
                             </Card>
                             <Card title="تعهدنامه" style={{width: "100%"}}>
                                 <Flex vertical={false} style={{width: "100%"}} gap={"middle"}>
-                                    <Button type="primary" onClick={() => openPrintModal(<MarriageCommitment setPrintTitle={setPrintTitle} soldierKey={key}/>)}>تعهد نامه عدم انتقال کارمندان</Button>
-                                    <Button type="primary" onClick={() => openPrintModal(<TransformCommitment setPrintTitle={setPrintTitle} soldierKey={key} />)}>تغییر نشانی</Button>
+                                    <Button type="primary" onClick={() => openPrintModal(<MarriageCommitment
+                                        setPrintTitle={setPrintTitle} soldierKey={key}/>)}>تعهد نامه عدم انتقال
+                                        کارمندان</Button>
+                                    <Button type="primary" onClick={() => openPrintModal(<TransformCommitment
+                                        setPrintTitle={setPrintTitle} soldierKey={key}/>)}>تغییر نشانی</Button>
                                 </Flex>
 
                             </Card>

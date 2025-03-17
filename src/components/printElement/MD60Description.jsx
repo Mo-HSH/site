@@ -7,14 +7,6 @@ import {getApiUrl} from "../../utils/Config.js";
 const filterOption = (input, option) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
-const mdSigns = [
-    "فرماندهی پشتیبانی مرکز پدافند هوایی آجا",
-    "مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا",
-    "رئیس دایره قضایی ف پشتیبانی نیروی پدافند هوایی آجا",
-    "فرمانده گروه پاسداری و خدمات فرماندهی پشتیبانی مرکز",
-    "رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا",
-]
-
 function Single({defaultSign, fontSize, forceRefresh}) {
 
     const [value, setValue] = useState({title: "", signer: ""});
@@ -245,13 +237,15 @@ function MultiInline({defaultSign, fontSize, singGap}) {
             <Flex style={{width: "100%"}} vertical={true} gap={singGap} justify={"center"} align={"end"}>
                 {
                     value.map((v) => {
-                        return (<Flex align={"center"} gap={"small"}>
-                            <Typography.Text
-                                style={{fontSize: `${fontSize}px`, fontWeight: "bold"}}>{v.title}</Typography.Text>
-                            <Typography.Text>-</Typography.Text>
-                            <Typography.Text
-                                style={{fontSize: `${fontSize}px`, fontWeight: "bold"}}>{v.signer}</Typography.Text>
-                        </Flex>);
+                        return (
+                            <Flex align={"center"} gap={"small"}>
+                                <Typography.Text
+                                    style={{fontSize: `${fontSize}px`, fontWeight: "bold"}}>{v.title}</Typography.Text>
+                                <Typography.Text>-</Typography.Text>
+                                <Typography.Text
+                                    style={{fontSize: `${fontSize}px`, fontWeight: "bold"}}>{v.signer}</Typography.Text>
+                            </Flex>
+                        );
                     })
                 }
             </Flex>
@@ -259,83 +253,10 @@ function MultiInline({defaultSign, fontSize, singGap}) {
     );
 }
 
-function Md60() {
-    const [signs, setSigns] = useState([]);
-
-    useEffect(() => {
-        axios.get(getApiUrl("config/signs", {
-            "projection": {
-                "key": 1,
-                "value": 1,
-            }
-        }), {withCredentials: true}).then((res) => {
-            setSigns(res.data.config.map(({key, value}) => {
-                return {
-                    title: key,
-                    signer: value
-                };
-            }).filter(sign => mdSigns.includes(sign.title)))
-        }).catch(() => {
-        });
-    }, [])
-
-    useEffect(() => {
-        console.log(signs)
-    }, [signs]);
-
-    return (<div>
-        <table className="md-sign" border="1" style={{borderCollapse: "collapse", border: "1px solid #000", width: "100%"}}>
-            <thead>
-            <tr>
-                <th>ردرف</th>
-                <th>نام و نشان</th>
-                <th>سمت</th>
-                <th className="md-sign-s">امضا</th>
-            </tr>
-            </thead>
-            {signs.length && (
-                <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>{signs[2].signer}</td>
-                    <td>{signs[2].title}</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>{signs[0].signer}</td>
-                    <td>{signs[0].title}</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>{signs[3].signer}</td>
-                    <td>{signs[3].title}</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>{signs[4].signer}</td>
-                    <td>{signs[4].title}</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>{signs[1].signer}</td>
-                    <td>{signs[1].title}</td>
-                    <td></td>
-                </tr>
-                </tbody>
-            )}
-        </table>
-    </div>)
-}
-
 
 const Sign = {
     Single,
     SingleInline,
-    MultiInline,
-    Md60
+    MultiInline
 };
 export default Sign;

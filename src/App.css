@@ -217,3 +217,20 @@ aside {
   padding: 3px;
   font-size: 18px;
 }
+
+.md-content  span {
+  /*display: inline-block;*/
+  line-height: 2;
+}
+
+.md-sign {
+  width: 100%;
+}
+
+.md-sign td {
+  padding: 30px 10px;
+}
+
+.md-sign-s {
+  width: 100px;
+}
