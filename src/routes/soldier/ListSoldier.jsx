@@ -85,7 +85,7 @@ function ListSoldier() {
         }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
-                console.log([...new Set(res.map(v=>v.section))])
+                console.log([...new Set(res.map(v => v.section))])
                 setData(res);
             })
             .catch((err) => {
@@ -150,11 +150,10 @@ function ListSoldier() {
             value: {
                 title: "مدرک تحصیلی",
                 dataIndex: "education",
-                render: ((v)=>{
+                render: ((v) => {
                     try {
                         return v[0];
-                    }
-                    catch {
+                    } catch {
                         return " ";
                     }
                 })
@@ -222,11 +221,10 @@ function ListSoldier() {
             value: {
                 title: "رشته تحصیلی",
                 dataIndex: "field_of_study",
-                render: ((v)=>{
+                render: ((v) => {
                     try {
                         return v[0];
-                    }
-                    catch {
+                    } catch {
                         return " ";
                     }
                 })
@@ -283,12 +281,11 @@ function ListSoldier() {
             value: {
                 title: "تاریخ نهست فرار",
                 dataIndex: "run",
-                render: ((run)=>{
+                render: ((run) => {
                     try {
-                        let dates = run.sort((a, b)=> a.absence_date.$date.$numberLong - b.absence_date.$date.$numberLong);
+                        let dates = run.sort((a, b) => a.absence_date.$date.$numberLong - b.absence_date.$date.$numberLong);
                         return DateRenderer(dates[dates.length - 1].absence_date);
-                    }
-                    catch {
+                    } catch {
                         return " ";
                     }
                 })
@@ -299,12 +296,11 @@ function ListSoldier() {
             value: {
                 title: "تاریخ فرار",
                 dataIndex: "run",
-                render: ((run)=>{
+                render: ((run) => {
                     try {
-                        let dates = run.sort((a, b)=> a.run_date.$date.$numberLong - b.run_date.$date.$numberLong);
+                        let dates = run.sort((a, b) => a.run_date.$date.$numberLong - b.run_date.$date.$numberLong);
                         return DateRenderer(dates[dates.length - 1].run_date);
-                    }
-                    catch {
+                    } catch {
                         return " ";
                     }
                 })
@@ -319,7 +315,7 @@ function ListSoldier() {
                     if (v) {
                         return DateRenderer(v["release_date"]);
                     }
-                        return "";
+                    return "";
                 })
             },
         },
@@ -348,7 +344,7 @@ function ListSoldier() {
             value: {
                 title: "سلامت جسمانی",
                 dataIndex: "extra_info",
-                render: ((v)=> v.includes("معاف از رزم") ? "معاف از رزم" : "سالم")
+                render: ((v) => v.includes("معاف از رزم") ? "معاف از رزم" : "سالم")
             }
         },
         {
@@ -363,7 +359,7 @@ function ListSoldier() {
             value: {
                 title: "وضعیت تاهل",
                 dataIndex: "family",
-                render: ((v)=> v.findIndex(i=>i.relative === "همسر") > -1 ? "متاهل" : "مجرد")
+                render: ((v) => v.findIndex(i => i.relative === "همسر") > -1 ? "متاهل" : "مجرد")
             }
         },
         {
@@ -399,11 +395,10 @@ function ListSoldier() {
             value: {
                 title: "شغل سازمانی - عنوان یگان",
                 dataIndex: "organizational_job",
-                render: ((v)=>{
+                render: ((v) => {
                     try {
-                        return v[v.length-1].unit_title;
-                    }
-                    catch {
+                        return v[v.length - 1].unit_title;
+                    } catch {
                         return "";
                     }
                 })
@@ -414,11 +409,10 @@ function ListSoldier() {
             value: {
                 title: "شغل سازمانی - عنوان شغل",
                 dataIndex: "organizational_job",
-                render: ((v)=>{
+                render: ((v) => {
                     try {
-                        return v[v.length-1].job_title;
-                    }
-                    catch {
+                        return v[v.length - 1].job_title;
+                    } catch {
                         return "";
                     }
                 })
@@ -501,13 +495,15 @@ function ListSoldier() {
         },
 
         {label: "وضعیت خدمتی", dataIndex: "status", type: "select", options: statusOptions},
-        {label: "نوع ترخیص", dataIndex: "release.release_type", type: "select", options: [
+        {
+            label: "نوع ترخیص", dataIndex: "release.release_type", type: "select", options: [
                 {label: "پایان خدمت", value: "پایان خدمت"},
                 {label: "ایست خدمت", value: "ایست خدمت"},
                 {label: "فوت", value: "فوت"},
                 {label: "معافیت", value: "معافیت"},
                 {label: "انتقالی", value: "انتقالی"},
-            ]},
+            ]
+        },
         {label: "وضعیت سلامت روان", dataIndex: "mental_health", type: "select", options: mentalHealthOptions},
         {
             label: "وضعیت معاف از رزم",
@@ -546,7 +542,13 @@ function ListSoldier() {
             type: "select",
             options: [{label: "دارد", value: "دارد"}, {label: "ندارد", value: "ندارد"}]
         },
-
+        {
+            label: "اطلاعات بیشتر",
+            dataIndex: "extra_info",
+            type: "select",
+            options: [{label: "دوره کد", value: "دوره کد"}, {label: "انتقالی", value: "انتقالی"},
+                {label: "معاف از رزم", value: "معاف از رزم"}, {label: "مامور", value: "مامور"}]
+        }
     ];
 
     function onFinishFilter(value) {
