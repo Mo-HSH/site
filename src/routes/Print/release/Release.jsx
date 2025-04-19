@@ -89,7 +89,8 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                     "unit": 1,
                     "is_native": 1,
                     "mental_health": 1,
-                    "duty_group": 1
+                    "duty_group": 1,
+                    "extra_info": 1,
                 }
         }, {withCredentials: true})
             .then((response) => {
@@ -101,6 +102,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                 } else {
                     setSoldier({
                         ...res[0],
+                        health_group: res[0]["mental_health"] === "گروه ب فراجا" || res[0]["mental_health"] === "گروه ب پش مرکز" || res[0]["extra_info"].includes("معاف از رزم") ? "معاف از رزم" : "سالم"
                     });
 
                     setReadyForPrint(true);
@@ -1128,7 +1130,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                 },
                                                 {
                                                     0: "گروه سلامت",
-                                                    1: soldier["mental_health"],
+                                                    1: soldier["health_group"],
                                                     2: "گروه خدمتی",
                                                     3: soldier["duty_group"] ? "رزمی" : "غیر رزمی",
                                                 }
