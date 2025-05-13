@@ -55,7 +55,7 @@ function Login() {
 
                         // textShadow: "0px 0px white",
                     }}>
-                        امروز پدافند در اولویت است.
+                        امروز پدافند در اولویت اول است.
                     </Typography.Text>
                 </Typography.Text>
 
