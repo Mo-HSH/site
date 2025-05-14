@@ -16,7 +16,7 @@ import {
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
-import {DateRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
+import {DateRenderer, DutyGroupRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
 import * as XLSX from "xlsx"
 import {saveAs} from "file-saver";
 import {dateValidator} from "../../utils/Validates.js";
@@ -424,6 +424,14 @@ function ListSoldier() {
                 title: "شماره تماس",
                 dataIndex: "phone"
             }
+        },
+        {
+            label: "گروه خدمتی",
+            value: {
+                title: "گروه رزمی",
+                dataIndex: "duty_group",
+                render: v => v ? "رزمی" : "غیر رزمی",
+            }
         }
     ]
 
@@ -447,7 +455,9 @@ function ListSoldier() {
                         t[key] = DateRenderer(v[key]);
                     }
                 } else {
-                    let renderer = options.find((v) => v.label === key).value.render;
+
+                    let renderer = options.find((v) => v.label === key)?.value.render;
+                    console.log(options);
                     if (renderer) {
                         t[key] = renderer(v[key]);
                     } else {

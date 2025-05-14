@@ -290,15 +290,18 @@ function LeaveAbsenceEscapeDeficitRun() {
     }, []);
 
     async function soldierCounter(filter) {
-        let res = await axios.post(getApiUrl("soldier/list"), {"filter": filter, "projection": {first_name: 1}}, {withCredentials: true});
+        let res = await axios.post(getApiUrl("soldier/list"), {
+            "filter": filter,
+            "projection": {first_name: 1}
+        }, {withCredentials: true});
+        console.log("====>", res);
         return res.data.length;
     }
     useEffect(() => {
         (async () => {
 
             let res = await axios.get(getApiUrl("config/organization-job"), {withCredentials: true});
-
-            let temp = res.data.config.map((v)=>{
+            let temp = res.data.config.map((v) => {
                 v["capacity"] = v.limit;
                 return v;
             });
@@ -619,7 +622,7 @@ function LeaveAbsenceEscapeDeficitRun() {
             dataIndex: "allow_ranks",
             key: "allow_ranks",
             align: "center",
-            render: ((v)=>v[0])
+            render: ((v) => v[0])
         },
     ];
 
@@ -635,8 +638,8 @@ function LeaveAbsenceEscapeDeficitRun() {
         {
             title: "فایل",
             dataIndex: "file",
-            render: (v)=>{
-                return(
+            render: (v) => {
+                return (
                     <Image
                         width={100}
                         shape="square"
@@ -835,10 +838,10 @@ function LeaveAbsenceEscapeDeficitRun() {
     }
 
     function onDelete(index, queryTarget) {
-        axios.post(getApiUrl(`document/${queryTarget}/delete/${selectedSoldierOid}/${index}`), {},{withCredentials: true})
-        .then(() => {
-            fetchData();
-        }).catch((err) => {
+        axios.post(getApiUrl(`document/${queryTarget}/delete/${selectedSoldierOid}/${index}`), {}, {withCredentials: true})
+            .then(() => {
+                fetchData();
+            }).catch((err) => {
             fetchData();
             api["error"]({
                 message: "خطا", description: err.data.message
@@ -883,7 +886,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     }
 
     function onDeleteDocument(index) {
-        axios.post(getApiUrl(`soldier/delete_document/${selectedSoldierOid}/${index}`), {},{withCredentials: true})
+        axios.post(getApiUrl(`soldier/delete_document/${selectedSoldierOid}/${index}`), {}, {withCredentials: true})
             .then(() => {
                 fetchData();
             }).catch((err) => {
@@ -897,7 +900,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     function onEdit(index, form, queryTarget) {
         return new Promise((resolve, _) => {
             form.validateFields().then((res) => {
-                axios.patch(getApiUrl(`document/${queryTarget}/edit/${selectedSoldierOid}/${index}`), res,{withCredentials: true}).then(() => {
+                axios.patch(getApiUrl(`document/${queryTarget}/edit/${selectedSoldierOid}/${index}`), res, {withCredentials: true}).then(() => {
                     fetchData();
                     resolve(true);
                 }).catch((err) => {
@@ -975,12 +978,12 @@ function LeaveAbsenceEscapeDeficitRun() {
             value["call_date"] = "";
         }
         axios.patch(getApiUrl(`document/run/edit/${selectedSoldierOid}/${runEditIndex}`), value, {withCredentials: true})
-        .then(() => {
-            fetchData();
-            api["success"]({
-                message: "انجام شد!"
-            });
-        }).catch((err) => {
+            .then(() => {
+                fetchData();
+                api["success"]({
+                    message: "انجام شد!"
+                });
+            }).catch((err) => {
             if (typeof err.response.data === "object") {
                 DateConflictErrorHandler(err.response.data);
             } else {
@@ -1135,17 +1138,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                                                     runIndex={runEditIndex}
                                                                                     forceRefresh={Date.now()}/>)}
                                     >
-                                        نامه مراجعت
-                                    </Button>
-                                    <Button
-                                        type={"primary"}
-                                        block={true}
-                                        onClick={() => openPrintModal(<ReturnLetter setPrintTitle={setPrintTitle}
-                                                                                    soldierKey={selectedSoldierOid}
-                                                                                    runIndex={runEditIndex}
-                                                                                    forceRefresh={Date.now()}/>)}
-                                    >
-                                        نامه معرفی به گردان
+                                        نامه معرفی به یگان
                                     </Button>
                                 </Flex>
                             </Flex>
@@ -1163,8 +1156,10 @@ function LeaveAbsenceEscapeDeficitRun() {
                         </Modal>
 
                         <Card title="اطلاعات سرباز" style={{width: "100%"}}>
-                            <Card.Grid style={gridStyle}> نام و نشان : {selectedSoldier["first_name"]} {selectedSoldier["last_name"]} </Card.Grid>
-                            <Card.Grid style={gridStyle}> شماره پرونده : &rlm;{selectedSoldier["folder_number"]} </Card.Grid>
+                            <Card.Grid style={gridStyle}> نام و نشان
+                                : {selectedSoldier["first_name"]} {selectedSoldier["last_name"]} </Card.Grid>
+                            <Card.Grid style={gridStyle}> شماره پرونده
+                                : &rlm;{selectedSoldier["folder_number"]} </Card.Grid>
                             <Card.Grid style={gridStyle}> کد ملی : {selectedSoldier["national_code"]} </Card.Grid>
                             <Card.Grid style={gridStyle}> درجه : {selectedSoldier["military_rank"]} </Card.Grid>
                             <Card.Grid style={gridStyle}> یگان : {selectedSoldier["unit"]} </Card.Grid>
@@ -1589,9 +1584,10 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                 <Flex style={{width: "100%"}}>
                                                     <Card title={"اقدامات"} style={{width: "100%"}}>
                                                         <Button type={"primary"}
-                                                                onClick={() => openPrintModal(<MarriageMD setPrintTitle={setPrintTitle}
-                                                                                                         soldierKey={selectedSoldierOid}
-                                                                                                         forceRefresh={Date.now()}/>)}
+                                                                onClick={() => openPrintModal(<MarriageMD
+                                                                    setPrintTitle={setPrintTitle}
+                                                                    soldierKey={selectedSoldierOid}
+                                                                    forceRefresh={Date.now()}/>)}
                                                         >
                                                             ماده دستور ازدواج و فرزند
                                                         </Button>
@@ -2173,9 +2169,10 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                         {
                                                             title: "ظرفیت",
                                                             dataIndex: "capacity",
-                                                            render: (value, record, index)=>{
+                                                            render: (value, record, index) => {
                                                                 return (
-                                                                    <Typography.Text strong={true} style={{color: value > 0 ? "green" : "red"}}>
+                                                                    <Typography.Text strong={true}
+                                                                                     style={{color: value > 0 ? "green" : "red"}}>
                                                                         {value}
                                                                     </Typography.Text>
                                                                 );
@@ -2183,23 +2180,27 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                         },
                                                         {
                                                             title: "اقدامات",
-                                                            render: (value, record, index)=>{
-                                                                return(
+                                                            render: (value, record, index) => {
+                                                                return (
                                                                     <Popover trigger={"click"} content={
                                                                         <Form
-                                                                            onFinish={(v)=>{
+                                                                            onFinish={(v) => {
                                                                                 onCreateJob({...v, ...record});
                                                                             }}
                                                                         >
                                                                             <Form.Item
                                                                                 label={"تاریخ شروع"}
                                                                                 name={"start_date"}
-                                                                                rules={[{validator: dateValidator, required: true}]}
+                                                                                rules={[{
+                                                                                    validator: dateValidator,
+                                                                                    required: true
+                                                                                }]}
                                                                             >
-                                                                                <Input />
+                                                                                <Input/>
                                                                             </Form.Item>
 
-                                                                            <Button type={"primary"} htmlType={"submit"}>ثبت</Button>
+                                                                            <Button type={"primary"}
+                                                                                    htmlType={"submit"}>ثبت</Button>
                                                                         </Form>
                                                                     }>
                                                                         <Button type={"primary"}>اضافه کردن</Button>
@@ -2228,23 +2229,26 @@ function LeaveAbsenceEscapeDeficitRun() {
                                             <Flex>
                                                 <Row gutter={12}>
                                                     <Col>
-                                                        <Input placeholder={"نام فایل"} value={uploadFileName} onChange={v=>setUploadFileName(v.target.value)}/>
+                                                        <Input placeholder={"نام فایل"} value={uploadFileName}
+                                                               onChange={v => setUploadFileName(v.target.value)}/>
                                                     </Col>
                                                     <Col>
                                                         <Upload.Dragger
                                                             disabled={uploadFileName.length < 1} multiple={true}
                                                             action={getApiUrl(`soldier/set_document/${selectedSoldierOid}/${uploadFileName}`)}
-                                                            name={"document"} withCredentials={true} showUploadList={false}
-                                                            onChange={(info)=>{
+                                                            name={"document"} withCredentials={true}
+                                                            showUploadList={false}
+                                                            onChange={(info) => {
                                                                 if (info.file.status === "done") {
                                                                     api["success"]({
-                                                                        message: "آپلود موفق!", description: "سند با موفقیت آپلود شد."
+                                                                        message: "آپلود موفق!",
+                                                                        description: "سند با موفقیت آپلود شد."
                                                                     });
                                                                     fetchData();
-                                                                }
-                                                                else if (info.file.status === "error") {
+                                                                } else if (info.file.status === "error") {
                                                                     api["error"]({
-                                                                        message: "خطا", description: "آپلود با خطا مواجه شد."
+                                                                        message: "خطا",
+                                                                        description: "آپلود با خطا مواجه شد."
                                                                     });
                                                                 }
                                                             }}
