@@ -430,7 +430,7 @@ function ListSoldier() {
             value: {
                 title: "گروه رزمی",
                 dataIndex: "duty_group",
-                render: v => v ? "رزمی" : "غیر رزمی",
+                render: DutyGroupRenderer,
             }
         }
     ]
@@ -538,7 +538,7 @@ function ListSoldier() {
             label: "بومی/غیربومی",
             dataIndex: "is_native",
             type: "select",
-            options: [{label: "بومی", value: "بومی"}, {label: "غیربومی", value: "غیربومی"}]
+            options: [{label: "بومی", value: true}, {label: "غیربومی", value: false}]
         },
         {
             label: "عکس پرسنلی",

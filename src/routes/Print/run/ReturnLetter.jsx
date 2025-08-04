@@ -243,7 +243,7 @@ function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                             </Typography.Text>
                                             {"و در تاریخ "}
                                             <Typography.Text>
-                                                {soldier["run_date"]}
+                                                {soldier["return_date"]}
                                             </Typography.Text>
                                             {" خود را به این یگان معرفی و پس از طی مراحل قضایی و محکومیت به وی ابلاغ گردید که در مورخه "}
                                             <Typography.Text>

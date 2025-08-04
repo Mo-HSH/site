@@ -262,6 +262,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                     "return_date": getDateValue("return_date"),
                     "return_letter_date": getDateValue("return_letter_date"),
                     "run_status": value.hasOwnProperty("run_status") ? value["run_status"] : "ثبت اولیه",
+                    "call_date": DateRenderer(value["call_date"]),
                     key: index
                 })
             });

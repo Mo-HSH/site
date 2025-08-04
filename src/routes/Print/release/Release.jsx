@@ -91,19 +91,37 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                     "mental_health": 1,
                     "duty_group": 1,
                     "extra_info": 1,
+                    "run_discharge": 1,
+                    "deficit": 1,
+                    "run_punish": 1,
+                    "section":1,
                 }
         }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
+                console.log(res[0]);
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
                     });
                 } else {
-                    setSoldier({
-                        ...res[0],
-                        health_group: res[0]["mental_health"] === "گروه ب فراجا" || res[0]["mental_health"] === "گروه ب پش مرکز" || res[0]["extra_info"].includes("معاف از رزم") ? "معاف از رزم" : "سالم"
-                    });
+                    if (res[0]["release"]["release_type"] === "پایان خدمت") {
+                        setSoldier({
+                            ...res[0],
+                            deficit: res[0]["deficit"].reduce((acc, i) => i.day + acc, 0),
+                            health_group: res[0]["mental_health"] === "گروه ب فراجا" || res[0]["mental_health"] === "گروه ب پش مرکز" || res[0]["extra_info"].includes("معاف از رزم") ? "معاف از رزم" : "سالم",
+                            release_type: "قانونی"
+                        });
+                    } else {
+                        setSoldier({
+                            ...res[0],
+                            deficit: res[0]["deficit"].reduce((acc, i) => i.day + acc, 0),
+                            health_group: res[0]["mental_health"] === "گروه ب فراجا" || res[0]["mental_health"] === "گروه ب پش مرکز" || res[0]["extra_info"].includes("معاف از رزم") ? "معاف از رزم" : "سالم",
+                            release_type: res[0]["release"]["release_type"],
+                        });
+                    }
+
+
 
                     setReadyForPrint(true);
                 }
@@ -159,7 +177,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                 [
                     "اسلحه خانه قصر فیروزه 2",
                     "پاسدار خانه قصر فیروزه 2",
-                    "ترابری فرماندهی پشتیبانی مرکز"
+                    "معاونت  آماد و پش (ترابری)"
                 ],
                 [
                     "دایره تامین حفاظت فرماندهی پشتیبانی مرکز",
@@ -302,6 +320,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                              border: "solid black 1px"
                                                          }}>
                                                         <Typography.Text>
+                                                            {DateRenderer(soldier["release"]["release_date"])}
                                                         </Typography.Text>
                                                     </Col>
                                                 </Row>
@@ -402,7 +421,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                         {label: "یگان", data: soldier["unit"]},
                                                         {label: "کد تخصص", data: ""},
                                                         {label: "یگان ترخیص کننده", data: "ف پش مرکز نپاجا"},
-                                                        {label: "محل خدمت", data: ""},
+                                                        {label: "محل خدمت", data: soldier["section"]},
                                                         {
                                                             label: "مدت قانونی خدمت",
                                                             data: soldier["is_native"] === undefined ? "" : soldier["is_native"] ? legalDutyDuration["native_duty_month"] + " ماه" : legalDutyDuration["none_native_duty_month"] + " ماه"
@@ -1002,7 +1021,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                 soldier["release"]["release_type"] === "انتقالی"
                                                     ?
                                                     <Typography.Text strong={true}>
-                                                    به {soldier["release"]["move_location"]} منتقل
+                                                        به {soldier["release"]["move_location"]} منتقل
                                                     </Typography.Text>
                                                     :
                                                     "از خدمت مقدس سربازی"
@@ -1019,9 +1038,9 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                         " و به همین منظور "
                                                         :
                                                         <>
-                                                        <Typography.Text strong={true}>
-                                                            {" ترخیص "}
-                                                        </Typography.Text>
+                                                            <Typography.Text strong={true}>
+                                                                {" ترخیص "}
+                                                            </Typography.Text>
                                                             {"و "}
                                                         </>
                                             }
@@ -1090,43 +1109,43 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                     0: "درجه",
                                                     1: "نام و نشان",
                                                     2: "نام پدر",
-                                                    3: "تاریخ اعزام",
-                                                    4: "محل صدور",
+                                                    3: "کد ملی",
+                                                    4: "مدرک تحصیلی",
                                                 },
                                                 {
                                                     0: soldier["military_rank"],
                                                     1: soldier["first_name"] + " " + soldier["last_name"],
                                                     2: soldier["father_name"],
-                                                    3: DateRenderer(soldier["deployment_date"]),
-                                                    4: soldier["birth_certificate_issuing_place"],
+                                                    3: soldier["national_code"],
+                                                    4: soldier["education"],
                                                 },
                                                 {
-                                                    0: "کد ملی",
-                                                    1: "مدرک تحصیلی",
-                                                    2: soldier["release"]["release_reason"] === "انتقالی" ? "تاریخ انتقالی" : "تاریخ ترخیص",
-                                                    3: "نوع ترخیص",
-                                                    4: "مدت خدمت",
+                                                    0: soldier["release"]["release_reason"] === "انتقالی" ? "تاریخ انتقالی" : "تاریخ ترخیص",
+                                                    1: "نوع ترخیص",
+                                                    2: "مدت خدمت",
+                                                    3: "مدت نهست",
+                                                    4: "اضافه خدمت انظباطی",
                                                 },
                                                 {
-                                                    0: soldier["national_code"],
-                                                    1: soldier["education"] + " " + soldier["field_of_study"],
-                                                    2: DateRenderer(soldier["release"]["release_date"]),
-                                                    3: soldier["release"]["release_reason"],
-                                                    4: soldier["release"]["duty_duration"],
+                                                    0: DateRenderer(soldier["release"]["release_date"]),
+                                                    1: soldier["release_type"],
+                                                    2: `${soldier["release"]["duty_duration"]} ${soldier["deficit"] ? `(${soldier["deficit"]} روز کسری خدمت)` : ""}`,
+                                                    3: soldier["release"]["absence_discharge"],
+                                                    4: soldier["release"]["additional_service_day"],
                                                 },
                                                 {
-                                                    0: "مدت نهست",
-                                                    1: "اضافه خدمت انظباطی",
-                                                    2: "اضافه خدمت سنواتی",
-                                                    3: "اضافه خدمت استعلاجی و سالیانه",
+                                                    0: "اضافه خدمت سنواتی",
+                                                    1: "اضافه خدمت استعلاجی و سالیانه",
+                                                    2: "مدت فرار",
+                                                    3: "اضافه خدمت ماده 60",
                                                     4: "جمع کل",
                                                 },
                                                 {
-                                                    0: soldier["release"]["absence_discharge"],
-                                                    1: soldier["release"]["additional_service_day"],
-                                                    2: soldier["release"]["additional_service_punish_day"],
-                                                    3: soldier["release"]["extra_annual_leave"] + soldier["release"]["extra_medical_leave"],
-                                                    4: soldier["release"]["extra_annual_leave"] + soldier["release"]["extra_medical_leave"] + soldier["release"]["additional_service_punish_day"] + soldier["release"]["absence_discharge"] + soldier["release"]["additional_service_day"],
+                                                    0: soldier["release"]["additional_service_punish_day"],
+                                                    1: soldier["release"]["extra_annual_leave"] + soldier["release"]["extra_medical_leave"],
+                                                    2: soldier["release"]["run_discharge"],
+                                                    3: soldier["run_punish"],
+                                                    4: soldier["release"]["absence_discharge"] + soldier["release"]["additional_service_punish_day"] + soldier["release"]["additional_service_punish_day"] + soldier["release"]["extra_annual_leave"] + soldier["release"]["extra_medical_leave"] + soldier["release"]["run_discharge"] + soldier["run_punish"],
                                                 },
                                                 {
                                                     0: "گروه سلامت",

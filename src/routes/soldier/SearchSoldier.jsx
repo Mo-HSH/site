@@ -46,6 +46,7 @@ import {saveAs} from "file-saver";
 import TransformCommitment from "../Print/soldierProfile/TransformCommitment.jsx";
 import MarriageCommitment from "../Print/soldierProfile/MarriageCommitment.jsx";
 import MD60 from "../Print/soldierProfile/MD60.jsx"
+import Remission from "../Print/soldierProfile/Remission.jsx";
 
 function SearchSoldier() {
 
@@ -1020,7 +1021,10 @@ function SearchSoldier() {
                                         >
                                             گواهی اشتغال
                                         </Button>
-                                        <Button type={"primary"} block={true} onClick={() => openPrintModal(<MD60 setPrintTitle={setPrintTitle} soldierKey={key} />)}>صورت جلسه ماده 60</Button>
+                                        <Button type={"primary"} block={true}
+                                                onClick={() => openPrintModal(<MD60 setPrintTitle={setPrintTitle}
+                                                                                    soldierKey={key}/>)}>صورت جلسه ماده
+                                            60</Button>
                                         <Button type="primary" block={true}
                                                 onClick={() => openPrintModal(<SoldierCart setPrintTitle={setPrintTitle}
                                                                                            soldierKey={key}/>)}>کارت
@@ -1045,6 +1049,10 @@ function SearchSoldier() {
                                                 onClick={() => openPrintModal(<AccidentComission
                                                     setPrintTitle={setPrintTitle} soldierKey={key}/>)}
                                         >صورت جلسه سانحه</Button>
+                                        <Button type="primary" block={true}
+                                                onClick={() => openPrintModal(<Remission setPrintTitle={setPrintTitle}
+                                                                                         soldierKey={key}/>)}>گردشکار
+                                            سنواتی</Button>
                                     </Flex>
                                 </Flex>
                             </Card>
