@@ -1145,7 +1145,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                     1: soldier["release"]["extra_annual_leave"] + soldier["release"]["extra_medical_leave"],
                                                     2: soldier["release"]["run_discharge"],
                                                     3: soldier["run_punish"],
-                                                    4: soldier["release"]["absence_discharge"] + soldier["release"]["additional_service_punish_day"] + soldier["release"]["additional_service_punish_day"] + soldier["release"]["extra_annual_leave"] + soldier["release"]["extra_medical_leave"] + soldier["release"]["run_discharge"] + soldier["run_punish"],
+                                                    4: soldier["release"]["absence_discharge"] + soldier["release"]["additional_service_punish_day"] + soldier["release"]["additional_service_day"] + soldier["release"]["extra_annual_leave"] + soldier["release"]["extra_medical_leave"] + soldier["release"]["run_discharge"] + soldier["run_punish"],
                                                 },
                                                 {
                                                     0: "گروه سلامت",

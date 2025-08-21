@@ -307,6 +307,21 @@ function ListSoldier() {
             },
         },
         {
+            label: "تاریخ مراجعت",
+            value: {
+                title: "تاریخ مراجعت",
+                dataIndex: "run",
+                render: ((run) => {
+                    try {
+                        let dates = run.sort((a, b) => a.run_date.$date.$numberLong - b.run_date.$date.$numberLong);
+                        return DateRenderer(dates[dates.length - 1].return_date);
+                    } catch {
+                        return " ";
+                    }
+                })
+            },
+        },
+        {
             label: "تاریخ ترخیص",
             value: {
                 title: "تاریخ ترخیص",
@@ -431,6 +446,40 @@ function ListSoldier() {
                 title: "گروه رزمی",
                 dataIndex: "duty_group",
                 render: DutyGroupRenderer,
+            }
+        },
+        {
+            label: "مدت نهست",
+            value: {
+                title: "مدت نهست",
+                dataIndex: "absence_discharge",
+            }
+        },
+        {
+            label: "مدت بازداشت",
+            value: {
+                title: "مدت بازداشت",
+                dataIndex: "arrest_punish",
+            }
+        },
+        {
+            label: "مدت مرخصی استحقاقی",
+            value: {
+                title: "مدت مرخصی استحقاقی",
+                dataIndex: "leave",
+                render: ((v) => {
+                    return v.reduce((acc, cur) => acc + cur.annual, 0)
+                })
+            }
+        },
+        {
+            label: "مدت مرخصی استعلاجی",
+            value: {
+                title: "مدت مرخصی استعلاجی",
+                dataIndex: "leave",
+                render: ((v) => {
+                    return v.reduce((acc, cur) => acc + cur.medical, 0)
+                })
             }
         }
     ]
