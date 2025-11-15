@@ -218,7 +218,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
             {title: "مرخصی", data: soldier["leave"].sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong)},
             {title: "نهست", data: absence.sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong)},
             {title: "بازداشت", data: soldier["arrest"].sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong)},
-            {title: "کسری", data: soldier["deficit"].sort((a, b)=> a.create_date.$date.$numberLong - b.create_date.$date.$numberLong)},
+            {title: "کسری", data: soldier["deficit"].sort()},
             {title: "فرار", data: soldier["run"].sort((a, b)=> a.absence_date.$date.$numberLong - b.absence_date.$date.$numberLong)},
             {title: "ماموریت", data: soldier["mission"].sort((a, b)=> a.start_date.$date.$numberLong - b.start_date.$date.$numberLong)},
             {title: "خانواده", data: soldier["family"]},

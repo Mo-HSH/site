@@ -906,6 +906,20 @@ function SearchSoldier() {
             });
     };
 
+    const downloadAllFiles = () => {
+        const arrOfFiles = documentsOptions.map(item => download(item.data));
+        Promise.all(arrOfFiles)
+            .then(() => {
+                //when all promises resolved - save zip file
+                zip.generateAsync({type: "blob"}).then(function (blob) {
+                    saveAs(blob, `${targetSoldier["military_rank"]} ${targetSoldier["first_name"]} ${targetSoldier["last_name"]} ${targetSoldier["national_code"]}.zip`);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
     return (
         <SearchSelect
             selectedSoldierView={
@@ -973,6 +987,7 @@ function SearchSoldier() {
                                             setFilter(v);
                                         }}/>
                                 <Button type={"primary"} onClick={downloadAll}>دانلود انتخاب شده</Button>
+                                <Button type={"primary"} onClick={downloadAllFiles}>دانلود همه مدارک</Button>
                             </Flex>
 
                             <CheckCard.Group
