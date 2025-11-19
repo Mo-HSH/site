@@ -203,9 +203,9 @@ function RunMD({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
 
                                     <Flex style={{width: "90%", height: "100%", marginBottom: "100px"}} align={"end"}>
                                         <Sign.MultiInline fontSize={13} singGap={70} defaultSign={[
-                                            "مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا",
-                                            "رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا",
-                                            "رئیس شعبه دستور ف پش نیروی پدافند هوایی آجا",
+                                            "مدیریت نیروی انسانی ف پش نپاجا",
+                                            "رئیس دایره وظیفه های ف پش نپاجا",
+                                            "رئیس شعبه دستور ف پش نپاجا",
                                         ]}
                                         />
                                     </Flex>
@@ -310,7 +310,7 @@ function RunMD({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                             >
                                 <Flex style={{height: "100px"}}>
                                     <Sign.Single fontSize={14} defaultSign={
-                                        "رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا"
+                                        "رئیس دایره وظیفه های ف پش نپاجا"
                                     }
                                     />
                                 </Flex>

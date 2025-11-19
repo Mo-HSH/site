@@ -1066,7 +1066,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                                         <Flex justify={"flex-end"} align={"end"}
                                               style={{width: "90%", marginTop: "20px"}}>
                                             <Sign.Single
-                                                defaultSign={"رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا"}/>
+                                                defaultSign={"رئیس دایره وظیفه های ف پش نپاجا"}/>
                                         </Flex>
                                         :
                                         null
@@ -1223,7 +1223,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                                             <Flex justify={"flex-end"} align={"end"}
                                                   style={{ marginTop: "20px", zIndex: 22}}>
                                                 <Sign.Single
-                                                    defaultSign={"رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا"}/>
+                                                    defaultSign={"رئیس دایره وظیفه های ف پش نیروی نپاجا"}/>
                                             </Flex>
                                     }
                                 </div>

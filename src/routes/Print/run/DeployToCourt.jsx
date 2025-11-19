@@ -241,7 +241,7 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
 
                                     <Flex style={{width: "90%"}} justify={"end"}>
                                         <Sign.SingleInline
-                                            defaultSign={"رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا"}
+                                            defaultSign={"رئیس دایره وظیفه های ف پش نپاجا"}
                                             fontSize={13}
                                             forceRefresh={runIndex}
                                         />

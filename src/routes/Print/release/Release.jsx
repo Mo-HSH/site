@@ -446,7 +446,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                     <Flex justify={"center"} align={"center"}
                                                           style={{height: "100%", width: "100%"}}>
                                                         <Sign.Single
-                                                            defaultSign={"رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا"}
+                                                            defaultSign={"رئیس دایره وظیفه های ف پش نپاجا"}
                                                             fontSize={10}
                                                         />
                                                     </Flex>
@@ -523,7 +523,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                               justify={"flex-end"}
                                               align={"center"}>
                                             <Sign.Single
-                                                defaultSign={"مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا"}
+                                                defaultSign={"مدیریت نیروی انسانی ف پش نپاجا"}
                                                 fontSize={12}
                                             />
                                         </Flex>
@@ -539,7 +539,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                     <Flex justify={"flex-end"} align={"center"}
                                           style={{width: "90%", height: "100%", marginTop: "60px"}}>
                                         <Sign.Single
-                                            defaultSign={"رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا"}
+                                            defaultSign={"رئیس دایره وظیفه های ف پش نپاجا"}
                                             fontSize={12}
                                         />
                                     </Flex>
@@ -667,7 +667,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                 <Flex justify={"flex-end"} align={"center"}
                                                       style={{width: "90%", height: "100%", marginTop: "60px"}}>
                                                     <Sign.Single
-                                                        defaultSign={"مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا"}
+                                                        defaultSign={"مدیریت نیروی انسانی ف پش نپاجا"}
                                                         fontSize={12}
                                                     />
                                                 </Flex>
@@ -912,7 +912,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
 
                                     <Flex style={{width: "90%", marginTop: "20px"}} justify={"end"}>
                                         <Sign.SingleInline
-                                            defaultSign={"مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا"}
+                                            defaultSign={"مدیریت نیروی انسانی ف پش نپاجا"}
                                             fontSize={12}
                                         />
                                     </Flex>
@@ -1075,11 +1075,11 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                         </Typography.Text>
                                     </Flex>
 
-                                    <Flex style={{width: "90%", marginTop: "40px"}} justify={"end"}>
+                                    <Flex style={{width: "90%", marginTop: "20px"}} justify={"end"}>
                                         <Sign.MultiInline fontSize={13} singGap={40} defaultSign={[
-                                            "مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا",
-                                            "رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا",
-                                            "رئیس شعبه دستور ف پش نیروی پدافند هوایی آجا",
+                                            "مدیریت نیروی انسانی ف پش نپاجا",
+                                            "رئیس دایره وظیفه های ف پش نپاجا",
+                                            "رئیس شعبه دستور ف پش نپاجا",
                                         ]}
                                         />
                                     </Flex>
