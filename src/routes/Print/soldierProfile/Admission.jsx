@@ -152,10 +152,10 @@ function Admission({setPrintTitle, soldierKey}) {
         axios.get(getApiUrl("config/signs"), {withCredentials: true}).then((res) => {
             Object.entries(res.data.config).forEach((v) => {
                 console.log(v)
-                if (v[1]["key"] === "رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا") {
+                if (v[1]["key"] === "رئیس دایره وظیفه های ف پش نپاجا") {
                     setSign1(v[1]["value"]);
                 }
-                if (v[1]["key"] === "مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا") {
+                if (v[1]["key"] === "مدیریت نیروی انسانی ف پش نپاجا") {
                     setSign2(v[1]["value"]);
                 }
             });
@@ -825,8 +825,8 @@ function Admission({setPrintTitle, soldierKey}) {
                                     {fontSize: "9.5", x: 282, y: 179, text: today},
                                     {fontSize: "9.5", x: 562, y: 215, text: soldier["full_name"]},
                                     {fontSize: "9.5", x: 350, y: 240, text: today},
-                                    {fontSize: "6.5", x: 495, y: 554, text: sign1},
-                                    {fontSize: "6.5", x: 315, y: 554, text: sign2},
+                                    {fontSize: "5.5", x: 495, y: 554, text: sign1},
+                                    {fontSize: "5.5", x: 315, y: 554, text: sign2},
                                 ].map((item, index) => (
                                     <text
                                         key={index}

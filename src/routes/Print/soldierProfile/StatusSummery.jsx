@@ -1223,7 +1223,7 @@ function StatusSummery({setPrintTitle, soldierKey}) {
                                             <Flex justify={"flex-end"} align={"end"}
                                                   style={{ marginTop: "20px", zIndex: 22}}>
                                                 <Sign.Single
-                                                    defaultSign={"رئیس دایره وظیفه های ف پش نیروی نپاجا"}/>
+                                                    defaultSign={"رئیس دایره وظیفه های ف پش نپاجا"}/>
                                             </Flex>
                                     }
                                 </div>
