@@ -202,7 +202,7 @@ function TransferIntroduction({setPrintTitle, soldierKey, refresher, isOutsideOf
                                           justify={"flex-end"}
                                           align={"center"}>
                                         <Sign.Single
-                                            defaultSign={isOutsideOfPadafand ? "فرماندهی پشتیبانی مرکز پدافند هوایی آجا" : "مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا"}
+                                            defaultSign={isOutsideOfPadafand ? "فرماندهی پشتیبانی مرکز پدافند هوایی آجا" : "مدیر نیروی انسانی ف پش نپاجا"}
                                             fontSize={12} forceRefresh={true}
                                         />
                                     </Flex>
@@ -259,7 +259,7 @@ function TransferIntroduction({setPrintTitle, soldierKey, refresher, isOutsideOf
                                                             <Col span={12}>
                                                                 <Flex style={{width: "100%"}} justify={"start"}>
                                                                     <Sign.Single
-                                                                        defaultSign={"رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا"}
+                                                                        defaultSign={"رئیس دایره وظیفه های ف پش نپاجا"}
                                                                         fontSize={12} forceRefresh={true}
                                                                     />
                                                                 </Flex>
@@ -267,7 +267,7 @@ function TransferIntroduction({setPrintTitle, soldierKey, refresher, isOutsideOf
                                                             <Col span={12}>
                                                                 <Flex style={{width: "100%"}} justify={"end"}>
                                                                     <Sign.Single
-                                                                        defaultSign={"مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا"}
+                                                                        defaultSign={"مدیر نیروی انسانی ف پش نپاجا"}
                                                                         fontSize={12} forceRefresh={true}
                                                                     />
                                                                 </Flex>
@@ -281,7 +281,7 @@ function TransferIntroduction({setPrintTitle, soldierKey, refresher, isOutsideOf
                                                                     متصدی اقدام
                                                                 </Typography.Text>
                                                                 <Sign.Single
-                                                                    defaultSign={"رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا"}
+                                                                    defaultSign={"رئیس دایره وظیفه های ف پش نپاجا"}
                                                                     fontSize={12} forceRefresh={true}
                                                                 />
                                                             </Flex>

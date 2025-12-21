@@ -523,7 +523,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                               justify={"flex-end"}
                                               align={"center"}>
                                             <Sign.Single
-                                                defaultSign={"مدیریت نیروی انسانی ف پش نپاجا"}
+                                                defaultSign={"مدیر نیروی انسانی ف پش نپاجا"}
                                                 fontSize={12}
                                             />
                                         </Flex>
@@ -667,7 +667,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                 <Flex justify={"flex-end"} align={"center"}
                                                       style={{width: "90%", height: "100%", marginTop: "60px"}}>
                                                     <Sign.Single
-                                                        defaultSign={"مدیریت نیروی انسانی ف پش نپاجا"}
+                                                        defaultSign={"مدیر نیروی انسانی ف پش نپاجا"}
                                                         fontSize={12}
                                                     />
                                                 </Flex>
@@ -912,7 +912,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
 
                                     <Flex style={{width: "90%", marginTop: "20px"}} justify={"end"}>
                                         <Sign.SingleInline
-                                            defaultSign={"مدیریت نیروی انسانی ف پش نپاجا"}
+                                            defaultSign={"مدیر نیروی انسانی ف پش نپاجا"}
                                             fontSize={12}
                                         />
                                     </Flex>
@@ -1077,7 +1077,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
 
                                     <Flex style={{width: "90%", marginTop: "20px"}} justify={"end"}>
                                         <Sign.MultiInline fontSize={13} singGap={40} defaultSign={[
-                                            "مدیریت نیروی انسانی ف پش نپاجا",
+                                            "مدیر نیروی انسانی ف پش نپاجا",
                                             "رئیس دایره وظیفه های ف پش نپاجا",
                                             "رئیس شعبه دستور ف پش نپاجا",
                                         ]}

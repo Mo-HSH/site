@@ -299,7 +299,7 @@ function IntroductionLetter({setPrintTitle, soldierKey}) {
                                     </Flex>
                                     <Flex style={{width: "90%", marginTop: "30px"}} justify={"end"}>
                                         <Sign.SingleInline
-                                            defaultSign={"مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا"}
+                                            defaultSign={"مدیر نیروی انسانی ف پش نپاجا"}
                                             fontSize={12}/>
                                     </Flex>
 

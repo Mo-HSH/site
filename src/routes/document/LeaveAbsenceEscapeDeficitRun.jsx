@@ -140,7 +140,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     useEffect(() => {
         let temp = [];
         try {
-            selectedSoldier["stop_duty"].forEach((value, index) => {
+            selectedSoldier["stop_duty"]?.forEach((value, index) => {
                 temp.push({
                     ...value,
                     "start_date": DateRenderer(value["start_date"]),
@@ -750,7 +750,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                 DateConflictErrorHandler(err.response.data);
             } else {
                 api["error"]({
-                    message: "خطا", description: err.data.message
+                    message: "خطا", description: err?.data?.message || ""
                 });
             }
 

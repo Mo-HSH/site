@@ -253,7 +253,7 @@ function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                         </Typography.Text>
                                         <Flex justify="flex-end" style={{margin: "15px 0"}}>
                                             <Sign.SingleInline
-                                                defaultSign={"مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا"}
+                                                defaultSign={"مدیر نیروی انسانی ف پش نپاجا"}
                                                 fontSize={12}
                                             />
                                         </Flex>

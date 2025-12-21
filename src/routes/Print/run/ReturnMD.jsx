@@ -214,7 +214,7 @@ function ReturnMD({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
 
                                     <Flex style={{width: "90%", height: "100%", marginBottom: "100px"}} align={"end"}>
                                         <Sign.MultiInline fontSize={13} singGap={70} defaultSign={[
-                                            "مدیریت نیروی انسانی ف پش نپاجا",
+                                            "مدیر نیروی انسانی ف پش نپاجا",
                                             "رئیس دایره وظیفه های ف پش نپاجا",
                                             "رئیس شعبه دستور ف پش نپاجا",
                                         ]}

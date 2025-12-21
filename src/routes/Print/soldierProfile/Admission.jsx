@@ -155,7 +155,7 @@ function Admission({setPrintTitle, soldierKey}) {
                 if (v[1]["key"] === "رئیس دایره وظیفه های ف پش نپاجا") {
                     setSign1(v[1]["value"]);
                 }
-                if (v[1]["key"] === "مدیریت نیروی انسانی ف پش نپاجا") {
+                if (v[1]["key"] === "مدیر نیروی انسانی ف پش نپاجا") {
                     setSign2(v[1]["value"]);
                 }
             });
