@@ -185,7 +185,7 @@ function SoldierCart({setPrintTitle, soldierKey}) {
                                         {/*<Typography.Text style={{fontSize: "12px"}}>مدیریت نیروی انسانی ف پش نیرو پدافند هوایی آجا</Typography.Text>*/}
                                         {/*<Typography.Text style={{fontSize: "12px"}}>سرهنگ امیرعلی کریمی</Typography.Text>*/}
                                         <Sign.Single
-                                            defaultSign={"مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا"}
+                                            defaultSign={"مدیر نیروی انسانی ف پش نپاجا"}
                                             fontSize={11}
                                         />
                                     </Flex>

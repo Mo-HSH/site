@@ -204,9 +204,9 @@ function MarriageMD({setPrintTitle, soldierKey, forceRefresh}) {
                         </Flex>
                         <Flex style={{width: "90%", marginBottom: "10px"}} align={"end"}>
                             <Sign.MultiInline fontSize={13} singGap={30} defaultSign={[
-                                "مدیریت نیروی انسانی ف پش نیروی پدافند هوایی آجا",
-                                "رئیس دایره وظیفه های ف پش نیروی پدافند هوایی آجا",
-                                "رئیس شعبه دستور ف پش نیروی پدافند هوایی آجا",
+                                "مدیر نیروی انسانی ف پش نپاجا",
+                                "رئیس دایره وظیفه های ف پش نپاجا",
+                                "رئیس شعبه دستور ف پش نپاجا",
                             ]}
                             />
                         </Flex>

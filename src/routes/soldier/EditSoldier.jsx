@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import {
     Avatar,
@@ -8,7 +8,7 @@ import {
     Flex, Form,
     Image, Input,
     Modal,
-    notification,
+    notification, Popconfirm,
     Row, Select,
     Spin,
     Tabs,
@@ -50,6 +50,7 @@ function EditSoldier() {
     const [relation, setRelation] = useState([]);
     const [removeFamilyConfirmModal, removeFamilyConfirmContextHolder] = Modal.useModal();
     const inputProfile = useRef(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios.get(getApiUrl("config/relation"), {withCredentials: true})
@@ -71,6 +72,24 @@ function EditSoldier() {
                 });
             });
     }, []);
+
+    function deleteSoldier(key) {
+        axios.post(getApiUrl(`soldier/edit_soldier/${key}`), {
+            "update": {
+                "deleted": true
+            },
+            "type": "bool",
+            "need_calculate": false
+        }, {withCredentials: true}).then(() => {
+            // fetchData();
+        }).catch((err) => {
+            api["error"]({
+                message: "خطا",
+                description: err.data.message,
+            });
+        })
+        navigate("/search-soldier");
+    }
 
     const filterOption = (input, option) =>
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
@@ -791,6 +810,15 @@ function EditSoldier() {
             </Row>
             {removeFamilyConfirmContextHolder}
 
+            <Flex vertical={true}>
+                <Divider orientation={"left"}>اقدامات</Divider>
+                <Popconfirm title={"آیا برای حذف سرباز مطمئن هستید؟"} onConfirm={() => {
+                    deleteSoldier(params.key)
+                }}>
+                    <Button type="primary" danger={true} style={{width: "200px"}}>حذف
+                        سرباز</Button>
+                </Popconfirm>
+            </Flex>
         </Flex>
     )
 

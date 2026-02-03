@@ -47,6 +47,8 @@ import TransformCommitment from "../Print/soldierProfile/TransformCommitment.jsx
 import MarriageCommitment from "../Print/soldierProfile/MarriageCommitment.jsx";
 import MD60 from "../Print/soldierProfile/MD60.jsx"
 import Remission from "../Print/soldierProfile/Remission.jsx";
+import TransferIntroduction from "../Print/release/TransferIntroduction.jsx";
+import RemissionLetter from "../Print/soldierProfile/RemissionLetter.jsx";
 
 function SearchSoldier() {
 
@@ -1064,10 +1066,32 @@ function SearchSoldier() {
                                                 onClick={() => openPrintModal(<AccidentComission
                                                     setPrintTitle={setPrintTitle} soldierKey={key}/>)}
                                         >صورت جلسه سانحه</Button>
-                                        <Button type="primary" block={true}
-                                                onClick={() => openPrintModal(<Remission setPrintTitle={setPrintTitle}
-                                                                                         soldierKey={key}/>)}>گردشکار
-                                            سنواتی</Button>
+                                        {/*<Button type="primary" block={true}*/}
+                                        {/*        onClick={() => openPrintModal(<Remission setPrintTitle={setPrintTitle}*/}
+                                        {/*                                                 soldierKey={key}/>)}>گردشکار*/}
+                                        {/*    سنواتی</Button>*/}
+                                        <Popover
+                                            content={() => {
+                                                return (
+                                                    <Flex gap={"large"}>
+                                                        <Button type={"primary"} block={true}
+                                                                onClick={() => openPrintModal(<Remission setPrintTitle={setPrintTitle} soldierKey={key}/>)}
+                                                        >
+                                                            تنظیم گردشکار
+                                                        </Button>
+                                                        <Button type={"primary"} block={true}
+                                                                onClick={() => {openPrintModal(<RemissionLetter setPrintTitle={setPrintTitle} soldierKey={key} />)}}>
+                                                            نامه گردشکار
+                                                        </Button>
+                                                    </Flex>
+                                                );
+                                            }}
+                                            trigger={"click"}
+                                        >
+                                            <Button type={"primary"} block={true}>
+                                                گردشکار
+                                            </Button>
+                                        </Popover>
                                     </Flex>
                                 </Flex>
                             </Card>
@@ -1142,10 +1166,10 @@ function SearchSoldier() {
                                 <Button type="link" icon={<EditOutlined/>}
                                         onClick={() => navigate(`/edit-soldier/${key}`)}>ویرایش اطلاعات</Button>
                                 <Button type="primary" onClick={() => setOpenDrawer(true)}>اقدامات</Button>
-                                <Popconfirm title={"آیا برای حذف سرباز مطمئن هستید؟"}>
-                                    <Button type="primary" danger={true} onClick={() => deleteSoldier()}>حذف
-                                        سرباز</Button>
-                                </Popconfirm>
+                                {/*<Popconfirm title={"آیا برای حذف سرباز مطمئن هستید؟"}>*/}
+                                {/*    <Button type="primary" danger={true} onClick={() => deleteSoldier()}>حذف*/}
+                                {/*        سرباز</Button>*/}
+                                {/*</Popconfirm>*/}
                                 <Button onClick={() => {
                                     setOpenDocumentModal(true);
                                 }}>مدارک اسکن شده</Button>

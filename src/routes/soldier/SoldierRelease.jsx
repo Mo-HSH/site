@@ -382,7 +382,7 @@ function SoldierRelease({oid}) {
                             <Col span={12}>
                                 <Flex style={{width: "100%"}} vertical={true}>
                                     <Form.Item
-                                        label={"نوع ترخیص"}
+                                        label={"پنوع ترخیص"}
                                         name={"release_type"}
                                         rules={[{
                                             required: true,
