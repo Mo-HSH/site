@@ -188,7 +188,6 @@ function SearchSelect({
             } else {
                 setShowSearchList(true);
                 setSelectedSoldierState({"family": []});
-                console.log(res);
                 setSoldiers(res);
             }
         }).catch((error)=>{

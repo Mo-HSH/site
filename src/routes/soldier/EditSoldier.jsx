@@ -124,6 +124,7 @@ function EditSoldier() {
                     "birth_certificate_issuing_place": 1,
                     "family": 1,
                     "bank_account": 1,
+                    "folder_number": 1,
                     "additional_service_day": 1,
                     "entry_date": 1,
                     "personnel_code": 1,
@@ -685,7 +686,12 @@ function EditSoldier() {
                                     initValue={soldier["bank_account"]}
                                     onConfirmEdit={(v) => onConfirmEditSingleForm("bank_account", v, "str", false)}/>
                 </Col>
-                <Col gutter={30} style={{width: "800px"}}>
+                <Col gutter={20} style={{width: "400px"}}>
+                    <InputFieldForm label={"لیبل پرونده"} validator={passAnywayValidator}
+                                    initValue={soldier["folder_number"]}
+                                    onConfirmEdit={(v) => onConfirmEditSingleForm("folder_number", v, "str", false)}/>
+                </Col>
+                <Col gutter={24} style={{width: "400px"}}>
                     <TagSelectFieldForm options={[
                         {label: <Tag color={getTagColor("انتقالی")}>انتقالی</Tag>, value: "انتقالی"},
                         {label: <Tag color={getTagColor("دوره کد")}>دوره کد</Tag>, value: "دوره کد"},

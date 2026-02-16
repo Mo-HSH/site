@@ -85,7 +85,6 @@ function ListSoldier() {
         }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
-                console.log([...new Set(res.map(v => v.section))])
                 setData(res);
             })
             .catch((err) => {

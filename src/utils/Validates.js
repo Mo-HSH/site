@@ -77,6 +77,7 @@ function dateValidator(rule, value) {
     if (!rule['required'] && (value === undefined || value === "")) {
         return Promise.resolve();
     }
+
     let regex = /^\d{4}\/\d{1,2}\/\d{1,2}$/;
     if (!regex.test(value))
         return Promise.reject(new Error("فرمت تاریخ اشتباه هست."));

@@ -49,6 +49,7 @@ import MD60 from "../Print/soldierProfile/MD60.jsx"
 import Remission from "../Print/soldierProfile/Remission.jsx";
 import TransferIntroduction from "../Print/release/TransferIntroduction.jsx";
 import RemissionLetter from "../Print/soldierProfile/RemissionLetter.jsx";
+import EditableTable from "../../utils/EditableTable.jsx";
 
 function SearchSoldier() {
 
@@ -223,6 +224,10 @@ function SearchSoldier() {
         {
             title: "تشویقی",
             dataIndex: "bonus",
+        },
+        {
+            title: "گردشکار",
+            dataIndex: "grd",
         }
     ].map(v => ({...v, align: "center"}));
 
@@ -272,6 +277,10 @@ function SearchSoldier() {
             title: "مدت بازداشت",
             dataIndex: "duration",
             render: v => v * 2,
+        },
+        {
+            title: "",
+            dataIndex: "grd"
         }
     ].map(v => ({...v, align: "center"}));
 
@@ -739,7 +748,8 @@ function SearchSoldier() {
                             children: <Table
                                 pagination={false} bordered={true} style={{width: "100%"}}
                                 columns={leaveColumns}
-                                dataSource={targetSoldier.leave ? [...targetSoldier.leave.sort((a, b) => a.start_date.$date.$numberLong - b.start_date.$date.$numberLong), {
+                                dataSource={targetSoldier.leave ? [...targetSoldier.leave.sort((a, b) => a.start_date.$date.$numberLong - b.start_date.$date.$numberLong).map(el => ({...el, grd: <Popover trigger={"hover"}
+                                                                                                                                                                                                           content={[targetSoldier["military_rank"], "و", targetSoldier["first_name"], targetSoldier["last_name"], "ش ملی:", targetSoldier["national_code"], "اعزامی:", DateRenderer(targetSoldier["deployment_date"])].join(" ")}>{targetSoldier["first_name"] + " " + targetSoldier["last_name"]}</Popover>})), {
                                     annual: targetSoldier.leave.reduce((sum, leave) => sum + leave.annual, 0),
                                     vacation: targetSoldier.leave.reduce((sum, leave) => sum + leave.vacation, 0),
                                     medical: targetSoldier.leave.reduce((sum, leave) => sum + leave.medical, 0),
@@ -766,7 +776,8 @@ function SearchSoldier() {
                                     targetSoldier.absence
                                         ?
                                         [
-                                            ...targetSoldier.absence.filter(v => !v.is_ignored).sort((a, b) => a.start_date.$date.$numberLong - b.start_date.$date.$numberLong),
+                                            ...targetSoldier.absence.filter(v => !v.is_ignored).sort((a, b) => a.start_date.$date.$numberLong - b.start_date.$date.$numberLong).map(el => ({...el, grd: <Popover trigger={"click"}
+                                                                                                                                                                                                                 content={<GForm data={el} soldier={targetSoldier} type={"absence"}/>}>گردشکار</Popover>})),
                                             {
                                                 duration: targetSoldier.absence.filter(v => !v.is_ignored).reduce((sum, absence) => sum + absence.duration, 0),
                                                 text: "جمع کل"
@@ -1318,6 +1329,33 @@ function SearchSoldier() {
             setSelectedSoldierState={setTargetSoldier}
         />
     );
+}
+
+function GForm({data, soldier, type}) {
+    console.log(data);
+    if (type === "absence") {
+        return (
+            <Flex vertical={true} style={{width:'80%'}}>
+                <Typography.Text>{soldier.military_rank} و {soldier.first_name} {soldier.last_name} ش ملی: {soldier.national_code} اعزامی: {DateRenderer(soldier["deployment_date"])} در تاریخ {DateRenderer(data["start_date"])} مبادرت به نهستی و در تاریخ {DateRenderer(data["end_date"])} پس {data["duration"]} روز از نهست مراجعت نموده که بهمین منظور  به {data["duration"] * 2} روز اضافه خدمت تنبیه میگردد.</Typography.Text>
+                <br/>
+                <Typography.Text>
+                    {" مدرک نامه شماره "}
+                    <Typography.Text>7-1613 - {DateRenderer(data["end_date"])}</Typography.Text>
+                    {" صادره از "}
+                    <Typography.Text>{soldier["unit"] === "فرماندهی پشتیبانی مرکز نپاجا - گ.خ" && "گروه خدمات پاسداری"}</Typography.Text>
+                    <Typography.Text>{soldier["unit"] === "فرماندهی پشتیبانی مرکز نپاجا - ت.ح" && "تامین حفاظتی"}</Typography.Text>
+                    {" ف پش مرکز نپاجا"}
+                </Typography.Text>
+                <Button style={{marginTop: "20px", width: 'fit-content'}} type={"primary"} >کپی</Button>
+            </Flex>
+        )
+    }
+
+    if (type === "absence") {
+        return (
+            <p></p>
+        )
+    }
 }
 
 export default SearchSoldier;

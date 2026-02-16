@@ -4,13 +4,11 @@ import {
     Divider,
     Flex,
     Form,
-    Input,
     notification,
     Table,
     Tooltip,
     Typography
 } from "antd";
-import {dateValidator} from "../../utils/Validates.js";
 import {useCallback, useRef, useState} from "react";
 import {useReactToPrint} from "react-to-print";
 import padafandLogoOpacityLow from "../../assets/img/Padafand_Logo_1.svg";
@@ -18,6 +16,7 @@ import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
 import {GetDateMinus, GetQueryDate, GetYear} from "../../utils/Calculative.js";
 import Sign from "../../components/printElement/Sign.jsx";
+import {InputDatePicker} from "jalaali-react-date-picker";
 
 function StatsReport() {
     const [api, contextHolder] = notification.useNotification();
@@ -47,7 +46,7 @@ function StatsReport() {
         axios.post(getApiUrl("soldier/list"), {
             "filter": {
                 "entry_date": {
-                    "$lte": GetQueryDate(value["date"])
+                    "$lte": GetQueryDate(value["date"].format('jYYYY/jMM/jDD'))
                 },
                 "status": {
                     "$in": [
@@ -2615,11 +2614,11 @@ function StatsReport() {
                         <Form.Item
                             label={"تاریخ مرجع"}
                             name={"date"}
-                            rules={[{
-                                validator: dateValidator, required: true,
-                            }]}
                         >
-                            <Input/>
+                            <InputDatePicker
+                                format="jYYYY/jMM/jDD"
+                                required={true}
+                            />
                         </Form.Item>
                     </Tooltip>
 

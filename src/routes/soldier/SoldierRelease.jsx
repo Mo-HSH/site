@@ -97,7 +97,6 @@ function SoldierRelease({oid}) {
             form.setFieldValue("duty_duration", soldier["duty_duration"]);
             if (!initial && soldier["overall_release_date"]) {
                 form.setFieldValue("release_date", DateRenderer(soldier["overall_release_date"]));
-                console.log("tetst", soldier["overall_release_date"]);
                 setInitial(true);
             }
             form.setFieldValue("extra_medical_leave", soldier["extra_medical_leave"]);
