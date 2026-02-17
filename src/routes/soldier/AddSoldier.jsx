@@ -25,9 +25,10 @@ import {useEffect, useState} from "react";
 import {PairedSelect} from "../../components/Inputs.jsx";
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
+import {InputDatePicker} from "jalaali-react-date-picker"
+import "jalaali-react-date-picker/lib/styles/index.css";
 
 function AddSoldier() {
-
     const [familyEmptyError, setFamilyEmptyError] = useState(false);
     const [religion, setReligion] = useState([]);
     const [relation, setRelation] = useState([]);
@@ -70,11 +71,9 @@ function AddSoldier() {
                             label: value
                         });
                     });
-                    console.log(temp);
                     setData(temp);
                 })
                 .catch((err) => {
-                    console.log("ssss");
                     api["error"]({
                         message: "خطا",
                         description: err.message
@@ -85,7 +84,6 @@ function AddSoldier() {
         axios.get(getApiUrl("config/unit"), {withCredentials: true})
             .then((res) => {
                 setUnitAndSections(res.data.config);
-                console.log(res.data.config);
             })
             .catch((err) => {
                 api["error"]({
@@ -149,7 +147,6 @@ function AddSoldier() {
     function rankChange() {
         const selectedRank = form.getFieldValue("military_rank");
         let temp = [];
-        console.log("tt");
         organizationJob.forEach((v, i) => {
             if (v["allow_ranks"].includes(selectedRank)) {
                 temp.push({
@@ -159,8 +156,6 @@ function AddSoldier() {
                 })
             }
         });
-        console.log("org job: ", organizationJob);
-        console.log("temp: ", temp);
         setOrganizationJobOption(temp);
     }
 
@@ -182,7 +177,15 @@ function AddSoldier() {
         else if (v["foreign_travels"] === undefined) {
             v["foreign_travels"] = [];
         }
-        console.log(v);
+
+        if (v["deployment_date"] && v["deployment_date"].format) {
+            v["deployment_date"] = v["deployment_date"].format('jYYYY/jMM/jDD');
+        }
+
+        if (v["entry_date"] && v["entry_date"].format) {
+            v["entry_date"] = v["entry_date"].format('jYYYY/jMM/jDD');
+        }
+
         axios.post(
             getApiUrl("soldier/register"),
             v,
@@ -263,7 +266,7 @@ function AddSoldier() {
                                 validator: dateValidator, required: true,
                             }]}
                         >
-                            <Input placeholder={"1377/12/20"}/>
+                            <Input placeholder={"1377/12/20"} />
                         </Form.Item>
                     </Col>
                     <Col flex={1}>
@@ -464,21 +467,20 @@ function AddSoldier() {
                         </Form.List>
                     </Col>
                 </Row>
-
-
             </Card>
             <Card name="second" title="اطلاعات خدمتی">
-
                 <Row gutter={8}>
                     <Col span={8}>
                         <Form.Item
                             label={"تاریخ اعزام"}
                             name={"deployment_date"}
                             rules={[{
-                                validator: dateValidator, required: true,
+                                required: true,
                             }]}
                         >
-                            <Input/>
+                            <InputDatePicker
+                                format="jYYYY/jMM/jDD"
+                            />
                         </Form.Item>
                     </Col>
                     <Col span={8}>
@@ -523,10 +525,12 @@ function AddSoldier() {
                             label={"تاریخ ورود"}
                             name={"entry_date"}
                             rules={[{
-                                validator: dateValidator, required: true,
+                                required: true,
                             }]}
                         >
-                            <Input/>
+                            <InputDatePicker
+                                format="jYYYY/jMM/jDD"
+                            />
                         </Form.Item>
                     </Col>
                     <Col flex={1}>
@@ -941,7 +945,7 @@ function AddSoldier() {
                                                 >
                                                     <Input placeholder="تاریخ رفت"/>
                                                 </Form.Item>
-                                            </Col>
+                                            </Col>÷
                                             <Col flex={1}>
                                                 <Form.Item
                                                     {...restField}

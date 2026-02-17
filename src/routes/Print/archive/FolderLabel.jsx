@@ -14,7 +14,6 @@ function FolderLabel() {
 
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(null);
-    const [lastName, setLastName] = useState(null);
     const [nationalCode, setNationalCode] = useState(null);
 
     function chunk(arr, size) {
@@ -38,13 +37,7 @@ function FolderLabel() {
             filter.deployment_date.$lte = GetQueryDate(toDate.format('jYYYY/jMM/jDD'));
         }
 
-        // // Handle last name filter (partial, case-insensitive)
-        if (lastName) {
-            filter.last_name = filter.last_name || {};
-            filter.last_name.$eq = lastName;
-        }
-
-        // Handle national code filter (partial, case-insensitive)
+        // Handle national code filter
         if (nationalCode) {
             filter.national_code = filter.national_code || {};
             filter.national_code.$eq = nationalCode;
@@ -86,21 +79,7 @@ function FolderLabel() {
             <Divider />
             <Flex style={{ marginBottom: "10px" }}>
                 <Form layout="inline" onFinish={onFinish}>
-                    <Form.Item label="نشان" name="last_name">
-                        <Input
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                        />
-                    </Form.Item>
-
-                    <Form.Item label="کد ملی" name="national_code">
-                        <Input
-                            value={nationalCode}
-                            onChange={(e) => setNationalCode(e.target.value)}
-                        />
-                    </Form.Item>
-
-                    <Form.Item label="اعزام (از)" name="from_date">
+                    <Form.Item label="از تاریخ اعزام" name="from_date">
                         <InputDatePicker
                             value={fromDate}
                             format="jYYYY/jMM/jDD"
@@ -108,11 +87,18 @@ function FolderLabel() {
                         />
                     </Form.Item>
 
-                    <Form.Item label="اعزام (تا)" name="to_date">
+                    <Form.Item label="تا تاریخ اعزام" name="to_date">
                         <InputDatePicker
                             value={toDate}
                             format="jYYYY/jMM/jDD"
                             onChange={(date) => setToDate(date)}
+                        />
+                    </Form.Item>
+
+                    <Form.Item label="کد ملی" name="national_code">
+                        <Input
+                            value={nationalCode}
+                            onChange={(e) => setNationalCode(e.target.value)}
                         />
                     </Form.Item>
 
