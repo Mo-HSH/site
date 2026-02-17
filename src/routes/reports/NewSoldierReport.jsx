@@ -38,7 +38,6 @@ function NewSoldierReport() {
         const fromDate = GetQueryDate(value["from_date"].format('jYYYY/jMM/jDD'));
         const toDate = GetQueryDate(value["to_date"].format('jYYYY/jMM/jDD'));
         const unit = value["unit"];
-        console.log(value);
 
         let filter = {
             "entry_date": {
@@ -68,7 +67,6 @@ function NewSoldierReport() {
         }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
-                console.log(res);
                 const transformedData = res.flatMap((soldier, index) => {
                     return ({
                         rowIndex: index+1,
@@ -102,7 +100,6 @@ function NewSoldierReport() {
     });
 
     function download() {
-        console.log(soldiers);
         const worksheet = XLSX.utils.json_to_sheet(soldiers.map((row, index) => ({
             'ردیف': index + 1,
             'نام': row["first_name"],

@@ -47,7 +47,6 @@ function SearchSelect({
             }
         }, {withCredentials: true})
             .then((res) => {
-                console.log(res.data);
                 if (res.data.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -122,7 +121,6 @@ function SearchSelect({
                     }
                     IsDutyStopped(key)
                         .then((res) => {
-                            console.log(res);
                             setSelectedSoldierState((lastValue) => {
                                 let newFilter = {...lastValue};
                                 newFilter["is_duty_stopped"] = res;
@@ -160,7 +158,6 @@ function SearchSelect({
                 }
             }
         })
-        console.log(filter);
 
         if (Object.values(values).every(value => value === undefined || value === '')) {
             if (showInitiallyAll === undefined || showInitiallyAll === false) {
@@ -182,7 +179,6 @@ function SearchSelect({
 
         axios.post(getApiUrl("soldier/list"), {"filter": filter, "projection": {...project}}, {withCredentials: true}).then((response) => {
             let res = response.data;
-            console.log(res);
             if (res.length === 1) {
                 selectTarget(res[0]["key"]);
             } else {
@@ -191,7 +187,6 @@ function SearchSelect({
                 setSoldiers(res);
             }
         }).catch((error)=>{
-            console.log("dd", error);
             api["error"]({
                 message: "خطا", description: error.response
             });

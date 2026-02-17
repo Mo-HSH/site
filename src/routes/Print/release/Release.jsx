@@ -99,7 +99,6 @@ function Release({setPrintTitle, soldierKey, refresher}) {
         }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
-                console.log(res[0]);
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."

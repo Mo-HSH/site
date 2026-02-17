@@ -86,7 +86,6 @@ function AlefFormNumber() {
     }, [reFetch]);
 
     function onFinish(value) {
-        console.log(value);
         axios.post(getApiUrl("document/release/alef/create/public_alef"), value, {withCredentials: true}).then(() => {
             api["success"]({
                 message: "عملیات موفق!", description: "درخواست با موفقیت انجام شد!"

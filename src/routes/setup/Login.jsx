@@ -17,7 +17,6 @@ function Login() {
         axios.post(getApiUrl("user/login"), values, {withCredentials: true})
             .then((res) => {
                 setLoading(false);
-                console.log(res.data);
                 localStorage.setItem("user_first_name", res.data.first_name);
                 localStorage.setItem("user_last_name", res.data.last_name);
                 localStorage.setItem("user_rank", res.data.rank);

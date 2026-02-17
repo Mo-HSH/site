@@ -86,7 +86,6 @@ function SearchSoldier() {
         GetDutyDuration(key, DateRenderer(targetSoldier["legal_release_date"])).then((duration) => {
             setAnnualLimit(Math.round((2.5 / 30) * (duration.month * 30 + duration.day)));
         })
-        console.log(targetSoldier);
     }, [targetSoldier]);
 
     const [key, setKey] = useState("");
@@ -103,7 +102,6 @@ function SearchSoldier() {
     const [documentsOptions, setDocumentsOptions] = useState([]);
 
     useEffect(() => {
-        console.log(targetSoldier);
         if (targetSoldier["document"] === undefined) {
             setDocumentsOptions([]);
             return;
@@ -961,7 +959,6 @@ function SearchSoldier() {
                             }}/>
 
                             <Button type={"primary"} onClick={() => {
-                                console.log(note);
                                 axios.post(getApiUrl(`soldier/edit_soldier/${key}`), {
                                     "update": {
                                         "note": note
@@ -1332,7 +1329,6 @@ function SearchSoldier() {
 }
 
 function GForm({data, soldier, type}) {
-    console.log(data);
     if (type === "absence") {
         return (
             <Flex vertical={true} style={{width:'80%'}}>

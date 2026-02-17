@@ -262,7 +262,6 @@ function StatusSummery({setPrintTitle, soldierKey}) {
         } else {
             chunkedData.push([{title: "پایان خدمت", data: []}]);
         }
-        console.log(dutyData);
         chunkedData.forEach((pageTables, index) => {
             setLastPageIndex(index);
             let separatedTable = separateArrayByTitle(pageTables);

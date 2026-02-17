@@ -56,7 +56,6 @@ function MarriageMD({setPrintTitle, soldierKey, forceRefresh}) {
         }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
-                console.log("RES", res[0])
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -67,8 +66,6 @@ function MarriageMD({setPrintTitle, soldierKey, forceRefresh}) {
                         "deployment_date": DateRenderer(res[0]["deployment_date"]),
                         "family": res[0]["family"].filter(v => ["همسر", "فرزند"].includes(v.relative)),
                     });
-                    console.log("TEST", res[0]["family"]);
-                    console.log("TEST2", res[0]["family"].filter(v => ["همسر", "فرزند"].includes(v.relative)));
 
                     setReadyForPrint(true);
                 }

@@ -74,7 +74,6 @@ function SoldierRelease({oid}) {
         if (oid === undefined && params.key !== undefined) {
             setTargetKey(params.key);
         } else if (oid !== undefined || oid !== "") {
-            console.log(oid);
             setTargetKey(oid);
         }
     }, [oid]);
@@ -205,7 +204,6 @@ function SoldierRelease({oid}) {
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
                     });
                 } else {
-                    console.log(res[0]);
                     setSoldier({
                         "release": {},
                         "release_progress": {},

@@ -171,7 +171,6 @@ function LeaveAbsenceEscapeDeficitRun() {
     }, [selectedSoldier]);
 
     useEffect(() => {
-        console.log(selectedSoldier["organizational_job"])
         let temp = [];
         try {
             selectedSoldier["organizational_job"].forEach((value, index) => {
@@ -182,7 +181,6 @@ function LeaveAbsenceEscapeDeficitRun() {
                 })
             });
             setOrganizationalJob(temp);
-            console.log(temp);
         } catch (err) {
             console.error(err);
         }
@@ -721,7 +719,6 @@ function LeaveAbsenceEscapeDeficitRun() {
                         });
                     })
                 IsDutyStopped(selectedSoldierOid).then((res) => {
-                    console.log(res);
                     setSelectedSoldier((lastValue) => {
                         let newFilter = {...lastValue};
                         newFilter["is_duty_stopped"] = res;

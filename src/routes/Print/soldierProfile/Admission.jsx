@@ -151,7 +151,6 @@ function Admission({setPrintTitle, soldierKey}) {
 
         axios.get(getApiUrl("config/signs"), {withCredentials: true}).then((res) => {
             Object.entries(res.data.config).forEach((v) => {
-                console.log(v)
                 if (v[1]["key"] === "رئیس دایره وظیفه های ف پش نپاجا") {
                     setSign1(v[1]["value"]);
                 }

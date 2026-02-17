@@ -203,8 +203,6 @@ function Remission({setPrintTitle, soldierKey}) {
         )
             .then((response) => {
                 let res = response.data;
-                // console.log(DateRenderer(res[0]["run"][0]["absence_date"]))
-                // console.log(DateRenderer(res[0]["run"][0]["run_date"]))
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -244,7 +242,6 @@ function Remission({setPrintTitle, soldierKey}) {
         return (
             <Select
                 onChange={(v) => {
-                    console.log(v)
                     setSelectValue(v);
                     const temp = options.find(e => e.label === v);
                     if (temp === undefined) {

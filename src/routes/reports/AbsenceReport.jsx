@@ -27,7 +27,6 @@ function AbsenceReport() {
                     value: v.name
                 }
             });
-            console.log(temp)
             setUnitSelectOptions(temp);
         }).catch(() => {
             api["error"]({
@@ -118,7 +117,6 @@ function AbsenceReport() {
                     }
                     return acc;
                 }, []);
-                console.log(rowSpanData);
                 setSoldiers(rowSpanData);
             })
             .catch((err) => {
@@ -138,7 +136,6 @@ function AbsenceReport() {
     });
 
     function download() {
-        console.log(data);
         const worksheet = XLSX.utils.json_to_sheet(data.map((row, index) => ({
             'ردیف': index + 1,
             'نام': row["first_name"],

@@ -73,7 +73,6 @@ function RemissionLetter({setPrintTitle, soldierKey}) {
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
                     });
                 } else {
-                    console.log(res[0]["unit"]);
                     setSoldier({
                         ...res[0],
                         "deployment_date": DateRenderer(res[0]["deployment_date"]),

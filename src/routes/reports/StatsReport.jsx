@@ -73,7 +73,6 @@ function StatsReport() {
             }
         }, {withCredentials: true}).then((response) => {
             let res = response.data;
-            console.log(res.length)
             let temp1 = {
                 "rowIndex": 1,
                 "unit": "پشتیبانی مرکز",
@@ -1353,7 +1352,6 @@ function StatsReport() {
             }
         }, {withCredentials: true}).then((response) => {
             let res = response.data;
-            console.log(res);
             let temp16 = {
                 "rowIndex": 1,
                 "unit": "پشتیبانی مرکز",

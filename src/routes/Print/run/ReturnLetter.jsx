@@ -52,8 +52,6 @@ function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                             message: "خطا", description: "مشکلی در سرور پیش آمده."
                         });
                     } else {
-                        console.log(res[0]["first_name"]);
-
                         setSoldier({
                             ...res[0],
                             "deployment_date": DateRenderer(res[0]["deployment_date"]),

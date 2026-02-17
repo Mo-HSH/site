@@ -505,7 +505,6 @@ function ListSoldier() {
                 } else {
 
                     let renderer = options.find((v) => v.label === key)?.value.render;
-                    console.log(options);
                     if (renderer) {
                         t[key] = renderer(v[key]);
                     } else {
@@ -708,7 +707,6 @@ function ListSoldier() {
             }
         })
 
-        console.log(temp);
         setFilter(temp);
     }
 

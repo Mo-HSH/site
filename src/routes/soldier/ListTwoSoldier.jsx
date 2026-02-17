@@ -353,7 +353,6 @@ function ListTwoSoldier() {
         const toDate = useRef(null);
 
         function handleSearch(selectedKeys, confirm) {
-            console.log(selectedKeys);
             setFilter((currentFilter) => {
                 let newFilter = {...currentFilter};
                 switch (selectedKeys[2]) {
@@ -377,7 +376,6 @@ function ListTwoSoldier() {
                     default:
                         dateValidator({required: true}, selectedKeys[0]).then((res) => {
                             fromDate.current.input.classList = "ant-input ant-input-rtl css-dev-only-do-not-override-umqb6y ant-input-outlined";
-                            console.log("dataIndex", dataIndex);
                             newFilter[dataIndex] = GetQueryDate(selectedKeys[0]);
                             return newFilter;
                         }).catch((err) => {
@@ -1057,12 +1055,10 @@ function ListTwoSoldier() {
     }
 
     useEffect(() => {
-        console.log("filter", filter);
         if (Object.keys(projection).length > 0) {
             axios.post(getApiUrl("soldier/list"), {"filter": filter, "projection": projection}, {withCredentials: true})
                 .then((response) => {
                     let res = response.data;
-                    console.log(res);
                     setData(res);
                 })
                 .catch((err) => {

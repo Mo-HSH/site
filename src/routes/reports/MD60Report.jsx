@@ -115,7 +115,6 @@ function MD60Report() {
                     }
                     return acc;
                 }, []);
-                console.log(rowSpanData);
                 setSoldiers(rowSpanData);
             })
             .catch((err) => {
@@ -135,7 +134,6 @@ function MD60Report() {
     });
 
     function download() {
-        console.log(data);
         const worksheet = XLSX.utils.json_to_sheet(data.map((row, index) => ({
             'ردیف': index + 1,
             'نام': row["first_name"],

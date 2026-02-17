@@ -231,7 +231,6 @@ function EditSoldier() {
     }
 
     function uploadProfile(e) {
-        console.log(e);
         // inputProfile.current.click();
         // open({multiple: false, directory: false, extensions: ['jpg', 'jpeg']})
         //     .then((res) => {
@@ -261,7 +260,6 @@ function EditSoldier() {
     }
 
     function onImageClick(event) {
-        console.log([event.nativeEvent.offsetX, event.nativeEvent.offsetY]);
         if (firstEye.length === 0) {
             setFirstEye([event.nativeEvent.offsetX, event.nativeEvent.offsetY]);
             setModalHelpText("لطفا چشم دوم را انتخاب کنید.");
@@ -294,7 +292,6 @@ function EditSoldier() {
     }
 
     function onConfirmEditSingleForm(db_key, value, type, needCalculate) {
-        console.log(db_key, value);
         let temp = {}
         temp[db_key] = value;
         axios.post(getApiUrl(`soldier/edit_soldier/${params.key}`), {

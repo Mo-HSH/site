@@ -92,9 +92,6 @@ function MD60({setPrintTitle, soldierKey}) {
         )
             .then((response) => {
                 let res = response.data;
-                // console.log(DateRenderer(res[0]["run"][0]["absence_date"]))
-                // console.log(DateRenderer(res[0]["run"][0]["run_date"]))
-                console.log(Date(+res[0]["run"][0]["return_date"]["$date"]["$numberLong"] - +res[0]["run"][0]["run_date"]["$date"]["$numberLong"]))
                 if (res.length === 0) {
                     api["error"]({
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
@@ -136,7 +133,6 @@ function MD60({setPrintTitle, soldierKey}) {
         return (
             <Select
                 onChange={(v) => {
-                    console.log(v)
                     setSelectValue(v);
                     const temp = options.find(e => e.label === v);
                     if (temp === undefined) {

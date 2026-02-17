@@ -36,7 +36,6 @@ function ReturnReport() {
     }, [])
 
     function onFinish(value) {
-        console.log(value)
         const fromDate = GetQueryDate(value["from_date"].format('jYYYY/jMM/jDD'));
         const toDate = GetQueryDate(value["to_date"].format('jYYYY/jMM/jDD'));
         const unit = value["unit"];
@@ -117,10 +116,8 @@ function ReturnReport() {
                     }
                     return acc;
                 }, []);
-                console.log(rowSpanData);
                 setSoldiers(rowSpanData);
                 setData(rowSpanData);
-                console.log(rowSpanData);
             })
             .catch((err) => {
                 api["error"]({
@@ -139,7 +136,6 @@ function ReturnReport() {
     });
 
     function download() {
-        console.log(data);
         const worksheet = XLSX.utils.json_to_sheet(data.map((row, index) => ({
             'ردیف': index + 1,
             'نام': row["first_name"],

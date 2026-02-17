@@ -10,7 +10,6 @@ function PairedSelect({data, parentName, ChildName, parentLabel, ChildLabel}) {
     const [childData, setChildData] = useState([]);
 
     const onParentChange = (value) => {
-        console.log(value);
         setChildData(data.find(v=>v.name === value).config.map(v=> {
             return(
                 {

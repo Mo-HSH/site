@@ -124,7 +124,6 @@ function ReleaseReport() {
     });
 
     function download() {
-        console.log(data);
         const worksheet = XLSX.utils.json_to_sheet(data.map((row, index) => ({
             'ردیف': index + 1,
             'درجه': row["military_rank"],

@@ -259,8 +259,6 @@ function SelectFieldForm({label, validator, initValue, onConfirmEdit, configName
     }, []);
 
     function onConfirm() {
-        console.log(selectRef);
-        console.log(value);
         if (value === undefined) {
             return;
         }
@@ -366,7 +364,6 @@ function BooleanFieldForm({label, initValue, initLabel, onConfirmEdit, trueLabel
     }, []);
 
     function onConfirm() {
-        console.log(value);
         onConfirmEdit(value);
         setIsEditable(false);
     }
@@ -484,7 +481,6 @@ function PairedSelectFieldForm({label, initParentValue, initChildValue, onConfir
             setErrorMessage("قسمت در یگان یافت نشد");
             return;
         }
-        console.log(parentValue, childValue);
         onConfirmEdit(parentValue, childValue);
         setIsEditable(false);
         setErrorMessage("");

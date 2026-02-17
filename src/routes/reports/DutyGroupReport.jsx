@@ -58,8 +58,6 @@ function DutyGroupReport() {
             }
         }
 
-        console.log(filter);
-
         if (unit.length > 0) {
             filter["unit"] = {
                 "$in": unit
@@ -97,7 +95,6 @@ function DutyGroupReport() {
         }, {withCredentials: true})
             .then((response) => {
                 let res = response.data;
-                console.log("res:", res);
                 let rowIndexCounter = 1;
 
                 const transformedData = res.flatMap(soldier => {
@@ -118,7 +115,6 @@ function DutyGroupReport() {
                     }));
                 });
                 setData(transformedData);
-                console.log("transformedData:", transformedData);
                 const rowSpanData = transformedData.reduce((acc, item, index, array) => {
                     const prevItem = index > 0 ? array[index - 1] : null;
                     if (!prevItem || prevItem.national_code !== item.national_code) {
@@ -129,7 +125,6 @@ function DutyGroupReport() {
                     }
                     return acc;
                 }, []);
-                console.log(rowSpanData);
                 setSoldiers(rowSpanData);
             })
             .catch((err) => {
@@ -149,7 +144,6 @@ function DutyGroupReport() {
     });
 
     function download() {
-        console.log(data);
         const worksheet = XLSX.utils.json_to_sheet(data.map((row, index) => ({
             'ردیف': index + 1,
             'درجه': row["military_rank"],

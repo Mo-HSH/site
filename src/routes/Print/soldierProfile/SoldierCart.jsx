@@ -62,7 +62,6 @@ function SoldierCart({setPrintTitle, soldierKey}) {
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
                     });
                 } else {
-                    console.log(res[0])
                     setSoldier({
                         ...res[0],
                         "job_title": res[0].organizational_job[0].job_title,

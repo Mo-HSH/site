@@ -19,7 +19,6 @@ function Register() {
                 console.error(err);
             });
         });
-        console.log(values);
     }
 
     return (

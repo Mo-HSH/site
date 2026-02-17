@@ -20,7 +20,6 @@ function LetterReceiver({defaultValue}) {
                     letterTitle: value
                 };
             }));
-            console.log(defaultValue);
             setValue(defaultValue);
         }).catch(() => {
         });

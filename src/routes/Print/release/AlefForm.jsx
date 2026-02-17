@@ -80,7 +80,6 @@ function AlefForm({setPrintTitle, alefFormNumber, refresher}) {
     });
 
     function handleDownload() {
-        console.log(soldier);
         function Description(data) {
             let res = [];
             let discharge = data["absence_discharge"] +
@@ -241,7 +240,6 @@ function AlefForm({setPrintTitle, alefFormNumber, refresher}) {
             title: "مدرک",
             dataIndex: "family",
             render: (data) => {
-                console.log(data);
                 if (data === undefined || data === null || data === "") {
                     return "";
                 }
