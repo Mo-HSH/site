@@ -20,7 +20,6 @@ function ObjectOneByOne({configName, keyTitle, valueTitle}) {
         setDataLoading(true);
         axios.get(getApiUrl(`config/${configName}`), {withCredentials: true}).then((res) => {
             setData(res.data.config);
-            console.log(res.data.config);
             setDataLoading(false);
         }).catch((err) => {
             console.log(err);
@@ -157,7 +156,6 @@ function CustomDependList({configName, modalTitle, parentName, childName}) {
                                                 onClick={() => {
                                                     setChildData(data.find(v=>v.name === item).config);
                                                     setSelectParent(item);
-                                                    console.log(childData);
                                                 }}
                                                 style={{
                                                     cursor: "pointer",
@@ -257,7 +255,6 @@ function CustomList({configName}) {
     }
 
     function onFinish(values) {
-        console.log(values);
         setFormLoading(true);
         axios.post(getApiUrl(`config/list/create/${configName}/${values.name}`), {}, {withCredentials: true})
             .then(()=>{

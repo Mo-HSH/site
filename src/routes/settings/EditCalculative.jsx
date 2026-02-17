@@ -18,7 +18,6 @@ function EditCalculative() {
     }
 
     function onFinish(native, duration) {
-        console.log(native, duration);
         axios.post(getApiUrl("config/calculative/create/duty_duration"),
             {"native": native, "duty_month": duration},
             {withCredentials: true})
@@ -39,7 +38,6 @@ function EditCalculative() {
         setDurationDataLoading(true);
         axios.get(getApiUrl("config/duty-duration"), {withCredentials: true})
             .then((res) => {
-                console.log(res.data.config);
                 setDutyDurationData(res.data.config);
                 setDurationDataLoading(false);
             }).catch((err) => {

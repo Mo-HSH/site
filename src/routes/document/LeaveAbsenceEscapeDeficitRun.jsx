@@ -295,7 +295,6 @@ function LeaveAbsenceEscapeDeficitRun() {
             "filter": filter,
             "projection": {first_name: 1}
         }, {withCredentials: true});
-        console.log("====>", res);
         return res.data.length;
     }
     useEffect(() => {

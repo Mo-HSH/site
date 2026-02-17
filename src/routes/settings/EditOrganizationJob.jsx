@@ -69,7 +69,6 @@ function EditOrganizationJob() {
     }
 
     function onCreate(value) {
-        console.log(value);
         axios.post(getApiUrl("config/organizational_job/create"), value, {withCredentials: true})
             .then(()=>{
                 fetchData();
