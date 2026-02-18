@@ -16,7 +16,7 @@ import {
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
-import {DateRenderer, DutyGroupRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
+import {DateRenderer, DutyGroupRenderer, ExtraInfoRenderer, NativeRenderer} from "../../utils/TableRenderer.jsx";
 import * as XLSX from "xlsx"
 import {saveAs} from "file-saver";
 import {dateValidator} from "../../utils/Validates.js";
@@ -43,7 +43,6 @@ function ListSoldier() {
         [
             {configName: "unit", setOptions: setUnitSectionOptions},
             {configName: "state", setOptions: setStateCityOptions},
-
             {configName: "status", setOptions: setStatusOptions},
             {configName: "mental-health", setOptions: setMentalHealthOptions},
             {configName: "rank", setOptions: setRankOptions},
@@ -480,7 +479,15 @@ function ListSoldier() {
                     return v.reduce((acc, cur) => acc + cur.medical, 0)
                 })
             }
-        }
+        },
+        {
+            label: "اطلاعات بیشتر",
+            value: {
+                title: "اطلاعات بیشتر",
+                dataIndex: "extra_info",
+                render: ExtraInfoRenderer
+            }
+        },
     ]
 
     function download() {
@@ -490,6 +497,7 @@ function ListSoldier() {
                 temp[options[colIndex].value.title] = dataItem[options[colIndex].value.dataIndex];
                 return temp;
             }))
+
             let t = {};
             tempRes.forEach((v) => {
                 const key = Object.keys(v)[0];
@@ -501,6 +509,10 @@ function ListSoldier() {
                         t[key] = renderer(v[key]);
                     } else {
                         t[key] = DateRenderer(v[key]);
+                    }
+
+                    if (renderer === ExtraInfoRenderer) {
+                        t[key] = v[key].join(',');
                     }
                 } else {
 
