@@ -11,7 +11,10 @@ import {
     Image,
     Input,
     Modal,
-    notification, Popconfirm, Popover, Progress, Select,
+    notification,
+    Popover,
+    Progress,
+    Select,
     Table, Tabs,
     Tooltip,
     Typography,
@@ -65,13 +68,10 @@ function SearchSoldier() {
         duty_group_data: [],
         organizational_job_data: []
     });
+
     const [filter, setFilter] = useState([]);
 
     const [fileArr, setFileArr] = useState([]);
-
-    useEffect(() => {
-        console.log(targetSoldier.leave)
-    }, [targetSoldier]);
 
     const [annualLimit, setAnnualLimit] = useState(50);
     useEffect(() => {
@@ -1171,9 +1171,21 @@ function SearchSoldier() {
 
                                 }
 
-                                <Button type="link" icon={<EditOutlined/>}
-                                        onClick={() => navigate(`/edit-soldier/${key}`)}>ویرایش اطلاعات</Button>
-                                <Button type="primary" onClick={() => setOpenDrawer(true)}>اقدامات</Button>
+                                <Button
+                                    type="link"
+                                    icon={<EditOutlined/>}
+                                    onClick={() => {
+                                        navigate(`/edit-soldier/${key}`);
+                                    }}
+                                >
+                                    ویرایش اطلاعات
+                                </Button>
+                                <Button
+                                    type="primary"
+                                    onClick={() => setOpenDrawer(true)}
+                                >
+                                    اقدامات
+                                </Button>
                                 {/*<Popconfirm title={"آیا برای حذف سرباز مطمئن هستید؟"}>*/}
                                 {/*    <Button type="primary" danger={true} onClick={() => deleteSoldier()}>حذف*/}
                                 {/*        سرباز</Button>*/}

@@ -12,7 +12,8 @@ import {
     notification,
     Radio,
     Row,
-    Select, Space
+    Select,
+    Space
 } from "antd";
 import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {
@@ -29,6 +30,13 @@ import {InputDatePicker} from "jalaali-react-date-picker"
 import "jalaali-react-date-picker/lib/styles/index.css";
 
 function AddSoldier() {
+    const [isDirty, setIsDirty] = useState(false);
+
+    // Change isDirty to true whenever the form is modified
+    const onFormChange = () => {
+        setIsDirty(true);
+    };
+
     const [familyEmptyError, setFamilyEmptyError] = useState(false);
     const [religion, setReligion] = useState([]);
     const [relation, setRelation] = useState([]);
@@ -47,6 +55,22 @@ function AddSoldier() {
     const [api, contextHolder] = notification.useNotification();
 
     const [form] = Form.useForm();
+
+    // Attach the event listener
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = ''; // Chrome requires returnValue to be set
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [isDirty]);
 
     useEffect(() => {
         const configs = [
@@ -141,7 +165,6 @@ function AddSoldier() {
                     description: err.message
                 });
             });
-
     }, []);
 
     function rankChange() {
@@ -201,11 +224,17 @@ function AddSoldier() {
                 description: err.message
             });
         });
+
+        setIsDirty(false);
     }
 
     return (<Flex align={"center"} justify={"center"}>
         {contextHolder}
-        <Form onFinish={onFinish} autoComplete="off" form={form} layout={"horizontal"}>
+        <Form
+            onFinish={onFinish}
+            autoComplete="off"
+            onValuesChange={() => onFormChange()}
+            form={form} layout={"horizontal"}>
             <Flex gap={"middle"} vertical={true}>
             <Card name="first" title="اطلاعات فردی">
                 <Row gutter={8}>
