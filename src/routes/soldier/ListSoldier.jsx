@@ -253,6 +253,14 @@ function ListSoldier() {
             },
         },
         {
+            label: "گروه خدمتی",
+            value: {
+                title: "گروه خدمتی",
+                dataIndex: "duty_group",
+                render: DutyGroupRenderer,
+            }
+        },
+        {
             label: "دین",
             value: {
                 title: "دین",
@@ -439,14 +447,6 @@ function ListSoldier() {
             }
         },
         {
-            label: "گروه خدمتی",
-            value: {
-                title: "گروه رزمی",
-                dataIndex: "duty_group",
-                render: DutyGroupRenderer,
-            }
-        },
-        {
             label: "مدت نهست",
             value: {
                 title: "مدت نهست",
@@ -515,7 +515,6 @@ function ListSoldier() {
                         t[key] = v[key].join(',');
                     }
                 } else {
-
                     let renderer = options.find((v) => v.label === key)?.value.render;
                     if (renderer) {
                         t[key] = renderer(v[key]);
@@ -591,7 +590,7 @@ function ListSoldier() {
             label: "گروه خدمتی",
             dataIndex: "duty_group",
             type: "select",
-            options: [{label: "رزمی", value: "رزمی"}, {label: "غیررزمی", value: "غیررزمی"}]
+            options: [{label: "رزمی", value: true}, {label: "غیررزمی", value: false}]
         },
         {
             label: "بومی/غیربومی",

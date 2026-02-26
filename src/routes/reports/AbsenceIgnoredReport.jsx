@@ -1,4 +1,4 @@
-import {Button, Divider, Flex, Form, notification, Select, Table, Tooltip, Typography} from "antd";
+import {Button, Divider, Flex, Form, Input, notification, Select, Table, Tooltip, Typography} from "antd";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {GetQueryDate} from "../../utils/Calculative.js";
 import {DateRenderer} from "../../utils/TableRenderer.jsx";
@@ -7,38 +7,58 @@ import {getApiUrl} from "../../utils/Config.js";
 import axios from "axios";
 import * as XLSX from "xlsx"
 import {saveAs} from "file-saver";
-import {InputDatePicker} from "jalaali-react-date-picker";
+import {dateValidator} from "../../utils/Validates.js";
 
 function AbsenceIgnoredReport() {
 
     const [unitSelectOptions, setUnitSelectOptions] = useState([]);
+    const [statusOptions, setStatusOptions] = useState([]);
     const [soldiers, setSoldiers] = useState([]);
     const [data, setData] = useState([]);
     const [downloading, setDownloading] = useState(false);
-
     const [api, contextHolder] = notification.useNotification();
     const printComponent = useRef(null);
 
     useEffect(() => {
-        axios.get(getApiUrl("config/unit"), {withCredentials: true}).then((res) => {
-            setUnitSelectOptions(res.data.config.map(v => {
-                return {
-                    label: v.name,
-                    value: v.name
-                }
-            }))
-        }).catch(() => {
-            api["error"]({
-                message: "خطا",
-                description: "خطا در دریافت تنظیمات یگان!"
-            });
-        });
-    }, [])
+        [
+            {configName: "unit", setOptions: setUnitSelectOptions},
+            {configName: "status", setOptions: setStatusOptions},
+        ].forEach(({configName, setOptions}) => {
+            axios.get(getApiUrl(`config/${configName}`), {withCredentials: true})
+                .then((response) => {
+                    let temp = [];
+                    response.data.config.forEach((value) => {
+                        if (typeof (value) === "string") {
+                            temp.push({
+                                value: value,
+                                label: value
+                            });
+                        } else {
+                            temp.push({
+                                value: value.name,
+                                label: value.name,
+                                children: [...value.config.map(i => {
+                                    return ({
+                                        value: i,
+                                        label: i
+                                    })
+                                })]
+                            })
+                        }
+                    });
+                    setOptions(temp);
+                })
+                .catch(() => {
+                });
+        })
+    }, []);
+
 
     function onFinish(value) {
-        const fromDate = GetQueryDate(value["from_date"].format('jYYYY/jMM/jDD'));
-        const toDate = GetQueryDate(value["to_date"].format('jYYYY/jMM/jDD'));
+        const fromDate = GetQueryDate(value["from_date"]);
+        const toDate = GetQueryDate(value["to_date"]);
         const unit = value["unit"];
+        const status = value["status"];
 
         let filter = {
             "absence": {
@@ -57,7 +77,11 @@ function AbsenceIgnoredReport() {
                 "$in": unit
             }
         }
-
+        if (status.length > 0) {
+            filter["status"] = {
+                "$in": status
+            }
+        }
         axios.post(getApiUrl("soldier/list"), {
                 "filter": filter,
                 "projection": {
@@ -172,22 +196,22 @@ function AbsenceIgnoredReport() {
                         <Form.Item
                             label={"از تاریخ"}
                             name={"from_date"}
+                            rules={[{
+                                validator: dateValidator, required: true,
+                            }]}
                         >
-                            <InputDatePicker
-                                format="jYYYY/jMM/jDD"
-                                required={true}
-                            />
+                            <Input />
                         </Form.Item>
                     </Tooltip>
                     <Tooltip title={"تا تاریخ نهست"}>
                         <Form.Item
                             label={"تا تاریخ"}
                             name={"to_date"}
+                            rules={[{
+                                validator: dateValidator, required: true,
+                            }]}
                         >
-                            <InputDatePicker
-                                format="jYYYY/jMM/jDD"
-                                required={true}
-                            />
+                            <Input />
                         </Form.Item>
                     </Tooltip>
                     <Form.Item
@@ -201,20 +225,33 @@ function AbsenceIgnoredReport() {
                         <Select allowClear={true} mode={"multiple"} options={unitSelectOptions}
                                 style={{minWidth: "300px"}}/>
                     </Form.Item>
+                    <Form.Item
+                        label={"وضعیت خدمتی"}
+                        name={"status"}
+                        rules={[{
+                            required: false,
+                        }]}
+                        initialValue={[]}
+                    >
+                        <Select allowClear={true} mode={"multiple"} options={statusOptions}
+                                style={{minWidth: "200px"}}/>
+                    </Form.Item>
 
-                    <Form.Item>
-                        <Button block={true} type={"primary"} htmlType="submit">جستجو</Button>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button block={true} type={"primary"} onClick={handlePrint}>پرینت</Button>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button block={true} type={"primary"} loading={downloading} onClick={()=> {
-                            setDownloading(true);
-                            download();
-                            setDownloading(false);
-                        }}>دانلود</Button>
-                    </Form.Item>
+                    <div style={{display: "flex", justifyContent: "center", width: "100%", marginTop: "20px"}}>
+                        <Form.Item>
+                            <Button block={true} type={"primary"} htmlType="submit">جستجو</Button>
+                        </Form.Item>
+                        <Form.Item>
+                            <Button block={true} type={"primary"} onClick={handlePrint}>پرینت</Button>
+                        </Form.Item>
+                        <Form.Item>
+                            <Button block={true} type={"primary"} loading={downloading} onClick={() => {
+                                setDownloading(true);
+                                download();
+                                setDownloading(false);
+                            }}>دانلود</Button>
+                        </Form.Item>
+                    </div>
                 </Form>
             </Flex>
             <Flex

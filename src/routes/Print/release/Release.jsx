@@ -965,7 +965,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                         })
                     }
                     {
-                        [...Array(3)].map((_) => {
+                        [...Array(2)].map((_) => {
                             return (
                                 <Flex
                                     vertical={true} align={"center"}
@@ -1075,7 +1075,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                     </Flex>
 
                                     <Flex style={{width: "90%", marginTop: "20px"}} justify={"end"}>
-                                        <Sign.MultiInline fontSize={13} singGap={40} defaultSign={[
+                                        <Sign.MultiInline fontSize={13} singGap={50} defaultSign={[
                                             "مدیر نیروی انسانی ف پش نپاجا",
                                             "رئیس دایره وظیفه های ف پش نپاجا",
                                             "رئیس شعبه دستور ف پش نپاجا",
@@ -1083,7 +1083,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                         />
                                     </Flex>
 
-                                    <Flex style={{width: "90%", height: "100%"}} align={"center"}>
+                                    <Flex style={{width: "90%", height: "60%"}} align={"center"}>
                                         <Table
                                             pagination={false}
                                             size={"small"}

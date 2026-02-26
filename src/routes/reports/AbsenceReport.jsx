@@ -1,4 +1,4 @@
-import {Button, Divider, Flex, Form, notification, Select, Table, Tooltip, Typography} from "antd";
+import {Button, Divider, Flex, Form, Input, notification, Select, Table, Tooltip, Typography} from "antd";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {GetQueryDate} from "../../utils/Calculative.js";
 import {DateRenderer} from "../../utils/TableRenderer.jsx";
@@ -7,10 +7,9 @@ import {getApiUrl} from "../../utils/Config.js";
 import axios from "axios";
 import * as XLSX from "xlsx"
 import {saveAs} from "file-saver";
-import {InputDatePicker} from "jalaali-react-date-picker";
+import {dateValidator} from "../../utils/Validates.js";
 
 function AbsenceReport() {
-
     const [unitSelectOptions, setUnitSelectOptions] = useState([]);
     const [statusOptions, setStatusOptions] = useState([]);
     const [soldiers, setSoldiers] = useState([]);
@@ -54,8 +53,8 @@ function AbsenceReport() {
     }, []);
 
     function onFinish(value) {
-        const fromDate = GetQueryDate(value["from_date"].format('jYYYY/jMM/jDD'));
-        const toDate = GetQueryDate(value["to_date"].format('jYYYY/jMM/jDD'));
+        const fromDate = GetQueryDate(value["from_date"]);
+        const toDate = GetQueryDate(value["to_date"]);
         const unit = value["unit"];
         const status = value["status"];
 
@@ -78,7 +77,6 @@ function AbsenceReport() {
                 "$in": unit
             }
         }
-
         if (status.length > 0) {
             filter["status"] = {
                 "$in": status
@@ -198,22 +196,22 @@ function AbsenceReport() {
                         <Form.Item
                             label={"از تاریخ"}
                             name={"from_date"}
+                            rules={[{
+                                validator: dateValidator, required: true,
+                            }]}
                         >
-                            <InputDatePicker
-                                format="jYYYY/jMM/jDD"
-                                required={true}
-                            />
+                            <Input />
                         </Form.Item>
                     </Tooltip>
                     <Tooltip title={"تا تاریخ نهست"}>
                         <Form.Item
                             label={"تا تاریخ"}
                             name={"to_date"}
+                            rules={[{
+                                validator: dateValidator, required: true,
+                            }]}
                         >
-                            <InputDatePicker
-                                format="jYYYY/jMM/jDD"
-                                required={true}
-                            />
+                            <Input />
                         </Form.Item>
                     </Tooltip>
 

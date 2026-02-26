@@ -4,6 +4,7 @@ import {
     Divider,
     Flex,
     Form,
+    Input,
     notification,
     Table,
     Tooltip,
@@ -16,7 +17,7 @@ import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
 import {GetDateMinus, GetQueryDate, GetYear} from "../../utils/Calculative.js";
 import Sign from "../../components/printElement/Sign.jsx";
-import {InputDatePicker} from "jalaali-react-date-picker";
+import {dateValidator} from "../../utils/Validates.js";
 
 function StatsReport() {
     const [api, contextHolder] = notification.useNotification();
@@ -46,7 +47,7 @@ function StatsReport() {
         axios.post(getApiUrl("soldier/list"), {
             "filter": {
                 "entry_date": {
-                    "$lte": GetQueryDate(value["date"].format('jYYYY/jMM/jDD'))
+                    "$lte": GetQueryDate(value["date"])
                 },
                 "status": {
                     "$in": [
@@ -2612,11 +2613,11 @@ function StatsReport() {
                         <Form.Item
                             label={"تاریخ مرجع"}
                             name={"date"}
+                            rules={[{
+                                validator: dateValidator, required: true,
+                            }]}
                         >
-                            <InputDatePicker
-                                format="jYYYY/jMM/jDD"
-                                required={true}
-                            />
+                            <Input />
                         </Form.Item>
                     </Tooltip>
 

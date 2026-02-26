@@ -20,6 +20,7 @@ import {
     Typography,
 } from "antd";
 import {
+    dateValidator,
     justNumericValidator,
     justStringValidator,
 } from "../../utils/Validates.js";
@@ -100,6 +101,24 @@ function SearchSoldier() {
     const [printTarget, setPrintTarget] = useState(<div>printable</div>);
     const [printTitle, setPrintTitle] = useState("تیتر پرینت");
     const [documentsOptions, setDocumentsOptions] = useState([]);
+    const [stopDutyData, setStopDutyData] = useState([]);
+
+    useEffect(() => {
+        let temp = [];
+        try {
+            targetSoldier["stop_duty"]?.forEach((value, index) => {
+                temp.push({
+                    ...value,
+                    "start_date": value["start_date"],
+                    "end_date": value["end_date"],
+                    key: index
+                })
+            });
+            setStopDutyData(temp);
+        } catch (err) {
+            console.error(err);
+        }
+    }, [targetSoldier]);
 
     useEffect(() => {
         if (targetSoldier["document"] === undefined) {
@@ -514,6 +533,47 @@ function SearchSoldier() {
         },
     ].map(v => ({...v, align: "center"}));
 
+    const stopDutyColumns = [
+        {
+            title: "ردیف",
+            render: rowCounterMerge,
+            onCell: (record) => {
+                if (record.text) {
+                    return {
+                        colSpan: 3,
+                    };
+                } else {
+                    return {};
+                }
+            }
+        },
+        {
+            title: "تاریخ شروع",
+            dataIndex: "start_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            }
+        },
+        {
+            title: "تاریخ خاتمه",
+            dataIndex: "end_date",
+            render: (v) => {
+                if (v === undefined || v === null || v === "") {
+                    return "-";
+                } else {
+                    return DateRenderer(v);
+                }
+            }
+        },
+        {
+            title: "علت",
+            dataIndex: "reason",
+        },
+    ].map(v => ({...v, align: "center"}));
 
     const collapseItems = [
         {
@@ -852,6 +912,15 @@ function SearchSoldier() {
                                 dataSource={targetSoldier.organizational_job ? targetSoldier.organizational_job.sort((a, b) => a.start_date.$date.$numberLong - b.start_date.$date.$numberLong) : []}
                             />
                         },
+                        {
+                            label: "معاف موقت",
+                            key: 8,
+                            children: <Table
+                                pagination={false} bordered={true} style={{width: "100%"}}
+                                columns={stopDutyColumns}
+                                dataSource={stopDutyData}
+                            />
+                        }
                     ]}
                 />
             </Flex>
