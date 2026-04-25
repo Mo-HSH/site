@@ -264,6 +264,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                     "return_letter_date": getDateValue("return_letter_date"),
                     "run_status": value.hasOwnProperty("run_status") ? value["run_status"] : "ثبت اولیه",
                     "call_date": DateRenderer(value["call_date"]),
+                    "war_mode": DateRenderer(value["war_mode"]),
                     key: index
                 })
             });
@@ -412,6 +413,16 @@ function LeaveAbsenceEscapeDeficitRun() {
             title: "اولیه",
             dataIndex: "is_initial",
             key: "is_initial",
+            align: "center",
+            inputType: "bool",
+            render: (value) => {
+                return (<Checkbox defaultChecked={value} disabled={true}/>);
+            },
+        },
+        {
+            title: "شرایط جنگی",
+            dataIndex: "war_mode",
+            key: "war_mode",
             align: "center",
             inputType: "bool",
             render: (value) => {
@@ -1295,6 +1306,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                                             duration: '',
                                             is_ignored: '',
                                             is_initial: '',
+                                            war_mode: '',
                                         }}
                                         onDelete={onDeleteAbsence} onEdit={onEditAbsence}
                                         pagination={false} bordered={true} style={{width: "100%"}}
@@ -1331,8 +1343,17 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                         label={"غیبت اولیه"}
                                                         name={"is_initial"}
                                                         rules={[{
-                                                            required: true,
+                                                            required: false,
                                                         }]}
+                                                        valuePropName={"checked"}
+                                                        initialValue={false}
+                                                    >
+                                                        <Checkbox/>
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label={"شرایط جنگی"}
+                                                        name={"war_mode"}
                                                         valuePropName={"checked"}
                                                         initialValue={false}
                                                     >
@@ -1950,7 +1971,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                                             validator: dateValidator, required: true,
                                                                         }]}
                                                                     >
-                                                                        <Input/>
+                                                                        <Input style={{width: "120px"}}/>
                                                                     </Form.Item>
 
                                                                     <Form.Item
@@ -1960,7 +1981,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                                             required: false,
                                                                         }]}
                                                                     >
-                                                                        <Input style={{direction: "rtl"}}/>
+                                                                        <Input style={{width: "120px", direction: "rtl"}}/>
                                                                     </Form.Item>
 
                                                                     <Form.Item
@@ -1998,12 +2019,20 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                                         />
                                                                     </Form.Item>
 
+                                                                    <Form.Item
+                                                                        name={"war_mode"}
+                                                                        valuePropName={"checked"}
+                                                                    >
+                                                                        <Checkbox>شرایط جنگی</Checkbox>
+                                                                    </Form.Item>
+
                                                                     <Form.Item>
                                                                         <Button type="primary" htmlType="submit">
                                                                             ثبت
                                                                         </Button>
                                                                     </Form.Item>
-                                                                </Form>}
+                                                                </Form>
+                                                        }
                                                     </>
                                                 )}
 
@@ -2027,6 +2056,16 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                         title: "صادره از (فرار)",
                                                         dataIndex: "run_letter_sender",
                                                         key: "run_letter_sender"
+                                                    },
+                                                    {
+                                                        title: "شرایط جنگی",
+                                                        dataIndex: "war_mode",
+                                                        key: "war_mode",
+                                                        align: "center",
+                                                        inputType: "bool",
+                                                        render: (value) => {
+                                                            return (<Checkbox defaultChecked={value} disabled={true}/>);
+                                                        },
                                                     },
                                                     {
                                                         render: (record) => {

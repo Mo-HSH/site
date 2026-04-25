@@ -17,7 +17,8 @@ function RunLetter({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
             "run_letter_sender": "",
             "m_run": "",
             "d_run": "",
-            "run_count": 1
+            "run_count": 1,
+            "war_mode": ""
         }
     });
     const [api, contextHolder] = notification.useNotification();

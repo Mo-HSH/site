@@ -337,25 +337,25 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                             <Col span={12} style={{border: "solid black 2px", borderLeft: 0}}>
                                                 {
                                                     [
-                                                        {label: "نام", data: soldier["first_name"]},
-                                                        {label: "نشان", data: soldier["last_name"]},
-                                                        {label: "نام پدر", data: soldier["father_name"]},
-                                                        {label: "شماره شناسنامه", data: soldier["national_code"]},
+                                                        {label: "نام", data: soldier["first_name"] || ''},
+                                                        {label: "نشان", data: soldier["last_name"] || ''},
+                                                        {label: "نام پدر", data: soldier["father_name"] || ''},
+                                                        {label: "شماره شناسنامه", data: soldier["national_code"] || ''},
                                                         {
                                                             label: "محل صدور",
                                                             data: soldier["birth_certificate_issuing_place"]
                                                         },
-                                                        {label: "تاریخ تولد", data: DateRenderer(soldier["birthday"])},
-                                                        {label: "محل تولد", data: soldier["birthplace"]},
+                                                        {label: "تاریخ تولد", data: DateRenderer(soldier["birthday"]) || ''},
+                                                        {label: "محل تولد", data: soldier["birthplace"] || ''},
                                                         {
                                                             label: "حوزه اعزام کننده",
                                                             data: soldier["deployment_location"]
                                                         },
-                                                        {label: "کد ملی", data: soldier["national_code"]},
-                                                        {label: "یگان آموزشی", data: soldier["learning_unit"]},
-                                                        {label: "رنگ چشم", data: soldier["eye_color"]},
-                                                        {label: "گروه خون", data: soldier["blood_type"]},
-                                                        {label: "قد", data: soldier["height"]},
+                                                        {label: "کد ملی", data: soldier["national_code"] || ''},
+                                                        {label: "یگان آموزشی", data: soldier["learning_unit"] || ''},
+                                                        {label: "رنگ چشم", data: soldier["eye_color"] || ''},
+                                                        {label: "گروه خون", data: soldier["blood_type"] || ''},
+                                                        {label: "قد", data: soldier["height"] || ''},
                                                         {
                                                             label: "آدرس",
                                                             data: ""
@@ -414,13 +414,13 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                                                             label: "مدت خدمت انجام شده",
                                                             data: soldier["release"]["duty_duration"]
                                                         },
-                                                        {label: "شماره پرسنلی", data: soldier["personnel_code"]},
-                                                        {label: "کسری", data: soldier["release"]["release_reason"]},
+                                                        {label: "شماره پرسنلی", data: soldier["personnel_code"] || ''},
+                                                        {label: "کسری", data: soldier["release"]["release_reason"] || ''},
                                                         {label: "شماره تماس", data: ""},
-                                                        {label: "یگان", data: soldier["unit"]},
+                                                        {label: "یگان", data: soldier["unit"] || ''},
                                                         {label: "کد تخصص", data: ""},
                                                         {label: "یگان ترخیص کننده", data: "ف پش مرکز نپاجا"},
-                                                        {label: "محل خدمت", data: soldier["section"]},
+                                                        {label: "محل خدمت", data: soldier["section"] || ''},
                                                         {
                                                             label: "مدت قانونی خدمت",
                                                             data: soldier["is_native"] === undefined ? "" : soldier["is_native"] ? legalDutyDuration["native_duty_month"] + " ماه" : legalDutyDuration["none_native_duty_month"] + " ماه"
@@ -965,7 +965,7 @@ function Release({setPrintTitle, soldierKey, refresher}) {
                         })
                     }
                     {
-                        [...Array(2)].map((_) => {
+                        [...Array(1)].map((_) => {
                             return (
                                 <Flex
                                     vertical={true} align={"center"}
