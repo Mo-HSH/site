@@ -2062,7 +2062,6 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                         dataIndex: "war_mode",
                                                         key: "war_mode",
                                                         align: "center",
-                                                        inputType: "bool",
                                                         render: (value) => {
                                                             return (<Checkbox defaultChecked={value} disabled={true}/>);
                                                         },

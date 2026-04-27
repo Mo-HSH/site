@@ -222,7 +222,7 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                                 </Typography.Text>
                                                 پس از
                                                 <Typography.Text strong>
-                                                    {" 15 روز "}
+                                                    { soldier["target_run"]["war_mode"] ? " 5 روز " : " 15 روز " }
                                                 </Typography.Text>
                                                 غیبت متوالی از خدمت فراری و در تاریخ
                                                 <Typography.Text strong>
