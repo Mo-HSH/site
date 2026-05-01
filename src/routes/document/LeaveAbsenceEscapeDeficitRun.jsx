@@ -264,7 +264,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                     "return_letter_date": getDateValue("return_letter_date"),
                     "run_status": value.hasOwnProperty("run_status") ? value["run_status"] : "ثبت اولیه",
                     "call_date": DateRenderer(value["call_date"]),
-                    "war_mode": DateRenderer(value["war_mode"]),
+                    "war_mode": value["war_mode"],
                     key: index
                 })
             });
@@ -407,7 +407,8 @@ function LeaveAbsenceEscapeDeficitRun() {
             key: "ignored_date",
             align: "center",
             inputType: "text",
-            validator: dateValidator
+            validator: dateValidator,
+            required: false
         },
         {
             title: "اولیه",
@@ -2063,7 +2064,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                         key: "war_mode",
                                                         align: "center",
                                                         render: (value) => {
-                                                            return (<Checkbox defaultChecked={value} disabled={true}/>);
+                                                            return (<Checkbox checked={!!value} disabled={true}/>);
                                                         },
                                                     },
                                                     {

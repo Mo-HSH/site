@@ -34,6 +34,7 @@ function EditableTable({
                         dataIndex: column.dataIndex,
                         title: column.title,
                         validator: column.validator,
+                        required: column.required,
                         editing: isEditing(record),
                         selectOption: column.selectOption
                     }),
@@ -113,15 +114,18 @@ function EditableTable({
                               index,
                               children,
                               validator,
+                              required,
                               selectOption,
                               ...restProps
                           }) => {
         const inputNode = inputType === 'number' ? <InputNumber min={0}/> : inputType === 'bool' ?
             <Checkbox/> : inputType === 'select' ? <Select options={selectOption}/> : <Input/>;
+        const isRequired = required !== false;
         const rules = validator === undefined ? [{
             required: true,
+            required: isRequired,
             message: `لطفا ${title} را وارد کنید!`,
-        }] : [{validator: validator, required: true}];
+        }] : [{validator: validator, required: isRequired}];
         return (
             <td {...restProps}>
                 {editing ? (
