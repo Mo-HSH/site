@@ -343,6 +343,14 @@ function EditSoldier() {
     return (
         <Flex vertical={true}>
             {contextHolder}
+            <Flex justify={"start"} style={{marginBottom: "10px"}}>
+                <Button
+                    type={"primary"}
+                    onClick={() => navigate("/search-soldier", {state: {national_code: soldier["national_code"]}})}
+                >
+                    بازگشت به پروفایل
+                </Button>
+            </Flex>
             <Modal title="آپلود پروفایل" open={isModalOpen} onOk={handleOk} width={800}
                    cancelButtonProps={{hidden: true}}
                    okButtonProps={{

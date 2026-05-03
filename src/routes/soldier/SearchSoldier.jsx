@@ -32,7 +32,7 @@ import {
     UserOutlined,
     WarningTwoTone
 } from "@ant-design/icons";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useLocation} from "react-router-dom";
 import SearchSelect from "../../layouts/SearchSelect.jsx";
 import StatusSummery from "../Print/soldierProfile/StatusSummery.jsx";
 import Admission from "../Print/soldierProfile/Admission.jsx";
@@ -96,6 +96,17 @@ function SearchSoldier() {
     const [openDocumentModal, setOpenDocumentModal] = useState(false);
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
+    const location = useLocation();
+    const [initialFilter] = useState(() =>
+        location.state && location.state.national_code
+            ? {national_code: location.state.national_code}
+            : undefined
+    );
+    useEffect(() => {
+        if (location.state && location.state.national_code) {
+            navigate(location.pathname, {replace: true, state: null});
+        }
+    }, []);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [printTarget, setPrintTarget] = useState(<div>printable</div>);
@@ -1411,6 +1422,7 @@ function SearchSoldier() {
             }
             setSoldierOid={setKey}
             setSelectedSoldierState={setTargetSoldier}
+            initialFilter={initialFilter}
         />
     );
 }

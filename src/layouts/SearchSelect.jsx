@@ -26,7 +26,8 @@ function SearchSelect({
                           searchColumns,
                           searchProject,
                           additionalFilter,
-                          overrideFilter
+                          overrideFilter,
+                          initialFilter
                       }) {
 
     const [soldiers, setSoldiers] = useState([]);
@@ -141,8 +142,8 @@ function SearchSelect({
     }
 
     useEffect(() => {
-        onFinish({});
-    }, [showInitiallyAll]);
+        onFinish(initialFilter || {});
+    }, [showInitiallyAll, initialFilter]);
 
     function onFinish(values) {
         let filter = additionalFilter === undefined ? {} : additionalFilter;
@@ -284,6 +285,7 @@ function SearchSelect({
             <Form
                 layout={"inline"}
                 onFinish={onFinish}
+                initialValues={initialFilter}
                 style={{justifyContent: "space-between"}}
             >
                 {searchFormFields}
