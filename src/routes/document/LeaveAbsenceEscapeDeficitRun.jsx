@@ -95,7 +95,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     useEffect(() => {
         let temp = [];
         try {
-            selectedSoldier["leave"].forEach((value, index) => {
+            selectedSoldier["leave"]?.forEach((value, index) => {
                 temp.push({
                     ...value,
                     "start_date": DateRenderer(value["start_date"]),
@@ -111,7 +111,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     useEffect(() => {
         let temp = [];
         try {
-            selectedSoldier["document"].forEach((value, index) => {
+            selectedSoldier["document"]?.forEach((value, index) => {
                 temp.push({
                     ...value,
                     "created_date": DateRenderer(value["created_date"]),
@@ -127,7 +127,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     useEffect(() => {
         let temp = [];
         try {
-            selectedSoldier["absence"].forEach((value, index) => {
+            selectedSoldier["absence"]?.forEach((value, index) => {
                 temp.push({
                     ...value,
                     "start_date": DateRenderer(value["start_date"]),
@@ -161,7 +161,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     useEffect(() => {
         let temp = [];
         try {
-            selectedSoldier["arrest"].forEach((value, index) => {
+            selectedSoldier["arrest"]?.forEach((value, index) => {
                 temp.push({
                     ...value,
                     "start_date": DateRenderer(value["start_date"]),
@@ -177,7 +177,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     useEffect(() => {
         let temp = [];
         try {
-            selectedSoldier["organizational_job"].forEach((value, index) => {
+            selectedSoldier["organizational_job"]?.forEach((value, index) => {
                 temp.push({
                     ...value,
                     "start_date": DateRenderer(value["start_date"]),
@@ -193,7 +193,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     useEffect(() => {
         let temp = [];
         try {
-            selectedSoldier["mission"].forEach((value, index) => {
+            selectedSoldier["mission"]?.forEach((value, index) => {
                 temp.push({
                     ...value,
                     "start_date": DateRenderer(value["start_date"]),
@@ -209,7 +209,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     useEffect(() => {
         let temp = [];
         try {
-            selectedSoldier["deficit"].forEach((value, index) => {
+            selectedSoldier["deficit"]?.forEach((value, index) => {
                 temp.push({
                     ...value,
                     "create_date": DateRenderer(value["create_date"]),
@@ -225,7 +225,7 @@ function LeaveAbsenceEscapeDeficitRun() {
     useEffect(() => {
         let temp = [];
         try {
-            selectedSoldier["duty_group_data"].forEach((value, index) => {
+            selectedSoldier["duty_group_data"]?.forEach((value, index) => {
                 temp.push({
                     ...value,
                     "submit_date": DateRenderer(value["submit_date"]),
@@ -243,7 +243,7 @@ function LeaveAbsenceEscapeDeficitRun() {
         let temp = [];
 
         try {
-            selectedSoldier["run"].forEach((value, index) => {
+            selectedSoldier["run"]?.forEach((value, index) => {
                 function getDateValue(property) {
                     if (value.hasOwnProperty(property)) {
                         if (value[property] === null) {
