@@ -64,16 +64,21 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                         message: "خطا", description: "مشکلی در سرور پیش آمده."
                     });
                 } else {
+                    const rawReturnDate = res[0]["run"][runIndex]["return_date"];
+                    const formattedReturnDate = rawReturnDate ? DateRenderer(rawReturnDate) : "";
                     setSoldier({
                         ...res[0],
                         "deployment_date": DateRenderer(res[0]["deployment_date"]),
                         "target_run": {
                             ...res[0]["run"][runIndex],
                             "absence_date": DateRenderer(res[0]["run"][runIndex]["absence_date"]),
-                            "return_date": DateRenderer(res[0]["run"][runIndex]["return_date"]),
+                            "return_date": formattedReturnDate,
                             "run_date": DateRenderer(res[0]["run"][runIndex]["run_date"]),
                         },
                     });
+                    if (formattedReturnDate) {
+                        setInput({return_date: formattedReturnDate});
+                    }
 
                     setReadyForPrint(true);
                 }
@@ -113,7 +118,9 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                     <Flex vertical={false} gap={"middle"} align={"center"} justify={"center"}
                           style={{width: "100%", zIndex: 2, marginBottom: "20px"}}>
                         <Form
+                            key={input["return_date"] || "empty"}
                             layout={"inline"}
+                            initialValues={{return_date: input["return_date"] || ""}}
                             onValuesChange={(changedValues, allValues) => {
                                 setInput(allValues);
                             }}
@@ -128,7 +135,9 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                                 <Input/>
                             </Form.Item>
                         </Form>
-                        <Button disabled={!readyForPrint} type={"primary"} onClick={handlePrint}>پرینت</Button>
+                        {input["return_date"] ? (
+                            <Button disabled={!readyForPrint} type={"primary"} onClick={handlePrint}>پرینت</Button>
+                        ) : null}
                     </Flex>
                 </Flex>
 

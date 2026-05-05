@@ -308,7 +308,7 @@ function SearchSoldier() {
                 if (record.text === "جمع کل") {
                     return record.arrest_duration;
                 }
-                return v * (record.war_mode ? 10 : 2);
+                return v * (record.war_mode ? 9 : 2);
             },
         },
         {
@@ -854,7 +854,7 @@ function SearchSoldier() {
                                                                                                                                                                                                                  content={<GForm data={el} soldier={targetSoldier} type={"absence"}/>}>گردشکار</Popover>})),
                                             {
                                                 duration: targetSoldier.absence.filter(v => !v.is_ignored).reduce((sum, absence) => sum + absence.duration, 0),
-                                                arrest_duration: targetSoldier.absence.filter(v => !v.is_ignored).reduce((sum, absence) => sum + absence.duration * (absence.war_mode ? 10 : 2), 0),
+                                                arrest_duration: targetSoldier.absence.filter(v => !v.is_ignored).reduce((sum, absence) => sum + absence.duration * (absence.war_mode ? 9 : 2), 0),
                                                 text: "جمع کل"
                                             }
                                         ]

@@ -48,6 +48,7 @@ import ReturnMD from "../Print/run/ReturnMD.jsx";
 import axios from "axios";
 import {getApiUrl} from "../../utils/Config.js";
 import MarriageMD from "../Print/deficit/MarriageMD.jsx";
+import moment from "jalali-moment";
 
 function LeaveAbsenceEscapeDeficitRun() {
     const [selectedSoldier, setSelectedSoldier] = useState({"leave": [], "absence": []});
@@ -263,7 +264,7 @@ function LeaveAbsenceEscapeDeficitRun() {
                     "return_date": getDateValue("return_date"),
                     "return_letter_date": getDateValue("return_letter_date"),
                     "run_status": value.hasOwnProperty("run_status") ? value["run_status"] : "ثبت اولیه",
-                    "call_date": DateRenderer(value["call_date"]),
+                    "call_date": getDateValue("call_date"),
                     "war_mode": value["war_mode"],
                     key: index
                 })
@@ -1783,8 +1784,20 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                                                                 فرار:</Typography.Title>
                                                                                         </Col>
                                                                                         <Col>
-                                                                                            <Typography.Title
-                                                                                                level={5}>{runData[runEditIndex] === undefined ? -1 : runData[runEditIndex].hasOwnProperty("run_duration") ? runData[runEditIndex]["run_duration"] : -1} روز</Typography.Title>
+                                                                                            <Form.Item noStyle shouldUpdate={(prev, curr) => prev.absence_date !== curr.absence_date || prev.return_date !== curr.return_date}>
+                                                                                                {({getFieldValue}) => {
+                                                                                                    const absence = getFieldValue("absence_date");
+                                                                                                    const ret = getFieldValue("return_date");
+                                                                                                    const fmt = "jYYYY/jMM/jDD HH:mm:ss";
+                                                                                                    const a = absence ? moment(`${absence} 00:00:00`, fmt) : null;
+                                                                                                    const r = ret ? moment(`${ret} 00:00:00`, fmt) : null;
+                                                                                                    let duration = runData[runEditIndex] === undefined ? -1 : runData[runEditIndex].hasOwnProperty("run_duration") ? runData[runEditIndex]["run_duration"] : -1;
+                                                                                                    if (a && a.isValid() && r && r.isValid()) {
+                                                                                                        duration = r.diff(a, "days");
+                                                                                                    }
+                                                                                                    return (<Typography.Title level={5}>{duration} روز</Typography.Title>);
+                                                                                                }}
+                                                                                            </Form.Item>
                                                                                         </Col>
                                                                                     </Row>
                                                                                 </Col>
@@ -1887,6 +1900,14 @@ function LeaveAbsenceEscapeDeficitRun() {
                                                                                                 },
                                                                                             ]}
                                                                                         />
+                                                                                    </Form.Item>
+
+                                                                                    <Form.Item
+                                                                                        label={"شرایط جنگی"}
+                                                                                        name={"war_mode"}
+                                                                                        valuePropName={"checked"}
+                                                                                    >
+                                                                                        <Checkbox disabled={true} />
                                                                                     </Form.Item>
                                                                                 </Col>
                                                                             </Row>
