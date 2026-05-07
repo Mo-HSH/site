@@ -10,6 +10,10 @@ function ObjectOneByOne({configName, keyTitle, valueTitle}) {
     const [needFetch, setNeedFetch] = useState(false);
     const [data, setData] = useState([]);
     const [isDataLoading, setDataLoading] = useState(true);
+    const [editOpen, setEditOpen] = useState(false);
+    const [editing, setEditing] = useState(null);
+    const [isEditLoading, setEditLoading] = useState(false);
+    const [editForm] = Form.useForm();
 
     function fetch() {
         setNeedFetch(!needFetch);
@@ -29,67 +33,133 @@ function ObjectOneByOne({configName, keyTitle, valueTitle}) {
 
 
     return (
-        <Table
-            style={{width: "90%"}}
-            pagination={false}
-            bordered={true}
-            dataSource={data}
-            columns={[
-                {
-                    title: keyTitle,
-                    dataIndex: "key"
-                },
-                {
-                    title: valueTitle,
-                    dataIndex: "value"
-                },
-            ]}
-            footer={()=>{
-                return(
-                    <Form
-                        style={{width: "90%"}}
-                        layout={"inline"}
-                        onFinish={(value)=>{
-                            axios.post(getApiUrl(`config/object_one_by_one/create/${configName}/${value.key}/${value.value}`), {}, {withCredentials: true}).then((res) => {
-                                setFormOpen(false);
-                                fetch();
-                            }).catch((err) => {
-                                console.log(err);
-                                setFormLoading(false);
-                            })
-                        }}
-                    >
-                        <Form.Item
-                            style={{width: "40%"}}
-                            label={keyTitle}
-                            name={"key"}
-                            rules={[{
-                                required: true,
-                            }]}
-                        >
-                            <Input/>
-                        </Form.Item>
-                        <Form.Item
-                            style={{width: "40%"}}
-                            label={valueTitle}
-                            name={"value"}
-                            rules={[{
-                                required: true,
-                            }]}
-                        >
-                            <Input/>
-                        </Form.Item>
-
-                        <Form.Item
-                        >
-                            <Button type="primary" htmlType="submit">
-                                ثبت
+        <>
+            <Table
+                style={{width: "90%"}}
+                pagination={false}
+                bordered={true}
+                dataSource={data}
+                columns={[
+                    {
+                        title: keyTitle,
+                        dataIndex: "key"
+                    },
+                    {
+                        title: valueTitle,
+                        dataIndex: "value"
+                    },
+                    {
+                        title: "عملیات",
+                        key: "actions",
+                        width: 120,
+                        render: (_, record) => (
+                            <Button
+                                type="link"
+                                onClick={() => {
+                                    setEditing(record);
+                                    editForm.setFieldsValue({key: record.key, value: record.value});
+                                    setEditOpen(true);
+                                }}
+                            >
+                                ویرایش
                             </Button>
-                        </Form.Item>
-                    </Form>
-                );
-            }}
-        />
+                        )
+                    },
+                ]}
+                footer={() => {
+                    return (
+                        <Form
+                            style={{width: "90%"}}
+                            layout={"inline"}
+                            onFinish={(value) => {
+                                axios.post(getApiUrl(`config/object_one_by_one/create/${configName}/${value.key}/${value.value}`), {}, {withCredentials: true}).then((res) => {
+                                    setFormOpen(false);
+                                    fetch();
+                                }).catch((err) => {
+                                    console.log(err);
+                                    setFormLoading(false);
+                                })
+                            }}
+                        >
+                            <Form.Item
+                                style={{width: "40%"}}
+                                label={keyTitle}
+                                name={"key"}
+                                rules={[{
+                                    required: true,
+                                }]}
+                            >
+                                <Input/>
+                            </Form.Item>
+                            <Form.Item
+                                style={{width: "40%"}}
+                                label={valueTitle}
+                                name={"value"}
+                                rules={[{
+                                    required: true,
+                                }]}
+                            >
+                                <Input/>
+                            </Form.Item>
+
+                            <Form.Item
+                            >
+                                <Button type="primary" htmlType="submit">
+                                    ثبت
+                                </Button>
+                            </Form.Item>
+                        </Form>
+                    );
+                }}
+            />
+            <Modal
+                open={editOpen}
+                title={"ویرایش"}
+                onCancel={() => setEditOpen(false)}
+                destroyOnClose
+                footer={null}
+            >
+                <Form
+                    form={editForm}
+                    layout={"vertical"}
+                    onFinish={(value) => {
+                        setEditLoading(true);
+                        axios.post(
+                            getApiUrl(`config/object_one_by_one/update/${configName}/${editing.key}/${editing.value}/${value.key}/${value.value}`),
+                            {},
+                            {withCredentials: true}
+                        ).then(() => {
+                            setEditLoading(false);
+                            setEditOpen(false);
+                            fetch();
+                        }).catch((err) => {
+                            console.log(err);
+                            setEditLoading(false);
+                        });
+                    }}
+                >
+                    <Form.Item
+                        label={keyTitle}
+                        name={"key"}
+                        rules={[{required: true, message: "این فیلد اجباریست."}]}
+                    >
+                        <Input/>
+                    </Form.Item>
+                    <Form.Item
+                        label={valueTitle}
+                        name={"value"}
+                        rules={[{required: true, message: "این فیلد اجباریست."}]}
+                    >
+                        <Input/>
+                    </Form.Item>
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit" loading={isEditLoading}>
+                            ثبت
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
+        </>
     );
 }
 

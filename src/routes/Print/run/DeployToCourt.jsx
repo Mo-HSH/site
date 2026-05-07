@@ -28,6 +28,7 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
     const [input, setInput] = useState({
         return_date: ""
     });
+    const [form] = Form.useForm();
 
     useEffect(() => {
         setPrintTitle("فرم اعزام به قضایی");
@@ -78,6 +79,7 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                     });
                     if (formattedReturnDate) {
                         setInput({return_date: formattedReturnDate});
+                        form.setFieldsValue({return_date: formattedReturnDate});
                     }
 
                     setReadyForPrint(true);
@@ -118,9 +120,8 @@ function DeployToCourt({setPrintTitle, soldierKey, runIndex, forceRefresh}) {
                     <Flex vertical={false} gap={"middle"} align={"center"} justify={"center"}
                           style={{width: "100%", zIndex: 2, marginBottom: "20px"}}>
                         <Form
-                            key={input["return_date"] || "empty"}
+                            form={form}
                             layout={"inline"}
-                            initialValues={{return_date: input["return_date"] || ""}}
                             onValuesChange={(changedValues, allValues) => {
                                 setInput(allValues);
                             }}
